@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,6 +24,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PersonAdd
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +38,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -52,6 +58,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.labball_tfg.Modelo.AdminUsuarioResponse
+import com.example.labball_tfg.Modelo.JugadorCreateRequest
 import com.example.labball_tfg.Modelo.JugadorResponse
 import com.example.labball_tfg.ViewModel.ADMIN.AdminJugadoresViewModel
 import com.example.labball_tfg.ui.theme.backgroundColor
@@ -67,23 +75,49 @@ fun AdminJugadoresScreen(
     viewModel: AdminJugadoresViewModel = viewModel()
 ) {
     val jugadores by viewModel.jugadores.collectAsState()
+    val usuariosClientes by viewModel.usuariosClientes.collectAsState()
     val entrenadoresCatalogo by viewModel.entrenadores.collectAsState()
     val ubicacionesCatalogo by viewModel.ubicaciones.collectAsState()
     val jugadorSeleccionado by viewModel.jugadorSeleccionado.collectAsState()
+    val jugadorGuardado by viewModel.jugadorGuardado.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
+    val successMessage by viewModel.successMessage.collectAsState()
 
     var selectedJugadorId by rememberSaveable { mutableStateOf<Int?>(null) }
     var searchText by rememberSaveable { mutableStateOf("") }
     var selectedEntrenador by rememberSaveable { mutableStateOf<String?>(null) }
     var selectedUbicacion by rememberSaveable { mutableStateOf<String?>(null) }
+    var showUserSelector by rememberSaveable { mutableStateOf(false) }
+    var pendingUsuarioId by rememberSaveable { mutableStateOf<Int?>(null) }
+    var openCreatedPlayerAfterSave by rememberSaveable { mutableStateOf(false) }
     val listState = rememberSaveable(saver = LazyListState.Saver) {
         LazyListState()
     }
 
     LaunchedEffect(token) {
         viewModel.cargarJugadores(token)
+        viewModel.cargarUsuariosClientes(token)
         viewModel.cargarCatalogos(token)
+    }
+
+    LaunchedEffect(jugadorGuardado?.idJugador, openCreatedPlayerAfterSave) {
+        val jugadorCreado = jugadorGuardado
+        if (openCreatedPlayerAfterSave && jugadorCreado != null) {
+            openCreatedPlayerAfterSave = false
+            showUserSelector = false
+            pendingUsuarioId = null
+            selectedJugadorId = jugadorCreado.idJugador
+            viewModel.limpiarJugadorSeleccionado()
+            viewModel.cargarJugadorPorId(token, jugadorCreado.idJugador)
+            viewModel.limpiarEstado()
+        }
+    }
+
+    LaunchedEffect(errorMessage) {
+        if (errorMessage != null) {
+            openCreatedPlayerAfterSave = false
+        }
     }
 
     BackHandler(enabled = selectedJugadorId != null) {
@@ -155,6 +189,17 @@ fun AdminJugadoresScreen(
         }
     }
 
+    val usuariosDisponiblesParaJugador = remember(usuariosClientes, jugadores) {
+        val jugadoresUsuarioIds = jugadores.map { it.idUsuario }.toSet()
+        usuariosClientes
+            .filter { usuario -> usuario.idUsuario !in jugadoresUsuarioIds }
+            .sortedBy { it.displayNameForPlayer().normalizedForSearch() }
+    }
+
+    val pendingUsuario = remember(pendingUsuarioId, usuariosClientes) {
+        usuariosClientes.firstOrNull { it.idUsuario == pendingUsuarioId }
+    }
+
     AdminJugadoresListContent(
         jugadores = jugadoresFiltrados,
         searchText = searchText,
@@ -164,6 +209,7 @@ fun AdminJugadoresScreen(
         selectedUbicacion = selectedUbicacion,
         isLoading = isLoading,
         errorMessage = errorMessage,
+        successMessage = successMessage,
         listState = listState,
         onSearchTextChange = { searchText = it },
         onEntrenadorSelected = { selectedEntrenador = it },
@@ -174,8 +220,43 @@ fun AdminJugadoresScreen(
             viewModel.limpiarEstado()
             viewModel.cargarJugadorPorId(token, jugador.idJugador)
             onJugadorClick(jugador)
+        },
+        onAddPlayerClick = {
+            viewModel.limpiarEstado()
+            showUserSelector = true
         }
     )
+
+    if (showUserSelector) {
+        AdminJugadorUserSelectorDialog(
+            usuarios = usuariosDisponiblesParaJugador,
+            isLoading = isLoading,
+            onUserSelected = { usuario ->
+                pendingUsuarioId = usuario.idUsuario
+                showUserSelector = false
+            },
+            onDismiss = { showUserSelector = false }
+        )
+    }
+
+    pendingUsuario?.let { usuario ->
+        AdminJugadorCreateConfirmDialog(
+            usuario = usuario,
+            isLoading = isLoading,
+            onConfirm = {
+                openCreatedPlayerAfterSave = true
+                pendingUsuarioId = null
+                viewModel.crearJugador(
+                    token = token,
+                    jugador = usuario.toJugadorCreateRequest()
+                )
+            },
+            onDismiss = {
+                openCreatedPlayerAfterSave = false
+                pendingUsuarioId = null
+            }
+        )
+    }
 }
 
 @Composable
@@ -188,68 +269,111 @@ private fun AdminJugadoresListContent(
     selectedUbicacion: String?,
     isLoading: Boolean,
     errorMessage: String?,
+    successMessage: String?,
     listState: LazyListState,
     onSearchTextChange: (String) -> Unit,
     onEntrenadorSelected: (String?) -> Unit,
     onUbicacionSelected: (String?) -> Unit,
-    onJugadorClick: (JugadorResponse) -> Unit
+    onJugadorClick: (JugadorResponse) -> Unit,
+    onAddPlayerClick: () -> Unit
 ) {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(backgroundColor)
     ) {
-        AdminJugadoresSearchField(
-            value = searchText,
-            onValueChange = onSearchTextChange
-        )
-
-        AdminJugadoresFilters(
-            entrenadores = entrenadores,
-            ubicaciones = ubicaciones,
-            selectedEntrenador = selectedEntrenador,
-            selectedUbicacion = selectedUbicacion,
-            onEntrenadorSelected = onEntrenadorSelected,
-            onUbicacionSelected = onUbicacionSelected
-        )
-
-        HorizontalDivider(
-            color = secondaryColor,
-            thickness = 1.dp
-        )
-
-        LazyColumn(
-            state = listState,
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(vertical = 4.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 64.dp)
         ) {
-            if (isLoading && jugadores.isEmpty()) {
-                item {
-                    AdminJugadoresLoadingMessage()
+            AdminJugadoresSearchField(
+                value = searchText,
+                onValueChange = onSearchTextChange
+            )
+
+            AdminJugadoresFilters(
+                entrenadores = entrenadores,
+                ubicaciones = ubicaciones,
+                selectedEntrenador = selectedEntrenador,
+                selectedUbicacion = selectedUbicacion,
+                onEntrenadorSelected = onEntrenadorSelected,
+                onUbicacionSelected = onUbicacionSelected
+            )
+
+            HorizontalDivider(
+                color = secondaryColor,
+                thickness = 1.dp
+            )
+
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentPadding = PaddingValues(vertical = 4.dp)
+            ) {
+                if (isLoading && jugadores.isEmpty()) {
+                    item {
+                        AdminJugadoresLoadingMessage()
+                    }
+                }
+
+                if (errorMessage != null) {
+                    item {
+                        AdminJugadoresMessage(errorMessage)
+                    }
+                }
+
+                if (successMessage != null) {
+                    item {
+                        AdminJugadoresMessage(successMessage)
+                    }
+                }
+
+                if (!isLoading && jugadores.isEmpty() && errorMessage == null) {
+                    item {
+                        AdminJugadoresMessage("No hay jugadores que mostrar.")
+                    }
+                }
+
+                items(
+                    items = jugadores,
+                    key = { it.idJugador }
+                ) { jugador ->
+                    AdminJugadorSummaryCard(
+                        jugador = jugador,
+                        onClick = { onJugadorClick(jugador) }
+                    )
                 }
             }
+        }
 
-            if (errorMessage != null) {
-                item {
-                    AdminJugadoresMessage(errorMessage)
-                }
-            }
-
-            if (!isLoading && jugadores.isEmpty() && errorMessage == null) {
-                item {
-                    AdminJugadoresMessage("No hay jugadores que mostrar.")
-                }
-            }
-
-            items(
-                items = jugadores,
-                key = { it.idJugador }
-            ) { jugador ->
-                AdminJugadorSummaryCard(
-                    jugador = jugador,
-                    onClick = { onJugadorClick(jugador) }
-                )
-            }
+        Button(
+            onClick = onAddPlayerClick,
+            enabled = !isLoading,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = secondaryColor,
+                disabledContainerColor = secondaryColor.copy(alpha = 0.35f)
+            ),
+            shape = RoundedCornerShape(50),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .height(54.dp)
+                .padding(horizontal = 18.dp, vertical = 4.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.PersonAdd,
+                contentDescription = null,
+                tint = textColor,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Anadir jugador",
+                color = textColor
+            )
         }
     }
 }
@@ -520,6 +644,223 @@ private fun AdminJugadoresMessage(message: String) {
     )
 }
 
+@Composable
+private fun AdminJugadorUserSelectorDialog(
+    usuarios: List<AdminUsuarioResponse>,
+    isLoading: Boolean,
+    onUserSelected: (AdminUsuarioResponse) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var searchText by rememberSaveable { mutableStateOf("") }
+    val usuariosFiltrados = remember(usuarios, searchText) {
+        val query = searchText.normalizedForSearch()
+        if (query.isBlank()) {
+            usuarios
+        } else {
+            usuarios.filter { it.matchesPlayerUserSearch(query) }
+        }
+    }
+
+    AlertDialog(
+        containerColor = backgroundColor,
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Seleccionar usuario",
+                color = textColor,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                OutlinedTextField(
+                    value = searchText,
+                    onValueChange = { searchText = it },
+                    placeholder = { Text("Buscar cliente") },
+                    singleLine = true,
+                    shape = RoundedCornerShape(50),
+                    colors = adminJugadorUserTextFieldColors(),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 360.dp)
+                ) {
+                    when {
+                        isLoading && usuarios.isEmpty() -> {
+                            CircularProgressIndicator(
+                                color = secondaryColor,
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
+
+                        usuariosFiltrados.isEmpty() -> {
+                            Text(
+                                text = "No hay clientes disponibles sin jugador.",
+                                color = Color.Gray,
+                                modifier = Modifier.padding(vertical = 18.dp)
+                            )
+                        }
+
+                        else -> {
+                            LazyColumn {
+                                items(
+                                    items = usuariosFiltrados,
+                                    key = { it.idUsuario }
+                                ) { usuario ->
+                                    AdminJugadorUserRow(
+                                        usuario = usuario,
+                                        onClick = { onUserSelected(usuario) }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar", color = textColor)
+            }
+        }
+    )
+}
+
+@Composable
+private fun AdminJugadorUserRow(
+    usuario: AdminUsuarioResponse,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        AdminJugadorUserAvatar(usuario)
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = usuario.displayNameForPlayer(),
+                color = textColor,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Text(
+                text = usuario.correo,
+                color = Color.Gray,
+                fontSize = 13.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+
+    HorizontalDivider(color = secondaryColor.copy(alpha = 0.4f))
+}
+
+@Composable
+private fun AdminJugadorUserAvatar(usuario: AdminUsuarioResponse) {
+    Box(
+        modifier = Modifier
+            .size(44.dp)
+            .clip(CircleShape)
+            .background(textColor.copy(alpha = 0.06f)),
+        contentAlignment = Alignment.Center
+    ) {
+        if (!usuario.fotoPerfilUrl.isNullOrBlank()) {
+            AsyncImage(
+                model = usuario.fotoPerfilUrl,
+                contentDescription = "Foto de usuario",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
+            Icon(
+                imageVector = Icons.Filled.Person,
+                contentDescription = null,
+                tint = secondaryColor,
+                modifier = Modifier.size(30.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun AdminJugadorCreateConfirmDialog(
+    usuario: AdminUsuarioResponse,
+    isLoading: Boolean,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        containerColor = backgroundColor,
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Crear jugador",
+                color = textColor,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text(
+                    text = "Se asociara un jugador a esta cuenta:",
+                    color = textColor
+                )
+                Text(
+                    text = usuario.correo,
+                    color = secondaryColor,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "Despues podras completar y editar sus datos.",
+                    color = Color.Gray,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onConfirm,
+                enabled = !isLoading
+            ) {
+                Text("Confirmar", color = secondaryColor)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss, enabled = !isLoading) {
+                Text("Cancelar", color = textColor)
+            }
+        }
+    )
+}
+
+@Composable
+private fun adminJugadorUserTextFieldColors() = OutlinedTextFieldDefaults.colors(
+    focusedTextColor = textColor,
+    unfocusedTextColor = textColor,
+    cursorColor = secondaryColor,
+    focusedBorderColor = secondaryColor,
+    unfocusedBorderColor = secondaryColor,
+    focusedContainerColor = Color.Transparent,
+    unfocusedContainerColor = Color.Transparent,
+    focusedPlaceholderColor = textColor.copy(alpha = 0.55f),
+    unfocusedPlaceholderColor = textColor.copy(alpha = 0.55f)
+)
+
 private fun String.normalizedForSearch(): String {
     return Normalizer
         .normalize(this, Normalizer.Form.NFD)
@@ -549,6 +890,33 @@ private fun JugadorResponse.trainingSummary(): String {
         nombreEntrenador?.takeIf { it.isNotBlank() },
         ubicacion?.takeIf { it.isNotBlank() }
     ).joinToString(" - ")
+}
+
+private fun AdminUsuarioResponse.displayNameForPlayer(): String {
+    return listOfNotNull(
+        nombre?.trim()?.takeIf { it.isNotBlank() },
+        apellido1?.trim()?.takeIf { it.isNotBlank() }
+    ).joinToString(" ").ifBlank {
+        correo.substringBefore("@").takeIf { it.isNotBlank() } ?: correo
+    }
+}
+
+private fun AdminUsuarioResponse.matchesPlayerUserSearch(query: String): Boolean {
+    return listOf(
+        correo,
+        telefono.orEmpty(),
+        displayNameForPlayer()
+    ).any { it.normalizedForSearch().contains(query) }
+}
+
+private fun AdminUsuarioResponse.toJugadorCreateRequest(): JugadorCreateRequest {
+    return JugadorCreateRequest(
+        idUsuario = idUsuario,
+        nombre = nombre?.trim()?.takeIf { it.isNotBlank() }
+            ?: correo.substringBefore("@").takeIf { it.isNotBlank() }
+            ?: "Jugador",
+        apellidos = apellido1?.trim()?.takeIf { it.isNotBlank() } ?: "Sin apellidos"
+    )
 }
 
 

@@ -3,6 +3,7 @@
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.labball_tfg.Modelo.API
+import com.example.labball_tfg.Modelo.AdminUsuarioResponse
 import com.example.labball_tfg.Modelo.JugadorCreateRequest
 import com.example.labball_tfg.Modelo.JugadorEstadisticasUpdateRequest
 import com.example.labball_tfg.Modelo.JugadorResponse
@@ -16,6 +17,9 @@ class AdminJugadoresViewModel : ViewModel() {
 
     private val _jugadores = MutableStateFlow<List<JugadorResponse>>(emptyList())
     val jugadores: StateFlow<List<JugadorResponse>> = _jugadores.asStateFlow()
+
+    private val _usuariosClientes = MutableStateFlow<List<AdminUsuarioResponse>>(emptyList())
+    val usuariosClientes: StateFlow<List<AdminUsuarioResponse>> = _usuariosClientes.asStateFlow()
 
     private val _entrenadores = MutableStateFlow<List<String>>(emptyList())
     val entrenadores: StateFlow<List<String>> = _entrenadores.asStateFlow()
@@ -34,6 +38,9 @@ class AdminJugadoresViewModel : ViewModel() {
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+
+    private val _successMessage = MutableStateFlow<String?>(null)
+    val successMessage: StateFlow<String?> = _successMessage.asStateFlow()
 
     fun cargarCatalogos(token: String) {
         viewModelScope.launch {
@@ -71,10 +78,32 @@ class AdminJugadoresViewModel : ViewModel() {
         }
     }
 
+    fun cargarUsuariosClientes(token: String) {
+        viewModelScope.launch {
+            try {
+                val response = API.apiDao.getAdminUsuarios("Bearer $token")
+
+                if (response.isSuccessful) {
+                    _usuariosClientes.value = response.body()
+                        ?.usuarios
+                        ?.filter { !it.esAdmin && !it.esSuperAdmin }
+                        ?.sortedBy { it.correo.lowercase() }
+                        ?: emptyList()
+                } else {
+                    _errorMessage.value =
+                        "Error al cargar usuarios cliente: ${response.code()} ${response.errorBody()?.string()}"
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = "Error conectando con FastAPI: ${e.message}"
+            }
+        }
+    }
+
     fun cargarJugadores(token: String) {
         viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
+            _successMessage.value = null
 
             try {
                 val response = API.apiDao.getAdminJugadores("Bearer $token")
@@ -101,6 +130,7 @@ class AdminJugadoresViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
+            _successMessage.value = null
 
             try {
                 val response = API.apiDao.getAdminJugadorById(
@@ -130,6 +160,7 @@ class AdminJugadoresViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
+            _successMessage.value = null
             _jugadorGuardado.value = null
 
             try {
@@ -140,6 +171,7 @@ class AdminJugadoresViewModel : ViewModel() {
 
                 if (response.isSuccessful) {
                     _jugadorGuardado.value = response.body()?.jugador
+                    _successMessage.value = response.body()?.message ?: "Jugador creado correctamente"
                     cargarJugadores(token)
                 } else {
                     _errorMessage.value =
@@ -162,6 +194,7 @@ class AdminJugadoresViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
+            _successMessage.value = null
             _jugadorGuardado.value = null
 
             try {
@@ -175,6 +208,7 @@ class AdminJugadoresViewModel : ViewModel() {
                     val jugadorActualizado = response.body()?.jugador
                     _jugadorGuardado.value = jugadorActualizado
                     _jugadorSeleccionado.value = jugadorActualizado
+                    _successMessage.value = response.body()?.message ?: "Jugador actualizado correctamente"
                     cargarJugadores(token)
                 } else {
                     _errorMessage.value =
@@ -197,6 +231,7 @@ class AdminJugadoresViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
+            _successMessage.value = null
             _jugadorGuardado.value = null
 
             try {
@@ -210,6 +245,7 @@ class AdminJugadoresViewModel : ViewModel() {
                     val jugadorActualizado = response.body()?.jugador
                     _jugadorGuardado.value = jugadorActualizado
                     _jugadorSeleccionado.value = jugadorActualizado
+                    _successMessage.value = response.body()?.message ?: "Estadisticas actualizadas correctamente"
                     cargarJugadores(token)
                 } else {
                     _errorMessage.value =
@@ -231,6 +267,7 @@ class AdminJugadoresViewModel : ViewModel() {
     fun limpiarEstado() {
         _jugadorGuardado.value = null
         _errorMessage.value = null
+        _successMessage.value = null
     }
 }
 

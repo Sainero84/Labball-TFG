@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -39,10 +40,14 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
+import com.example.labball_tfg.Modelo.MediaUpdateRequest
 import com.example.labball_tfg.Modelo.VideoDetailResponse
 import com.example.labball_tfg.Modelo.VideoListItemResponse
+import com.example.labball_tfg.ViewModel.ADMIN.AdminMediaViewModel
 import com.example.labball_tfg.ViewModel.CLIENTE.MediaViewModel
+import com.example.labball_tfg.ViewModel.UsuarioViewModel
 import com.example.labball_tfg.ui.theme.backgroundColor
+import com.example.labball_tfg.ui.theme.errorColor
 import com.example.labball_tfg.ui.theme.secondaryColor
 import com.example.labball_tfg.ui.theme.textColor
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -55,18 +60,43 @@ import com.example.labball_tfg.ui.theme.primaryColor
 fun AdminEntrenaPorTuCuentaScreen(
     token: String,
     viewModel: MediaViewModel = viewModel(),
+    adminMediaViewModel: AdminMediaViewModel = viewModel(),
+    usuarioViewModel: UsuarioViewModel = viewModel(),
     onPublicarVideoClick: () -> Unit = {}
 ) {
     val videos by viewModel.videos.collectAsState()
     val videoSeleccionado by viewModel.videoSeleccionado.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
+    val usuarioActual by usuarioViewModel.usuario.collectAsState()
+    val mediaGuardado by adminMediaViewModel.mediaGuardado.collectAsState()
+    val mediaEliminado by adminMediaViewModel.mediaEliminado.collectAsState()
+    val adminActionLoading by adminMediaViewModel.isLoading.collectAsState()
+    val adminActionError by adminMediaViewModel.errorMessage.collectAsState()
 
     var busqueda by remember { mutableStateOf("") }
     var mostrandoPublicarVideo by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(token) {
         viewModel.cargarVideos(token)
+        usuarioViewModel.cargarUsuarioMe(token)
+    }
+
+    LaunchedEffect(mediaGuardado?.idMedia, mostrandoPublicarVideo) {
+        val media = mediaGuardado
+        if (media != null && !mostrandoPublicarVideo) {
+            viewModel.cargarVideos(token)
+            viewModel.cargarVideoPorId(token, media.idMedia)
+            adminMediaViewModel.limpiarEstado()
+        }
+    }
+
+    LaunchedEffect(mediaEliminado) {
+        if (mediaEliminado) {
+            viewModel.limpiarVideoSeleccionado()
+            viewModel.cargarVideos(token)
+            adminMediaViewModel.limpiarEstado()
+        }
     }
 
     val videosFiltrados = videos.filter {
@@ -82,7 +112,8 @@ fun AdminEntrenaPorTuCuentaScreen(
             onVideoPublicado = {
                 mostrandoPublicarVideo = false
                 viewModel.cargarVideos(token)
-            }
+            },
+            viewModel = adminMediaViewModel
         )
         return
     }
@@ -90,8 +121,28 @@ fun AdminEntrenaPorTuCuentaScreen(
     if (videoSeleccionado != null) {
         VideoFullScreen(
             video = videoSeleccionado!!,
+            canDelete = usuarioActual?.esSuperAdmin == true,
+            isActionLoading = adminActionLoading,
+            actionError = adminActionError,
             onBack = {
+                adminMediaViewModel.limpiarEstado()
                 viewModel.limpiarVideoSeleccionado()
+            },
+            onUpdateVideo = { idMedia, titulo, descripcion ->
+                adminMediaViewModel.actualizarVideo(
+                    token = token,
+                    idMedia = idMedia,
+                    media = MediaUpdateRequest(
+                        titulo = titulo,
+                        descripcion = descripcion
+                    )
+                )
+            },
+            onDeleteVideo = { idMedia ->
+                adminMediaViewModel.eliminarVideo(
+                    token = token,
+                    idMedia = idMedia
+                )
             }
         )
         return
@@ -242,12 +293,28 @@ private fun VideoListItem(
 @Composable
 private fun VideoFullScreen(
     video: VideoDetailResponse,
-    onBack: () -> Unit
+    canDelete: Boolean,
+    isActionLoading: Boolean,
+    actionError: String?,
+    onBack: () -> Unit,
+    onUpdateVideo: (idMedia: Int, titulo: String, descripcion: String?) -> Unit,
+    onDeleteVideo: (idMedia: Int) -> Unit
 ) {
     val context = LocalContext.current
     val view = LocalView.current
     val activity = remember(context) { context.findActivity() }
     var isVideoFullscreen by rememberSaveable(video.urlArchivo) { mutableStateOf(false) }
+    var isEditing by rememberSaveable(video.idMedia) { mutableStateOf(false) }
+    var editTitle by rememberSaveable(video.idMedia) { mutableStateOf(video.titulo) }
+    var editDescription by rememberSaveable(video.idMedia) { mutableStateOf(video.descripcion.orEmpty()) }
+    var showDeleteConfirmation by rememberSaveable(video.idMedia) { mutableStateOf(false) }
+
+    LaunchedEffect(video.idMedia, video.titulo, video.descripcion) {
+        if (!isEditing) {
+            editTitle = video.titulo
+            editDescription = video.descripcion.orEmpty()
+        }
+    }
 
     val exoPlayer = remember(video.urlArchivo) {
         ExoPlayer.Builder(context).build().apply {
@@ -286,23 +353,98 @@ private fun VideoFullScreen(
             .background(backgroundColor)
             .padding(16.dp)
     ) {
-        TextButton(onClick = onBack) {
-            Text(
-                text = "Volver",
-                color = secondaryColor
-            )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            TextButton(onClick = onBack, enabled = !isActionLoading) {
+                Text(
+                    text = "Volver",
+                    color = secondaryColor
+                )
+            }
+
+            TextButton(
+                onClick = {
+                    isEditing = !isEditing
+                    editTitle = video.titulo
+                    editDescription = video.descripcion.orEmpty()
+                },
+                enabled = !isActionLoading
+            ) {
+                Text(
+                    text = if (isEditing) "Cancelar" else "Editar",
+                    color = secondaryColor
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Text(
-            text = video.titulo,
-            color = textColor,
-            style = MaterialTheme.typography.headlineLarge.copy(
-                fontWeight = FontWeight.Bold,
-                lineHeight = 40.sp
+        if (isEditing) {
+            OutlinedTextField(
+                value = editTitle,
+                onValueChange = { editTitle = it },
+                label = { Text("Titulo") },
+                singleLine = true,
+                shape = RoundedCornerShape(12.dp),
+                colors = adminVideoDetailTextFieldColors(),
+                modifier = Modifier.fillMaxWidth()
             )
-        )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            OutlinedTextField(
+                value = editDescription,
+                onValueChange = { editDescription = it },
+                label = { Text("Descripcion") },
+                minLines = 2,
+                maxLines = 4,
+                shape = RoundedCornerShape(12.dp),
+                colors = adminVideoDetailTextFieldColors(),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Button(
+                onClick = {
+                    onUpdateVideo(
+                        video.idMedia,
+                        editTitle.trim(),
+                        editDescription.trim().takeIf { it.isNotBlank() }
+                    )
+                    isEditing = false
+                },
+                enabled = editTitle.isNotBlank() && !isActionLoading,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = secondaryColor,
+                    disabledContainerColor = secondaryColor.copy(alpha = 0.35f)
+                ),
+                shape = RoundedCornerShape(50),
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                if (isActionLoading) {
+                    CircularProgressIndicator(
+                        color = textColor,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier.size(18.dp)
+                    )
+                } else {
+                    Text("Guardar cambios", color = textColor)
+                }
+            }
+        } else {
+            Text(
+                text = video.titulo,
+                color = textColor,
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                    lineHeight = 40.sp
+                )
+            )
+        }
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -357,16 +499,95 @@ private fun VideoFullScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = video.descripcion ?: "",
-            color = textColor,
-            style = MaterialTheme.typography.titleLarge.copy(
-                fontWeight = FontWeight.Medium,
-                lineHeight = 30.sp
+        if (!isEditing) {
+            Text(
+                text = video.descripcion ?: "",
+                color = textColor,
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Medium,
+                    lineHeight = 30.sp
+                )
             )
+        }
+
+        if (actionError != null) {
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                text = actionError,
+                color = errorColor,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        if (canDelete) {
+            TextButton(
+                onClick = { showDeleteConfirmation = true },
+                enabled = !isActionLoading,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text(
+                    text = "Eliminar video",
+                    color = errorColor,
+                    fontSize = 12.sp
+                )
+            }
+        }
+    }
+
+    if (showDeleteConfirmation) {
+        AlertDialog(
+            containerColor = backgroundColor,
+            onDismissRequest = { showDeleteConfirmation = false },
+            title = {
+                Text(
+                    text = "Eliminar video",
+                    color = textColor,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text(
+                    text = "Seguro que quieres eliminar este video?",
+                    color = textColor
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteConfirmation = false
+                        onDeleteVideo(video.idMedia)
+                    },
+                    enabled = !isActionLoading
+                ) {
+                    Text("Eliminar", color = errorColor)
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDeleteConfirmation = false },
+                    enabled = !isActionLoading
+                ) {
+                    Text("Cancelar", color = textColor)
+                }
+            }
         )
     }
 }
+
+@Composable
+private fun adminVideoDetailTextFieldColors() = OutlinedTextFieldDefaults.colors(
+    focusedTextColor = textColor,
+    unfocusedTextColor = textColor,
+    cursorColor = primaryColor,
+    focusedBorderColor = secondaryColor,
+    unfocusedBorderColor = secondaryColor,
+    focusedContainerColor = Color.Transparent,
+    unfocusedContainerColor = Color.Transparent,
+    focusedLabelColor = textColor,
+    unfocusedLabelColor = textColor.copy(alpha = 0.65f)
+)
 
 private fun Context.findActivity(): Activity? = when (this) {
     is Activity -> this
