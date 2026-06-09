@@ -62,4 +62,10 @@ http://127.0.0.1:8000/docs
 
 ## Base de datos
 
-Las migraciones SQL estan en la carpeta `migrations/` y deben aplicarse en orden sobre la base de datos `tfg_db`.
+La migracion completa esta en:
+
+```text
+migrations/labball_migraciones_completas.sql
+```
+
+Debe aplicarse sobre la base de datos `tfg_db`.
