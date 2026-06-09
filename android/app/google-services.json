@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "368679961744",
+    "project_id": "labbaltfg",
+    "storage_bucket": "labbaltfg.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:368679961744:android:1b5c5ee2d9a155efa50415",
+        "android_client_info": {
+          "package_name": "com.example.labball_tfg"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkwU9dds1_2W6EZC13bFyk24-95GxG5JE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
