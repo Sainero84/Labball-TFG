@@ -149,33 +149,3 @@ class AdminUsuarioMessageResponseSchema(BaseModel):
 
 class AdminUsuarioDeleteResponseSchema(BaseModel):
     message: str
-
-
-class AdminClienteCreateSchema(BaseModel):
-    correo: str = Field(..., min_length=1, max_length=150)
-    telefono: Optional[str] = Field(default=None, max_length=20)
-
-
-class AdminClienteUpdateSchema(BaseModel):
-    correo: Optional[str] = Field(default=None, min_length=1, max_length=150)
-    telefono: Optional[str] = Field(default=None, max_length=20)
-
-
-class AdminClienteResponseSchema(BaseModel):
-    id_usuario: int
-    correo: str
-    telefono: Optional[str] = None
-    foto_perfil_url: Optional[str] = None
-
-
-class AdminClienteListResponseSchema(BaseModel):
-    clientes: list[AdminClienteResponseSchema]
-
-
-class AdminClienteMessageResponseSchema(BaseModel):
-    message: str
-    cliente: AdminClienteResponseSchema
-
-
-class AdminClienteDeleteResponseSchema(BaseModel):
-    message: str

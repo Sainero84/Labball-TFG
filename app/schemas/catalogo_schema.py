@@ -1,10 +1,6 @@
 from pydantic import BaseModel, Field
 
 
-class EntrenadorCreateSchema(BaseModel):
-    nombre: str = Field(..., min_length=1, max_length=150)
-
-
 class EntrenadorResponseSchema(BaseModel):
     id_entrenador: int
     nombre: str
@@ -13,11 +9,6 @@ class EntrenadorResponseSchema(BaseModel):
 
 class EntrenadorListResponseSchema(BaseModel):
     entrenadores: list[EntrenadorResponseSchema]
-
-
-class EntrenadorMessageResponseSchema(BaseModel):
-    message: str
-    entrenador: EntrenadorResponseSchema
 
 
 class UbicacionCreateSchema(BaseModel):

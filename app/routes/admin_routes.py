@@ -44,9 +44,7 @@ from app.schemas.codigo_administrador_schema import (
     CodigoAdministradorValidateSchema
 )
 from app.schemas.catalogo_schema import (
-    EntrenadorCreateSchema,
     EntrenadorListResponseSchema,
-    EntrenadorMessageResponseSchema,
     UbicacionCreateSchema,
     UbicacionDeleteResponseSchema,
     UbicacionListResponseSchema,
@@ -72,12 +70,6 @@ from app.schemas.tarifa_schema import (
     TarifaUpdateSchema
 )
 from app.schemas.usuario_schema import (
-    AdminClienteCreateSchema,
-    AdminClienteDeleteResponseSchema,
-    AdminClienteListResponseSchema,
-    AdminClienteMessageResponseSchema,
-    AdminClienteResponseSchema,
-    AdminClienteUpdateSchema,
     AdminUsuarioCreateSchema,
     AdminUsuarioDeleteResponseSchema,
     AdminUsuarioListResponseSchema,
@@ -115,51 +107,6 @@ MAX_VIDEO_SIZE = 200 * 1024 * 1024
 MAX_THUMBNAIL_SIZE = 10 * 1024 * 1024
 ALLOWED_VIDEO_EXTENSIONS = {".mp4", ".mov", ".webm", ".mkv"}
 ALLOWED_THUMBNAIL_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
-
-
-@router.get("/clientes", response_model=AdminClienteListResponseSchema)
-def get_admin_clientes(
-    admin=Depends(get_current_admin_user),
-    db: Session = Depends(get_db)
-):
-    return admin_usuario_service.get_admin_clientes(db)
-
-
-@router.get("/clientes/{cliente_id}", response_model=AdminClienteResponseSchema)
-def get_admin_cliente(
-    cliente_id: int,
-    admin=Depends(get_current_admin_user),
-    db: Session = Depends(get_db)
-):
-    return admin_usuario_service.get_admin_cliente_by_id(db, cliente_id)
-
-
-@router.post("/clientes", response_model=AdminClienteMessageResponseSchema)
-def create_admin_cliente(
-    cliente_data: AdminClienteCreateSchema,
-    admin=Depends(get_current_admin_user),
-    db: Session = Depends(get_db)
-):
-    return admin_usuario_service.create_admin_cliente(db, cliente_data)
-
-
-@router.put("/clientes/{cliente_id}", response_model=AdminClienteMessageResponseSchema)
-def update_admin_cliente(
-    cliente_id: int,
-    cliente_data: AdminClienteUpdateSchema,
-    admin=Depends(get_current_admin_user),
-    db: Session = Depends(get_db)
-):
-    return admin_usuario_service.update_admin_cliente(db, cliente_id, cliente_data)
-
-
-@router.delete("/clientes/{cliente_id}", response_model=AdminClienteDeleteResponseSchema)
-def delete_admin_cliente(
-    cliente_id: int,
-    admin=Depends(get_current_admin_user),
-    db: Session = Depends(get_db)
-):
-    return admin_usuario_service.delete_admin_cliente(db, cliente_id)
 
 
 @router.get("/usuarios", response_model=AdminUsuarioListResponseSchema)
@@ -380,15 +327,6 @@ def get_admin_entrenadores(
     db: Session = Depends(get_db)
 ):
     return catalogo_service.get_all_entrenadores(db)
-
-
-@router.post("/entrenadores", response_model=EntrenadorMessageResponseSchema)
-def create_admin_entrenador(
-    entrenador_data: EntrenadorCreateSchema,
-    admin=Depends(get_current_super_admin_user),
-    db: Session = Depends(get_db)
-):
-    return catalogo_service.create_entrenador(db, entrenador_data)
 
 
 @router.get("/ubicaciones", response_model=UbicacionListResponseSchema)

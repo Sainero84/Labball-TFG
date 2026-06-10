@@ -148,12 +148,6 @@ interface ModeloApiDao {
         @Header("Authorization") token: String
     ): Response<EntrenadorListResponse>
 
-    @POST("/admin/entrenadores")
-    suspend fun createAdminEntrenador(
-        @Header("Authorization") token: String,
-        @Body request: EntrenadorCreateRequest
-    ): Response<EntrenadorMessageResponse>
-
     @GET("/admin/ubicaciones")
     suspend fun getAdminUbicaciones(
         @Header("Authorization") token: String

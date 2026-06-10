@@ -8,17 +8,11 @@ from app.repositories import (
     inscripcion_semana_repository,
     jugador_repository,
     semana_repository,
-    tarifa_repository,
-    usuario_repository
+    tarifa_repository
 )
 from app.schemas.inscripcion_schema import (
     ReservaEntrenamientosAsignadosResponseSchema,
     ReservaEntrenamientosAsignarSchema,
-    InscripcionCreateSchema,
-    InscripcionUpdateSchema,
-    InscripcionResponseSchema,
-    InscripcionListResponseSchema,
-    InscripcionMessageResponseSchema,
     ReservaAdminListItemSchema,
     ReservaAdminListResponseSchema,
     ReservaCreateSchema,
@@ -32,13 +26,6 @@ from app.schemas.entrenamiento_schema import (
     EntrenamientoListResponseSchema,
     EntrenamientoResponseSchema
 )
-
-
-def schema_to_dict(schema, **kwargs) -> dict:
-    if hasattr(schema, "model_dump"):
-        return schema.model_dump(**kwargs)
-
-    return schema.dict(**kwargs)
 
 
 def calcular_precio_final(precio_sin_descuento: float, porcentaje_descuento: float | None) -> float:
@@ -97,60 +84,6 @@ def resolve_tarifa(
         )
 
     return tarifa
-
-
-def calcular_datos_precio(
-    db: Session,
-    precio_sin_descuento: float,
-    id_descuento: int | None,
-    descuento_manual: float | None = None
-) -> tuple[float, float, float]:
-    precio_sin_descuento = round(float(precio_sin_descuento), 2)
-
-    if id_descuento is not None:
-        descuento = descuento_repository.get_by_id(db, id_descuento)
-
-        if descuento is None:
-            raise HTTPException(status_code=404, detail="Descuento no encontrado")
-
-        descuento_aplicado = calcular_descuento_aplicado(
-            precio_sin_descuento,
-            float(descuento.porcentaje)
-        )
-    else:
-        descuento_aplicado = round(float(descuento_manual or 0), 2)
-
-    if descuento_aplicado > precio_sin_descuento:
-        raise HTTPException(
-            status_code=400,
-            detail="El descuento no puede superar el precio sin descuento"
-        )
-
-    precio_final = round(precio_sin_descuento - descuento_aplicado, 2)
-
-    return precio_sin_descuento, descuento_aplicado, precio_final
-
-
-def to_inscripcion_response(inscripcion) -> InscripcionResponseSchema:
-    return InscripcionResponseSchema(
-        id_inscripcion=inscripcion.id_inscripcion,
-        id_usuario=inscripcion.id_usuario,
-        id_tarifa=inscripcion.id_tarifa,
-        numero_sesiones=inscripcion.numero_sesiones,
-        nombre=inscripcion.nombre,
-        apellidos=inscripcion.apellidos,
-        dni=inscripcion.dni,
-        fecha_nacimiento=inscripcion.fecha_nacimiento,
-        correo=inscripcion.correo,
-        telefono=inscripcion.telefono,
-        club=inscripcion.club,
-        categoria=inscripcion.categoria,
-        precio_sin_descuento=float(inscripcion.precio_sin_descuento),
-        descuento_aplicado=float(inscripcion.descuento_aplicado),
-        precio_final=float(inscripcion.precio_final),
-        pagado=inscripcion.pagado,
-        id_descuento=inscripcion.id_descuento
-    )
 
 
 def to_reserva_response(db: Session, reserva) -> ReservaResponseSchema:
@@ -233,151 +166,6 @@ def to_entrenamiento_response(db: Session, entrenamiento) -> EntrenamientoRespon
         id_usuario=id_usuario,
         id_reserva=id_inscripcion
     )
-
-
-def get_all_inscripciones(db: Session) -> InscripcionListResponseSchema:
-    inscripciones = inscripcion_repository.get_all(db)
-    return InscripcionListResponseSchema(
-        inscripciones=[to_inscripcion_response(i) for i in inscripciones]
-    )
-
-
-def get_inscripcion_by_id(db: Session, inscripcion_id: int) -> InscripcionResponseSchema:
-    inscripcion = inscripcion_repository.get_by_id(db, inscripcion_id)
-
-    if inscripcion is None:
-        raise HTTPException(status_code=404, detail="Inscripcion no encontrada")
-
-    return to_inscripcion_response(inscripcion)
-
-
-def create_inscripcion(
-    db: Session,
-    inscripcion_data: InscripcionCreateSchema
-) -> InscripcionMessageResponseSchema:
-    usuario = usuario_repository.get_by_id(db, inscripcion_data.id_usuario)
-
-    if usuario is None:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-
-    tarifa = resolve_tarifa(
-        db,
-        id_tarifa=inscripcion_data.id_tarifa,
-        numero_sesiones=inscripcion_data.numero_sesiones
-    )
-    precio_sin_descuento, descuento_aplicado, precio_final = calcular_datos_precio(
-        db,
-        float(tarifa.precio_total),
-        inscripcion_data.id_descuento,
-        inscripcion_data.descuento_aplicado
-    )
-
-    new_inscripcion_data = schema_to_dict(inscripcion_data)
-    new_inscripcion_data.update(
-        {
-            "id_tarifa": tarifa.id_tarifa,
-            "numero_sesiones": tarifa.numero_sesiones,
-            "precio_sin_descuento": precio_sin_descuento,
-            "descuento_aplicado": descuento_aplicado,
-            "precio_final": precio_final
-        }
-    )
-    new_inscripcion = inscripcion_repository.create(db, new_inscripcion_data)
-
-    return InscripcionMessageResponseSchema(
-        message="Inscripcion creada correctamente",
-        inscripcion=to_inscripcion_response(new_inscripcion)
-    )
-
-
-def update_inscripcion(
-    db: Session,
-    inscripcion_id: int,
-    inscripcion_data: InscripcionUpdateSchema
-) -> InscripcionMessageResponseSchema:
-    inscripcion_actual = inscripcion_repository.get_by_id(db, inscripcion_id)
-
-    if inscripcion_actual is None:
-        raise HTTPException(status_code=404, detail="Inscripcion no encontrada")
-
-    updated_fields = schema_to_dict(inscripcion_data, exclude_unset=True)
-
-    if "id_usuario" in updated_fields:
-        usuario = usuario_repository.get_by_id(db, updated_fields["id_usuario"])
-        if usuario is None:
-            raise HTTPException(status_code=404, detail="Usuario no encontrado")
-
-    pricing_fields = {
-        "id_tarifa",
-        "numero_sesiones",
-        "id_descuento",
-        "precio_sin_descuento",
-        "descuento_aplicado"
-    }
-
-    if any(field in updated_fields for field in pricing_fields):
-        if "id_tarifa" in updated_fields or "numero_sesiones" in updated_fields:
-            tarifa = resolve_tarifa(
-                db,
-                id_tarifa=updated_fields.get("id_tarifa"),
-                numero_sesiones=updated_fields.get("numero_sesiones")
-            )
-            updated_fields["id_tarifa"] = tarifa.id_tarifa
-            updated_fields["numero_sesiones"] = tarifa.numero_sesiones
-            precio_sin_descuento = float(tarifa.precio_total)
-        else:
-            precio_sin_descuento = float(
-                updated_fields.get(
-                    "precio_sin_descuento",
-                    inscripcion_actual.precio_sin_descuento
-                )
-            )
-
-        id_descuento = updated_fields.get(
-            "id_descuento",
-            inscripcion_actual.id_descuento
-        )
-        descuento_manual = updated_fields.get(
-            "descuento_aplicado",
-            inscripcion_actual.descuento_aplicado
-        )
-
-        if (
-            "id_descuento" in updated_fields
-            and updated_fields["id_descuento"] is None
-            and "descuento_aplicado" not in updated_fields
-        ):
-            descuento_manual = 0
-
-        precio_sin_descuento, descuento_aplicado, precio_final = calcular_datos_precio(
-            db,
-            precio_sin_descuento,
-            id_descuento,
-            descuento_manual
-        )
-        updated_fields["precio_sin_descuento"] = precio_sin_descuento
-        updated_fields["descuento_aplicado"] = descuento_aplicado
-        updated_fields["precio_final"] = precio_final
-
-    updated = inscripcion_repository.update(db, inscripcion_id, updated_fields)
-
-    return InscripcionMessageResponseSchema(
-        message="Inscripcion actualizada correctamente",
-        inscripcion=to_inscripcion_response(updated)
-    )
-
-
-def delete_inscripcion(db: Session, inscripcion_id: int) -> InscripcionMessageResponseSchema:
-    deleted = inscripcion_repository.delete(db, inscripcion_id)
-
-    if deleted is None:
-        raise HTTPException(status_code=404, detail="Inscripcion no encontrada")
-
-    return InscripcionMessageResponseSchema(
-        message="Inscripcion eliminada correctamente",
-        inscripcion=to_inscripcion_response(deleted)
-    )
-
 
 def create_reserva(
     db: Session,

@@ -12,9 +12,7 @@ from app.repositories import (
     ubicacion_repository
 )
 from app.schemas.catalogo_schema import (
-    EntrenadorCreateSchema,
     EntrenadorListResponseSchema,
-    EntrenadorMessageResponseSchema,
     EntrenadorResponseSchema,
     UbicacionCreateSchema,
     UbicacionDeleteResponseSchema,
@@ -111,29 +109,6 @@ def get_all_entrenadores(db: Session) -> EntrenadorListResponseSchema:
     entrenadores.sort(key=lambda entrenador: entrenador.nombre.lower())
 
     return EntrenadorListResponseSchema(entrenadores=entrenadores)
-
-
-def create_entrenador(
-    db: Session,
-    entrenador_data: EntrenadorCreateSchema
-) -> EntrenadorMessageResponseSchema:
-    nombre = normalize_nombre(entrenador_data.nombre)
-
-    if entrenador_repository.get_by_nombre(db, nombre) is not None:
-        raise HTTPException(status_code=409, detail="Ya existe un entrenador con ese nombre")
-
-    entrenador = entrenador_repository.create(
-        db,
-        {
-            "nombre": nombre,
-            "activo": True
-        }
-    )
-
-    return EntrenadorMessageResponseSchema(
-        message="Entrenador creado correctamente",
-        entrenador=to_entrenador_response(entrenador)
-    )
 
 
 def get_all_ubicaciones(db: Session) -> UbicacionListResponseSchema:

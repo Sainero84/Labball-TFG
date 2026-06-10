@@ -33,23 +33,6 @@ def count_admins(db: Session) -> int:
     return db.query(UsuarioEntity).filter(UsuarioEntity.es_admin.is_(True)).count()
 
 
-def get_all_clientes(db: Session):
-    return db.query(UsuarioEntity).filter(
-        UsuarioEntity.es_admin.is_(False),
-        UsuarioEntity.es_super_admin.is_(False),
-        UsuarioEntity.es_entrenador.is_(False)
-    ).all()
-
-
-def get_cliente_by_id(db: Session, user_id: int):
-    return db.query(UsuarioEntity).filter(
-        UsuarioEntity.id_usuario == user_id,
-        UsuarioEntity.es_admin.is_(False),
-        UsuarioEntity.es_super_admin.is_(False),
-        UsuarioEntity.es_entrenador.is_(False)
-    ).first()
-
-
 # --------------------------------------------------
 # OBTENER UN USUARIO POR ID
 # --------------------------------------------------

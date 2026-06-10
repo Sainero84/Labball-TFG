@@ -21,10 +21,6 @@ from app.entities.ubicacion_entity import UbicacionEntity
 
 from app.routes.usuario_routes import router as usuario_router
 from app.routes.media_routes import router as media_router
-from app.routes.semana_routes import router as semana_router
-from app.routes.inscripcion_routes import router as inscripcion_router
-from app.routes.inscripcion_semana_routes import router as inscripcion_semana_router
-from app.routes.descuento_routes import router as descuento_router
 from app.routes.jugador_routes import router as jugador_router
 from app.routes.entrenamiento_routes import router as entrenamiento_router
 from app.routes.auth_routes import router as auth_router
@@ -70,10 +66,6 @@ def get_me(current_user: dict = Depends(get_current_firebase_user)):
 app.include_router(usuario_router)
 app.include_router(auth_router)
 app.include_router(media_router)
-app.include_router(semana_router)
-app.include_router(inscripcion_router)
-app.include_router(inscripcion_semana_router)
-app.include_router(descuento_router)
 app.include_router(jugador_router)
 app.include_router(entrenamiento_router)
 app.include_router(reserva_router)

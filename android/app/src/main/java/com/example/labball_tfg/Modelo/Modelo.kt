@@ -337,10 +337,6 @@ data class TarifaListResponse(
     val tarifas: List<TarifaResponse>
 )
 
-data class EntrenadorCreateRequest(
-    val nombre: String
-)
-
 data class EntrenadorResponse(
     @SerializedName("id_entrenador") val idEntrenador: Int,
     val nombre: String,
@@ -349,11 +345,6 @@ data class EntrenadorResponse(
 
 data class EntrenadorListResponse(
     val entrenadores: List<EntrenadorResponse>
-)
-
-data class EntrenadorMessageResponse(
-    val message: String,
-    val entrenador: EntrenadorResponse
 )
 
 data class UbicacionCreateRequest(
