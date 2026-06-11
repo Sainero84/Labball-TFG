@@ -20,15 +20,6 @@ def get_all(db: Session):
     ).all()
 
 
-def get_all_entrenadores(db: Session):
-    return db.query(UsuarioEntity).options(
-        joinedload(UsuarioEntity.jugador)
-    ).filter(
-        UsuarioEntity.es_admin.is_(True),
-        UsuarioEntity.es_entrenador.is_(True)
-    ).order_by(UsuarioEntity.correo.asc()).all()
-
-
 def count_admins(db: Session) -> int:
     return db.query(UsuarioEntity).filter(UsuarioEntity.es_admin.is_(True)).count()
 

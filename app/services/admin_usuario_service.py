@@ -11,7 +11,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.repositories import usuario_repository
-from app.services import codigo_administrador_service
+from app.services import catalogo_service, codigo_administrador_service
 from app.schemas.usuario_schema import (
     AdminUsuarioCreateSchema,
     AdminUsuarioListResponseSchema,
@@ -190,6 +190,8 @@ def create_admin_usuario(
             }
         )
         db.flush()
+        if usuario.es_entrenador:
+            catalogo_service.sync_entrenador_for_usuario(db, usuario)
         send_password_reset_email(correo, api_key)
         db.commit()
         db.refresh(usuario)
@@ -324,6 +326,8 @@ def update_admin_usuario_rol(
             detail="Un superadministrador no puede quitarse a si mismo sus permisos"
         )
 
+    era_entrenador = usuario.es_entrenador
+
     usuario.es_admin = nuevo_es_admin
     usuario.es_super_admin = nuevo_es_super_admin
     usuario.es_entrenador = nuevo_es_entrenador
@@ -334,6 +338,15 @@ def update_admin_usuario_rol(
         usuario.id_codigo_administrador = None
 
     try:
+        if nuevo_es_entrenador:
+            catalogo_service.sync_entrenador_for_usuario(db, usuario)
+        elif era_entrenador:
+            catalogo_service.set_entrenador_usuario_activo(
+                db,
+                usuario.id_usuario,
+                False
+            )
+
         db.commit()
     except IntegrityError as exception:
         db.rollback()

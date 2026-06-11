@@ -1,5 +1,5 @@
 from sqlalchemy import or_
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.entities.entrenamiento_entity import EntrenamientoEntity
 from app.entities.inscripcion_entity import InscripcionEntity
@@ -11,7 +11,10 @@ from app.entities.inscripcion_entity import InscripcionEntity
 
 def get_all(db: Session):
 
-    return db.query(EntrenamientoEntity).all()
+    return db.query(EntrenamientoEntity).options(
+        joinedload(EntrenamientoEntity.entrenador),
+        joinedload(EntrenamientoEntity.ubicacion_catalogo)
+    ).all()
 
 
 # --------------------------------------------------
@@ -20,14 +23,20 @@ def get_all(db: Session):
 
 def get_by_id(db: Session, entrenamiento_id: int):
 
-    return db.query(EntrenamientoEntity).filter(
+    return db.query(EntrenamientoEntity).options(
+        joinedload(EntrenamientoEntity.entrenador),
+        joinedload(EntrenamientoEntity.ubicacion_catalogo)
+    ).filter(
         EntrenamientoEntity.id_entrenamiento == entrenamiento_id
     ).first()
 
 
 def get_by_usuario_id(db: Session, usuario_id: int):
 
-    return db.query(EntrenamientoEntity).outerjoin(
+    return db.query(EntrenamientoEntity).options(
+        joinedload(EntrenamientoEntity.entrenador),
+        joinedload(EntrenamientoEntity.ubicacion_catalogo)
+    ).outerjoin(
         InscripcionEntity,
         EntrenamientoEntity.id_inscripcion == InscripcionEntity.id_inscripcion
     ).filter(
@@ -66,7 +75,10 @@ def count_by_usuario_id(db: Session, usuario_id: int) -> int:
 
 def get_by_reserva_id(db: Session, reserva_id: int):
 
-    return db.query(EntrenamientoEntity).filter(
+    return db.query(EntrenamientoEntity).options(
+        joinedload(EntrenamientoEntity.entrenador),
+        joinedload(EntrenamientoEntity.ubicacion_catalogo)
+    ).filter(
         or_(
             EntrenamientoEntity.id_inscripcion == reserva_id,
             EntrenamientoEntity.id_reserva == reserva_id
@@ -86,7 +98,10 @@ def count_by_reserva_id(db: Session, reserva_id: int) -> int:
 
 def get_by_id_and_usuario_id(db: Session, entrenamiento_id: int, usuario_id: int):
 
-    return db.query(EntrenamientoEntity).outerjoin(
+    return db.query(EntrenamientoEntity).options(
+        joinedload(EntrenamientoEntity.entrenador),
+        joinedload(EntrenamientoEntity.ubicacion_catalogo)
+    ).outerjoin(
         InscripcionEntity,
         EntrenamientoEntity.id_inscripcion == InscripcionEntity.id_inscripcion
     ).filter(

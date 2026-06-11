@@ -9,9 +9,9 @@ from datetime import datetime
 
 class EntrenamientoCreateSchema(BaseModel):
 
-    nombre_entrenador: str = Field(..., min_length=1, max_length=150)
+    id_entrenador: int = Field(..., gt=0)
 
-    ubicacion: str = Field(..., min_length=1, max_length=200)
+    id_ubicacion: int = Field(..., gt=0)
 
     hora_inicio: datetime
 
@@ -32,17 +32,9 @@ class EntrenamientoCreateSchema(BaseModel):
 
 class EntrenamientoUpdateSchema(BaseModel):
 
-    nombre_entrenador: Optional[str] = Field(
-        default=None,
-        min_length=1,
-        max_length=150
-    )
+    id_entrenador: Optional[int] = Field(default=None, gt=0)
 
-    ubicacion: Optional[str] = Field(
-        default=None,
-        min_length=1,
-        max_length=200
-    )
+    id_ubicacion: Optional[int] = Field(default=None, gt=0)
 
     hora_inicio: Optional[datetime] = None
 
@@ -65,7 +57,11 @@ class EntrenamientoResponseSchema(BaseModel):
 
     id_entrenamiento: int
 
+    id_entrenador: int
+
     nombre_entrenador: str
+
+    id_ubicacion: int
 
     ubicacion: str
 

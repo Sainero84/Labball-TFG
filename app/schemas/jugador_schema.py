@@ -44,6 +44,16 @@ class JugadorUpdateSchema(BaseModel):
 # SCHEMA DE SALIDA: JUGADOR
 # --------------------------------------------------
 
+class JugadorEntrenadorAsignadoSchema(BaseModel):
+    id_entrenador: int
+    nombre: str
+
+
+class JugadorUbicacionAsignadaSchema(BaseModel):
+    id_ubicacion: int
+    nombre: str
+
+
 class JugadorResponseSchema(BaseModel):
     id_jugador: int
     id_usuario: int
@@ -59,6 +69,12 @@ class JugadorResponseSchema(BaseModel):
     defensa: Optional[int] = None
     velocidad: Optional[int] = None
     foto_perfil_url: Optional[str] = None
+    id_entrenador: Optional[int] = None
+    nombre_entrenador: Optional[str] = None
+    id_ubicacion: Optional[int] = None
+    ubicacion: Optional[str] = None
+    entrenadores: list[JugadorEntrenadorAsignadoSchema] = Field(default_factory=list)
+    ubicaciones: list[JugadorUbicacionAsignadaSchema] = Field(default_factory=list)
 
 
 class JugadorEstadisticasUpdateSchema(BaseModel):

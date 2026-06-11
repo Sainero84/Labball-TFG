@@ -159,19 +159,21 @@ fun AdminJugadoresScreen(
     }
 
     val entrenadores = remember(jugadores, entrenadoresCatalogo) {
-        (entrenadoresCatalogo + jugadores.mapNotNull { it.nombreEntrenador?.takeIf { value -> value.isNotBlank() } })
+        (entrenadoresCatalogo + jugadores.flatMap { it.assignedEntrenadorNames() })
             .distinct()
             .sortedBy { it.normalizedForSearch() }
     }
 
     val ubicaciones = remember(jugadores, ubicacionesCatalogo) {
-        (ubicacionesCatalogo + jugadores.mapNotNull { it.ubicacion?.takeIf { value -> value.isNotBlank() } })
+        (ubicacionesCatalogo + jugadores.flatMap { it.assignedUbicacionNames() })
             .distinct()
             .sortedBy { it.normalizedForSearch() }
     }
 
     val jugadoresFiltrados = remember(jugadores, searchText, selectedEntrenador, selectedUbicacion) {
         val busqueda = searchText.normalizedForSearch()
+        val entrenadorSeleccionado = selectedEntrenador
+        val ubicacionSeleccionada = selectedUbicacion
 
         jugadores.filter { jugador ->
             val coincideBusqueda = busqueda.isBlank() ||
@@ -179,11 +181,11 @@ fun AdminJugadoresScreen(
                     .normalizedForSearch()
                     .contains(busqueda)
 
-            val coincideEntrenador = selectedEntrenador == null ||
-                jugador.nombreEntrenador == selectedEntrenador
+            val coincideEntrenador = entrenadorSeleccionado == null ||
+                jugador.matchesEntrenador(entrenadorSeleccionado)
 
-            val coincideUbicacion = selectedUbicacion == null ||
-                jugador.ubicacion == selectedUbicacion
+            val coincideUbicacion = ubicacionSeleccionada == null ||
+                jugador.matchesUbicacion(ubicacionSeleccionada)
 
             coincideBusqueda && coincideEntrenador && coincideUbicacion
         }
@@ -886,10 +888,37 @@ private fun formatPeso(peso: Double?): String {
 }
 
 private fun JugadorResponse.trainingSummary(): String {
+    val entrenador = assignedEntrenadorNames().firstOrNull()
+    val ubicacion = assignedUbicacionNames().firstOrNull()
+
     return listOfNotNull(
-        nombreEntrenador?.takeIf { it.isNotBlank() },
-        ubicacion?.takeIf { it.isNotBlank() }
+        entrenador,
+        ubicacion
     ).joinToString(" - ")
+}
+
+private fun JugadorResponse.assignedEntrenadorNames(): List<String> {
+    return (entrenadores.map { it.nombre } + listOfNotNull(nombreEntrenador))
+        .map { it.trim() }
+        .filter { it.isNotBlank() }
+        .distinctBy { it.normalizedForSearch() }
+}
+
+private fun JugadorResponse.assignedUbicacionNames(): List<String> {
+    return (ubicaciones.map { it.nombre } + listOfNotNull(ubicacion))
+        .map { it.trim() }
+        .filter { it.isNotBlank() }
+        .distinctBy { it.normalizedForSearch() }
+}
+
+private fun JugadorResponse.matchesEntrenador(selectedEntrenador: String): Boolean {
+    val selected = selectedEntrenador.normalizedForSearch()
+    return assignedEntrenadorNames().any { it.normalizedForSearch() == selected }
+}
+
+private fun JugadorResponse.matchesUbicacion(selectedUbicacion: String): Boolean {
+    val selected = selectedUbicacion.normalizedForSearch()
+    return assignedUbicacionNames().any { it.normalizedForSearch() == selected }
 }
 
 private fun AdminUsuarioResponse.displayNameForPlayer(): String {

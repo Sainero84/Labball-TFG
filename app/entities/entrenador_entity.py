@@ -1,5 +1,5 @@
-from sqlalchemy import Boolean, Integer, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Boolean, ForeignKey, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.base import Base
 
@@ -11,6 +11,13 @@ class EntrenadorEntity(Base):
         Integer,
         primary_key=True,
         autoincrement=True
+    )
+
+    id_usuario: Mapped[int | None] = mapped_column(
+        Integer,
+        ForeignKey("usuarios.id_usuario"),
+        unique=True,
+        nullable=True
     )
 
     nombre: Mapped[str] = mapped_column(
@@ -25,3 +32,5 @@ class EntrenadorEntity(Base):
         default=True,
         server_default="1"
     )
+
+    usuario = relationship("UsuarioEntity")

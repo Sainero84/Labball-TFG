@@ -3,8 +3,10 @@ from sqlalchemy.orm import Session
 
 from app.repositories import (
     entrenamiento_repository,
+    entrenador_repository,
     inscripcion_repository,
     jugador_repository,
+    ubicacion_repository,
     usuario_repository
 )
 
@@ -47,6 +49,48 @@ def get_entrenamiento_jugador_id(db: Session, entrenamiento) -> int | None:
     return jugador.id_jugador if jugador is not None else None
 
 
+def get_entrenamiento_nombre_entrenador(entrenamiento) -> str:
+    entrenador = getattr(entrenamiento, "entrenador", None)
+
+    if entrenador is not None:
+        return entrenador.nombre
+
+    return entrenamiento.nombre_entrenador
+
+
+def get_entrenamiento_ubicacion(entrenamiento) -> str:
+    ubicacion = getattr(entrenamiento, "ubicacion_catalogo", None)
+
+    if ubicacion is not None:
+        return ubicacion.nombre
+
+    return entrenamiento.ubicacion
+
+
+def resolve_catalogos_entrenamiento(
+    db: Session,
+    id_entrenador: int,
+    id_ubicacion: int
+):
+    entrenador = entrenador_repository.get_by_id(db, id_entrenador)
+
+    if entrenador is None:
+        raise HTTPException(status_code=404, detail="Entrenador no encontrado")
+
+    if not entrenador.activo:
+        raise HTTPException(status_code=400, detail="El entrenador no esta activo")
+
+    ubicacion = ubicacion_repository.get_by_id(db, id_ubicacion)
+
+    if ubicacion is None:
+        raise HTTPException(status_code=404, detail="Ubicacion no encontrada")
+
+    if not ubicacion.activo:
+        raise HTTPException(status_code=400, detail="La ubicacion no esta activa")
+
+    return entrenador, ubicacion
+
+
 def to_entrenamiento_response(
     db: Session,
     entrenamiento
@@ -55,8 +99,10 @@ def to_entrenamiento_response(
 
     return EntrenamientoResponseSchema(
         id_entrenamiento=entrenamiento.id_entrenamiento,
-        nombre_entrenador=entrenamiento.nombre_entrenador,
-        ubicacion=entrenamiento.ubicacion,
+        id_entrenador=entrenamiento.id_entrenador,
+        nombre_entrenador=get_entrenamiento_nombre_entrenador(entrenamiento),
+        id_ubicacion=entrenamiento.id_ubicacion,
+        ubicacion=get_entrenamiento_ubicacion(entrenamiento),
         hora_inicio=entrenamiento.hora_inicio,
         hora_fin=entrenamiento.hora_fin,
         id_inscripcion=id_inscripcion,
@@ -222,10 +268,17 @@ def create_entrenamiento(
         inscripcion,
         entrenamiento_data.id_jugador
     )
+    entrenador, ubicacion = resolve_catalogos_entrenamiento(
+        db,
+        entrenamiento_data.id_entrenador,
+        entrenamiento_data.id_ubicacion
+    )
 
     new_entrenamiento_data = {
-        "nombre_entrenador": entrenamiento_data.nombre_entrenador,
-        "ubicacion": entrenamiento_data.ubicacion,
+        "id_entrenador": entrenador.id_entrenador,
+        "nombre_entrenador": entrenador.nombre,
+        "id_ubicacion": ubicacion.id_ubicacion,
+        "ubicacion": ubicacion.nombre,
         "hora_inicio": entrenamiento_data.hora_inicio,
         "hora_fin": entrenamiento_data.hora_fin,
         "id_inscripcion": inscripcion.id_inscripcion,
@@ -263,11 +316,35 @@ def update_entrenamiento(
 
     updated_fields = {}
 
-    if entrenamiento_data.nombre_entrenador is not None:
-        updated_fields["nombre_entrenador"] = entrenamiento_data.nombre_entrenador
+    if entrenamiento_data.id_entrenador is not None:
+        entrenador = entrenador_repository.get_by_id(
+            db,
+            entrenamiento_data.id_entrenador
+        )
 
-    if entrenamiento_data.ubicacion is not None:
-        updated_fields["ubicacion"] = entrenamiento_data.ubicacion
+        if entrenador is None:
+            raise HTTPException(status_code=404, detail="Entrenador no encontrado")
+
+        if not entrenador.activo:
+            raise HTTPException(status_code=400, detail="El entrenador no esta activo")
+
+        updated_fields["id_entrenador"] = entrenador.id_entrenador
+        updated_fields["nombre_entrenador"] = entrenador.nombre
+
+    if entrenamiento_data.id_ubicacion is not None:
+        ubicacion = ubicacion_repository.get_by_id(
+            db,
+            entrenamiento_data.id_ubicacion
+        )
+
+        if ubicacion is None:
+            raise HTTPException(status_code=404, detail="Ubicacion no encontrada")
+
+        if not ubicacion.activo:
+            raise HTTPException(status_code=400, detail="La ubicacion no esta activa")
+
+        updated_fields["id_ubicacion"] = ubicacion.id_ubicacion
+        updated_fields["ubicacion"] = ubicacion.nombre
 
     if entrenamiento_data.hora_inicio is not None:
         updated_fields["hora_inicio"] = entrenamiento_data.hora_inicio

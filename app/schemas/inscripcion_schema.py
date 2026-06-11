@@ -88,8 +88,8 @@ class ReservaPagadoUpdateSchema(BaseModel):
 
 
 class ReservaEntrenamientoAsignarItemSchema(BaseModel):
-    nombre_entrenador: str = Field(..., min_length=1, max_length=150)
-    ubicacion: str = Field(..., min_length=1, max_length=200)
+    id_entrenador: int = Field(..., gt=0)
+    id_ubicacion: int = Field(..., gt=0)
     hora_inicio: datetime
     hora_fin: datetime
 

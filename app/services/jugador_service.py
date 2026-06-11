@@ -7,10 +7,12 @@ from sqlalchemy.orm import Session
 from app.repositories import jugador_repository, usuario_repository
 from app.schemas.jugador_schema import (
     JugadorCreateSchema,
-    JugadorUpdateSchema,
-    JugadorResponseSchema,
+    JugadorEntrenadorAsignadoSchema,
     JugadorListResponseSchema,
-    JugadorMessageResponseSchema
+    JugadorMessageResponseSchema,
+    JugadorResponseSchema,
+    JugadorUbicacionAsignadaSchema,
+    JugadorUpdateSchema
 )
 
 
@@ -33,11 +35,65 @@ def normalize_static_url(url: str | None) -> str | None:
     return url
 
 
-def to_jugador_response(jugador) -> JugadorResponseSchema:
+def get_entrenamiento_nombre_entrenador(entrenamiento) -> str:
+    entrenador = getattr(entrenamiento, "entrenador", None)
+
+    if entrenador is not None:
+        return entrenador.nombre
+
+    return entrenamiento.nombre_entrenador
+
+
+def get_entrenamiento_ubicacion(entrenamiento) -> str:
+    ubicacion = getattr(entrenamiento, "ubicacion_catalogo", None)
+
+    if ubicacion is not None:
+        return ubicacion.nombre
+
+    return entrenamiento.ubicacion
+
+
+def get_jugador_catalogos(db: Session, jugador):
+    entrenamientos = jugador_repository.get_entrenamientos_catalogo_by_jugador(
+        db,
+        jugador
+    )
+    entrenadores: list[JugadorEntrenadorAsignadoSchema] = []
+    ubicaciones: list[JugadorUbicacionAsignadaSchema] = []
+    entrenador_ids_vistos = set()
+    ubicacion_ids_vistos = set()
+
+    for entrenamiento in entrenamientos:
+        if entrenamiento.id_entrenador not in entrenador_ids_vistos:
+            entrenador_ids_vistos.add(entrenamiento.id_entrenador)
+            entrenadores.append(
+                JugadorEntrenadorAsignadoSchema(
+                    id_entrenador=entrenamiento.id_entrenador,
+                    nombre=get_entrenamiento_nombre_entrenador(entrenamiento)
+                )
+            )
+
+        if entrenamiento.id_ubicacion not in ubicacion_ids_vistos:
+            ubicacion_ids_vistos.add(entrenamiento.id_ubicacion)
+            ubicaciones.append(
+                JugadorUbicacionAsignadaSchema(
+                    id_ubicacion=entrenamiento.id_ubicacion,
+                    nombre=get_entrenamiento_ubicacion(entrenamiento)
+                )
+            )
+
+    return entrenadores, ubicaciones
+
+
+def to_jugador_response(db: Session, jugador) -> JugadorResponseSchema:
     foto_perfil_url = None
 
     if jugador.usuario is not None:
         foto_perfil_url = normalize_static_url(jugador.usuario.foto_perfil_url)
+
+    entrenadores, ubicaciones = get_jugador_catalogos(db, jugador)
+    entrenador_principal = entrenadores[0] if entrenadores else None
+    ubicacion_principal = ubicaciones[0] if ubicaciones else None
 
     return JugadorResponseSchema(
         id_jugador=jugador.id_jugador,
@@ -53,7 +109,25 @@ def to_jugador_response(jugador) -> JugadorResponseSchema:
         pase=jugador.pase,
         defensa=jugador.defensa,
         velocidad=jugador.velocidad,
-        foto_perfil_url=foto_perfil_url
+        foto_perfil_url=foto_perfil_url,
+        id_entrenador=(
+            entrenador_principal.id_entrenador
+            if entrenador_principal is not None else None
+        ),
+        nombre_entrenador=(
+            entrenador_principal.nombre
+            if entrenador_principal is not None else None
+        ),
+        id_ubicacion=(
+            ubicacion_principal.id_ubicacion
+            if ubicacion_principal is not None else None
+        ),
+        ubicacion=(
+            ubicacion_principal.nombre
+            if ubicacion_principal is not None else None
+        ),
+        entrenadores=entrenadores,
+        ubicaciones=ubicaciones
     )
 
 
@@ -65,7 +139,7 @@ def get_all_jugadores(db: Session) -> JugadorListResponseSchema:
     jugadores = jugador_repository.get_all(db)
 
     return JugadorListResponseSchema(
-        jugadores=[to_jugador_response(jugador) for jugador in jugadores]
+        jugadores=[to_jugador_response(db, jugador) for jugador in jugadores]
     )
 
 
@@ -79,7 +153,7 @@ def get_jugador_by_id(db: Session, jugador_id: int) -> JugadorResponseSchema:
     if jugador is None:
         raise HTTPException(status_code=404, detail="Jugador no encontrado")
 
-    return to_jugador_response(jugador)
+    return to_jugador_response(db, jugador)
 
 
 def get_jugador_by_user(db: Session, current_user) -> JugadorResponseSchema:
@@ -88,7 +162,7 @@ def get_jugador_by_user(db: Session, current_user) -> JugadorResponseSchema:
     if jugador is None:
         raise HTTPException(status_code=404, detail="Jugador no encontrado")
 
-    return to_jugador_response(jugador)
+    return to_jugador_response(db, jugador)
 
 
 # --------------------------------------------------
@@ -134,7 +208,7 @@ def create_jugador(
 
     return JugadorMessageResponseSchema(
         message="Jugador creado correctamente",
-        jugador=to_jugador_response(new_jugador)
+        jugador=to_jugador_response(db, new_jugador)
     )
 
 
@@ -195,7 +269,7 @@ def update_jugador(
 
     return JugadorMessageResponseSchema(
         message="Jugador actualizado correctamente",
-        jugador=to_jugador_response(updated_jugador)
+        jugador=to_jugador_response(db, updated_jugador)
     )
 
 
@@ -214,5 +288,5 @@ def delete_jugador(
 
     return JugadorMessageResponseSchema(
         message="Jugador eliminado correctamente",
-        jugador=to_jugador_response(deleted_jugador)
+        jugador=to_jugador_response(db, deleted_jugador)
     )

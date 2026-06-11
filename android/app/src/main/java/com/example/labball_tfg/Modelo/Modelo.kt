@@ -101,8 +101,10 @@ data class ReservaAdminListResponse(
 data class ReservaPagadoUpdateRequest(val pagado: Boolean)
 
 data class EntrenamientoCreateRequest(
-    @SerializedName("nombre_entrenador") val nombreEntrenador: String,
-    val ubicacion: String,
+    @SerializedName("id_entrenador") val idEntrenador: Int,
+    @SerializedName("id_ubicacion") val idUbicacion: Int,
+    @SerializedName("nombre_entrenador") val nombreEntrenador: String? = null,
+    val ubicacion: String? = null,
     @SerializedName("hora_inicio") val horaInicio: String,
     @SerializedName("hora_fin") val horaFin: String,
     @SerializedName("id_jugador") val idJugador: Int,
@@ -110,8 +112,8 @@ data class EntrenamientoCreateRequest(
 )
 
 data class EntrenamientoAsignacionRequest(
-    @SerializedName("nombre_entrenador") val nombreEntrenador: String,
-    val ubicacion: String,
+    @SerializedName("id_entrenador") val idEntrenador: Int,
+    @SerializedName("id_ubicacion") val idUbicacion: Int,
     @SerializedName("hora_inicio") val horaInicio: String,
     @SerializedName("hora_fin") val horaFin: String
 )
@@ -121,8 +123,8 @@ data class ReservaEntrenamientosAsignarRequest(
 )
 
 data class EntrenamientoUpdateRequest(
-    @SerializedName("nombre_entrenador") val nombreEntrenador: String? = null,
-    val ubicacion: String? = null,
+    @SerializedName("id_entrenador") val idEntrenador: Int? = null,
+    @SerializedName("id_ubicacion") val idUbicacion: Int? = null,
     @SerializedName("hora_inicio") val horaInicio: String? = null,
     @SerializedName("hora_fin") val horaFin: String? = null,
     @SerializedName("id_jugador") val idJugador: Int? = null,
@@ -131,12 +133,14 @@ data class EntrenamientoUpdateRequest(
 
 data class EntrenamientoResponse(
     @SerializedName("id_entrenamiento") val idEntrenamiento: Int,
+    @SerializedName("id_entrenador") val idEntrenador: Int,
     @SerializedName("nombre_entrenador") val nombreEntrenador: String,
+    @SerializedName("id_ubicacion") val idUbicacion: Int,
     val ubicacion: String,
     @SerializedName("hora_inicio") val horaInicio: String,
     @SerializedName("hora_fin") val horaFin: String,
     @SerializedName("id_jugador") val idJugador: Int?,
-    @SerializedName("id_usuario") val idUsuario: Int
+    @SerializedName("id_usuario") val idUsuario: Int?
 )
 
 data class EntrenamientoListResponse(
@@ -242,6 +246,16 @@ data class JugadorEstadisticasUpdateRequest(
     val velocidad: Int? = null
 )
 
+data class JugadorEntrenadorAsignadoResponse(
+    @SerializedName("id_entrenador") val idEntrenador: Int,
+    val nombre: String
+)
+
+data class JugadorUbicacionAsignadaResponse(
+    @SerializedName("id_ubicacion") val idUbicacion: Int,
+    val nombre: String
+)
+
 data class JugadorResponse(
     @SerializedName("id_jugador") val idJugador: Int,
     @SerializedName("id_usuario") val idUsuario: Int,
@@ -257,8 +271,12 @@ data class JugadorResponse(
     val defensa: Int?,
     val velocidad: Int?,
     @SerializedName("foto_perfil_url") val fotoPerfilUrl: String? = null,
+    @SerializedName("id_entrenador") val idEntrenador: Int? = null,
     @SerializedName("nombre_entrenador") val nombreEntrenador: String? = null,
-    val ubicacion: String? = null
+    @SerializedName("id_ubicacion") val idUbicacion: Int? = null,
+    val ubicacion: String? = null,
+    val entrenadores: List<JugadorEntrenadorAsignadoResponse> = emptyList(),
+    val ubicaciones: List<JugadorUbicacionAsignadaResponse> = emptyList()
 )
 
 data class JugadorListResponse(val jugadores: List<JugadorResponse>)

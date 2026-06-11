@@ -2,10 +2,12 @@
 from fastapi import HTTPException
 
 # Importamos Session
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 # Importamos el repository
 from app.repositories import usuario_repository
+from app.services import catalogo_service
 
 # Importamos los schemas
 from app.schemas.usuario_schema import (
@@ -95,6 +97,18 @@ def create_usuario(db: Session, user_data: UsuarioCreateSchema) -> UsuarioMessag
 
     new_user = usuario_repository.create(db, new_user_data)
 
+    if new_user.es_entrenador:
+        try:
+            catalogo_service.sync_entrenador_for_usuario(db, new_user)
+            db.commit()
+            db.refresh(new_user)
+        except IntegrityError as exception:
+            db.rollback()
+            raise HTTPException(
+                status_code=409,
+                detail="No se pudo sincronizar el usuario como entrenador"
+            ) from exception
+
     return UsuarioMessageResponseSchema(
         message="Usuario creado correctamente",
         usuario=to_usuario_response(new_user)
@@ -146,6 +160,21 @@ def update_usuario(
 
     if updated_user is None:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    if updated_user.es_entrenador and any(
+        field in updated_fields
+        for field in ["nombre", "apellido_1", "es_entrenador"]
+    ):
+        try:
+            catalogo_service.sync_entrenador_for_usuario(db, updated_user)
+            db.commit()
+            db.refresh(updated_user)
+        except IntegrityError as exception:
+            db.rollback()
+            raise HTTPException(
+                status_code=409,
+                detail="No se pudo sincronizar el usuario como entrenador"
+            ) from exception
 
     return UsuarioMessageResponseSchema(
         message="Usuario actualizado correctamente",

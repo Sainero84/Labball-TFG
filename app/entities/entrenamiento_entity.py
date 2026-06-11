@@ -3,6 +3,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
 
 from app.database.base import Base
+from app.entities.entrenador_entity import EntrenadorEntity
+from app.entities.ubicacion_entity import UbicacionEntity
 
 
 class EntrenamientoEntity(Base):
@@ -19,8 +21,18 @@ class EntrenamientoEntity(Base):
         nullable=False
     )
 
+    id_entrenador: Mapped[int] = mapped_column(
+        ForeignKey("entrenadores.id_entrenador"),
+        nullable=False
+    )
+
     ubicacion: Mapped[str] = mapped_column(
         String(200),
+        nullable=False
+    )
+
+    id_ubicacion: Mapped[int] = mapped_column(
+        ForeignKey("ubicaciones.id_ubicacion"),
         nullable=False
     )
 
@@ -54,6 +66,8 @@ class EntrenamientoEntity(Base):
 
     jugador = relationship("JugadorEntity")
     usuario = relationship("UsuarioEntity")
+    entrenador = relationship("EntrenadorEntity")
+    ubicacion_catalogo = relationship("UbicacionEntity")
     inscripcion = relationship(
         "InscripcionEntity",
         foreign_keys=[id_inscripcion]

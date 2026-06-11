@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 from app.repositories import (
     descuento_repository,
     entrenador_repository,
-    usuario_repository,
     ubicacion_repository
 )
 from app.schemas.catalogo_schema import (
@@ -58,12 +57,48 @@ def entrenador_nombre_from_usuario(usuario) -> str:
     return usuario.correo
 
 
-def to_entrenador_usuario_response(usuario) -> EntrenadorResponseSchema:
-    return EntrenadorResponseSchema(
-        id_entrenador=usuario.id_usuario,
-        nombre=entrenador_nombre_from_usuario(usuario),
-        activo=usuario.es_admin and usuario.es_entrenador
+def sync_entrenador_for_usuario(db: Session, usuario, activo: bool = True):
+    nombre = normalize_nombre(entrenador_nombre_from_usuario(usuario))
+    entrenador = entrenador_repository.get_by_usuario_id(db, usuario.id_usuario)
+
+    entrenador_con_mismo_nombre = entrenador_repository.get_by_nombre(db, nombre)
+
+    if (
+        entrenador_con_mismo_nombre is not None
+        and entrenador_con_mismo_nombre.id_usuario not in [None, usuario.id_usuario]
+    ):
+        nombre = usuario.correo
+
+    if entrenador is not None:
+        entrenador.nombre = nombre
+        entrenador.activo = activo
+        return entrenador
+
+    entrenador = entrenador_repository.get_by_nombre(db, nombre)
+
+    if entrenador is not None:
+        if entrenador.id_usuario is None:
+            entrenador.id_usuario = usuario.id_usuario
+        entrenador.activo = activo
+        return entrenador
+
+    return entrenador_repository.create_without_commit(
+        db,
+        {
+            "id_usuario": usuario.id_usuario,
+            "nombre": nombre,
+            "activo": activo
+        }
     )
+
+
+def set_entrenador_usuario_activo(db: Session, usuario_id: int, activo: bool):
+    entrenador = entrenador_repository.get_by_usuario_id(db, usuario_id)
+
+    if entrenador is not None:
+        entrenador.activo = activo
+
+    return entrenador
 
 
 def to_ubicacion_response(ubicacion) -> UbicacionResponseSchema:
@@ -83,30 +118,10 @@ def to_descuento_response(descuento) -> DescuentoResponseSchema:
 
 
 def get_all_entrenadores(db: Session) -> EntrenadorListResponseSchema:
-    entrenadores_catalogo = entrenador_repository.get_all(db)
-    usuarios_entrenadores = usuario_repository.get_all_entrenadores(db)
-    nombres_vistos = set()
-    entrenadores: list[EntrenadorResponseSchema] = []
-
-    for entrenador in [
-        *[
-            to_entrenador_usuario_response(usuario)
-            for usuario in usuarios_entrenadores
-        ],
-        *[
-            to_entrenador_response(entrenador)
-            for entrenador in entrenadores_catalogo
-        ]
-    ]:
-        nombre_key = normalize_nombre(entrenador.nombre).lower()
-
-        if nombre_key in nombres_vistos:
-            continue
-
-        nombres_vistos.add(nombre_key)
-        entrenadores.append(entrenador)
-
-    entrenadores.sort(key=lambda entrenador: entrenador.nombre.lower())
+    entrenadores = [
+        to_entrenador_response(entrenador)
+        for entrenador in entrenador_repository.get_all(db)
+    ]
 
     return EntrenadorListResponseSchema(entrenadores=entrenadores)
 
@@ -149,7 +164,14 @@ def delete_ubicacion(
     db: Session,
     ubicacion_id: int
 ) -> UbicacionDeleteResponseSchema:
-    ubicacion = ubicacion_repository.delete(db, ubicacion_id)
+    try:
+        ubicacion = ubicacion_repository.delete(db, ubicacion_id)
+    except IntegrityError as exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="No se puede eliminar la ubicacion porque esta asociada a entrenamientos"
+        ) from exception
 
     if ubicacion is None:
         raise HTTPException(status_code=404, detail="Ubicacion no encontrada")

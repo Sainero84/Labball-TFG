@@ -1,4 +1,8 @@
+from sqlalchemy import or_
 from sqlalchemy.orm import Session, joinedload
+
+from app.entities.entrenamiento_entity import EntrenamientoEntity
+from app.entities.inscripcion_entity import InscripcionEntity
 from app.entities.jugador_entity import JugadorEntity
 
 
@@ -34,6 +38,22 @@ def get_by_usuario_id(db: Session, usuario_id: int):
     ).filter(
         JugadorEntity.id_usuario == usuario_id
     ).first()
+
+
+def get_entrenamientos_catalogo_by_jugador(db: Session, jugador: JugadorEntity):
+    return db.query(EntrenamientoEntity).options(
+        joinedload(EntrenamientoEntity.entrenador),
+        joinedload(EntrenamientoEntity.ubicacion_catalogo)
+    ).outerjoin(
+        InscripcionEntity,
+        EntrenamientoEntity.id_inscripcion == InscripcionEntity.id_inscripcion
+    ).filter(
+        or_(
+            EntrenamientoEntity.id_jugador == jugador.id_jugador,
+            EntrenamientoEntity.id_usuario == jugador.id_usuario,
+            InscripcionEntity.id_usuario == jugador.id_usuario
+        )
+    ).order_by(EntrenamientoEntity.hora_inicio.desc()).all()
 
 
 # --------------------------------------------------

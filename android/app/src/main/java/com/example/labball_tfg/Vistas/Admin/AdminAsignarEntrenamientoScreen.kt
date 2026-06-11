@@ -51,7 +51,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.labball_tfg.Modelo.EntrenamientoCreateRequest
 import com.example.labball_tfg.Modelo.EntrenamientoResponse
+import com.example.labball_tfg.Modelo.EntrenadorResponse
 import com.example.labball_tfg.Modelo.ReservaResponse
+import com.example.labball_tfg.Modelo.UbicacionResponse
 import com.example.labball_tfg.ui.theme.backgroundColor
 import com.example.labball_tfg.ui.theme.secondaryColor
 import com.example.labball_tfg.ui.theme.textColor
@@ -60,12 +62,19 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-private const val FIELD_COUNT = 5
-private const val FIELD_ENTRENADOR = 0
-private const val FIELD_UBICACION = 1
-private const val FIELD_FECHA_VISIBLE = 2
-private const val FIELD_FECHA_API = 3
-private const val FIELD_HORA_INICIO = 4
+private const val FIELD_COUNT = 7
+private const val FIELD_ENTRENADOR_ID = 0
+private const val FIELD_ENTRENADOR_NOMBRE = 1
+private const val FIELD_UBICACION_ID = 2
+private const val FIELD_UBICACION_NOMBRE = 3
+private const val FIELD_FECHA_VISIBLE = 4
+private const val FIELD_FECHA_API = 5
+private const val FIELD_HORA_INICIO = 6
+
+private data class AdminCatalogOption(
+    val id: Int,
+    val nombre: String
+)
 
 private data class AdminDateTarget(
     val sessionIndex: Int
@@ -81,8 +90,8 @@ fun AdminAsignarEntrenamientoScreen(
     reserva: ReservaResponse,
     idJugador: Int?,
     entrenamientosIniciales: List<EntrenamientoResponse> = emptyList(),
-    entrenadores: List<String> = emptyList(),
-    ubicaciones: List<String> = emptyList(),
+    entrenadores: List<EntrenadorResponse> = emptyList(),
+    ubicaciones: List<UbicacionResponse> = emptyList(),
     editMode: Boolean = false,
     onBack: () -> Unit,
     onGuardarEntrenamientos: (List<EntrenamientoCreateRequest>) -> Unit
@@ -368,8 +377,8 @@ private fun AdminAsignarHeader(
 private fun AdminEntrenamientoFormCard(
     index: Int,
     values: List<String>,
-    entrenadores: List<String>,
-    ubicaciones: List<String>,
+    entrenadores: List<EntrenadorResponse>,
+    ubicaciones: List<UbicacionResponse>,
     onValueChange: (Int, String) -> Unit,
     onDateClick: () -> Unit,
     onTimeClick: () -> Unit
@@ -392,23 +401,31 @@ private fun AdminEntrenamientoFormCard(
         )
 
         AdminTrainingSelector(
-            value = values.adminTrainingField(index, FIELD_ENTRENADOR),
+            value = values.adminTrainingField(index, FIELD_ENTRENADOR_NOMBRE),
             placeholder = "Entrenador",
-            options = adminCatalogOptions(
+            options = adminEntrenadorOptions(
                 catalog = entrenadores,
-                currentValue = values.adminTrainingField(index, FIELD_ENTRENADOR)
+                currentId = values.adminTrainingField(index, FIELD_ENTRENADOR_ID),
+                currentName = values.adminTrainingField(index, FIELD_ENTRENADOR_NOMBRE)
             ),
-            onSelected = { onValueChange(FIELD_ENTRENADOR, it) }
+            onSelected = {
+                onValueChange(FIELD_ENTRENADOR_ID, it.id.toString())
+                onValueChange(FIELD_ENTRENADOR_NOMBRE, it.nombre)
+            }
         )
 
         AdminTrainingSelector(
-            value = values.adminTrainingField(index, FIELD_UBICACION),
+            value = values.adminTrainingField(index, FIELD_UBICACION_NOMBRE),
             placeholder = "Ubicacion",
-            options = adminCatalogOptions(
+            options = adminUbicacionOptions(
                 catalog = ubicaciones,
-                currentValue = values.adminTrainingField(index, FIELD_UBICACION)
+                currentId = values.adminTrainingField(index, FIELD_UBICACION_ID),
+                currentName = values.adminTrainingField(index, FIELD_UBICACION_NOMBRE)
             ),
-            onSelected = { onValueChange(FIELD_UBICACION, it) }
+            onSelected = {
+                onValueChange(FIELD_UBICACION_ID, it.id.toString())
+                onValueChange(FIELD_UBICACION_NOMBRE, it.nombre)
+            }
         )
 
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -507,8 +524,8 @@ private fun List<String>.adminUpdateTrainingField(
 }
 
 private fun List<String>.adminTrainingSessionComplete(index: Int): Boolean {
-    return adminTrainingField(index, FIELD_ENTRENADOR).isNotBlank() &&
-            adminTrainingField(index, FIELD_UBICACION).isNotBlank() &&
+    return adminTrainingField(index, FIELD_ENTRENADOR_ID).isNotBlank() &&
+            adminTrainingField(index, FIELD_UBICACION_ID).isNotBlank() &&
             adminTrainingField(index, FIELD_FECHA_API).isNotBlank() &&
             adminTrainingField(index, FIELD_HORA_INICIO).isNotBlank()
 }
@@ -518,8 +535,8 @@ private fun List<String>.adminTrainingSessionComplete(index: Int): Boolean {
 private fun AdminTrainingSelector(
     value: String,
     placeholder: String,
-    options: List<String>,
-    onSelected: (String) -> Unit
+    options: List<AdminCatalogOption>,
+    onSelected: (AdminCatalogOption) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -578,7 +595,7 @@ private fun AdminTrainingSelector(
                 DropdownMenuItem(
                     text = {
                         Text(
-                            text = option,
+                            text = option.nombre,
                             color = textColor,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
@@ -594,14 +611,48 @@ private fun AdminTrainingSelector(
     }
 }
 
+private fun adminEntrenadorOptions(
+    catalog: List<EntrenadorResponse>,
+    currentId: String,
+    currentName: String
+): List<AdminCatalogOption> {
+    val options = catalog.map { entrenador ->
+        AdminCatalogOption(
+            id = entrenador.idEntrenador,
+            nombre = entrenador.nombre
+        )
+    }
+
+    return adminCatalogOptions(options, currentId, currentName)
+}
+
+private fun adminUbicacionOptions(
+    catalog: List<UbicacionResponse>,
+    currentId: String,
+    currentName: String
+): List<AdminCatalogOption> {
+    val options = catalog.map { ubicacion ->
+        AdminCatalogOption(
+            id = ubicacion.idUbicacion,
+            nombre = ubicacion.nombre
+        )
+    }
+
+    return adminCatalogOptions(options, currentId, currentName)
+}
+
 private fun adminCatalogOptions(
-    catalog: List<String>,
-    currentValue: String
-): List<String> {
-    return (catalog + currentValue.takeIf { it.isNotBlank() })
-        .filterNotNull()
-        .distinct()
-        .sortedBy { it.lowercase() }
+    catalog: List<AdminCatalogOption>,
+    currentId: String,
+    currentName: String
+): List<AdminCatalogOption> {
+    val currentOption = currentId.toIntOrNull()
+        ?.takeIf { currentName.isNotBlank() }
+        ?.let { id -> AdminCatalogOption(id = id, nombre = currentName) }
+
+    return (catalog + listOfNotNull(currentOption))
+        .distinctBy { it.id }
+        .sortedBy { it.nombre.lowercase() }
 }
 private fun adminInitialTrainingValues(
     totalSesiones: Int,
@@ -610,8 +661,10 @@ private fun adminInitialTrainingValues(
     val values = MutableList(totalSesiones * FIELD_COUNT) { "" }
 
     entrenamientos.take(totalSesiones).forEachIndexed { index, entrenamiento ->
-        values[index * FIELD_COUNT + FIELD_ENTRENADOR] = entrenamiento.nombreEntrenador
-        values[index * FIELD_COUNT + FIELD_UBICACION] = entrenamiento.ubicacion
+        values[index * FIELD_COUNT + FIELD_ENTRENADOR_ID] = entrenamiento.idEntrenador.toString()
+        values[index * FIELD_COUNT + FIELD_ENTRENADOR_NOMBRE] = entrenamiento.nombreEntrenador
+        values[index * FIELD_COUNT + FIELD_UBICACION_ID] = entrenamiento.idUbicacion.toString()
+        values[index * FIELD_COUNT + FIELD_UBICACION_NOMBRE] = entrenamiento.ubicacion
         values[index * FIELD_COUNT + FIELD_FECHA_VISIBLE] =
             adminVisibleDateFromDateTime(entrenamiento.horaInicio)
         values[index * FIELD_COUNT + FIELD_FECHA_API] =
@@ -630,8 +683,10 @@ private fun List<String>.adminToEntrenamientoRequests(
 ): List<EntrenamientoCreateRequest> {
     return List(totalSesiones) { index ->
         EntrenamientoCreateRequest(
-            nombreEntrenador = adminTrainingField(index, FIELD_ENTRENADOR).trim(),
-            ubicacion = adminTrainingField(index, FIELD_UBICACION).trim(),
+            idEntrenador = adminTrainingField(index, FIELD_ENTRENADOR_ID).toInt(),
+            idUbicacion = adminTrainingField(index, FIELD_UBICACION_ID).toInt(),
+            nombreEntrenador = adminTrainingField(index, FIELD_ENTRENADOR_NOMBRE).trim(),
+            ubicacion = adminTrainingField(index, FIELD_UBICACION_NOMBRE).trim(),
             horaInicio = adminTrainingDateTimeValue(
                 adminTrainingField(index, FIELD_FECHA_API),
                 adminTrainingField(index, FIELD_HORA_INICIO)

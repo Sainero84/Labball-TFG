@@ -6,10 +6,12 @@ import com.example.labball_tfg.Modelo.API
 import com.example.labball_tfg.Modelo.EntrenamientoAsignacionRequest
 import com.example.labball_tfg.Modelo.EntrenamientoCreateRequest
 import com.example.labball_tfg.Modelo.EntrenamientoResponse
+import com.example.labball_tfg.Modelo.EntrenadorResponse
 import com.example.labball_tfg.Modelo.ReservaAdminListItemResponse
 import com.example.labball_tfg.Modelo.ReservaEntrenamientosAsignarRequest
 import com.example.labball_tfg.Modelo.ReservaPagadoUpdateRequest
 import com.example.labball_tfg.Modelo.ReservaResponse
+import com.example.labball_tfg.Modelo.UbicacionResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,11 +22,11 @@ class AdminReservasViewModel : ViewModel() {
     private val _reservas = MutableStateFlow<List<ReservaAdminListItemResponse>>(emptyList())
     val reservas: StateFlow<List<ReservaAdminListItemResponse>> = _reservas.asStateFlow()
 
-    private val _entrenadores = MutableStateFlow<List<String>>(emptyList())
-    val entrenadores: StateFlow<List<String>> = _entrenadores.asStateFlow()
+    private val _entrenadores = MutableStateFlow<List<EntrenadorResponse>>(emptyList())
+    val entrenadores: StateFlow<List<EntrenadorResponse>> = _entrenadores.asStateFlow()
 
-    private val _ubicaciones = MutableStateFlow<List<String>>(emptyList())
-    val ubicaciones: StateFlow<List<String>> = _ubicaciones.asStateFlow()
+    private val _ubicaciones = MutableStateFlow<List<UbicacionResponse>>(emptyList())
+    val ubicaciones: StateFlow<List<UbicacionResponse>> = _ubicaciones.asStateFlow()
 
     private val _reservaSeleccionada = MutableStateFlow<ReservaResponse?>(null)
     val reservaSeleccionada: StateFlow<ReservaResponse?> =
@@ -49,8 +51,7 @@ class AdminReservasViewModel : ViewModel() {
                     _entrenadores.value = entrenadoresResponse.body()
                         ?.entrenadores
                         ?.filter { it.activo }
-                        ?.map { it.nombre }
-                        ?.sortedBy { it.lowercase() }
+                        ?.sortedBy { it.nombre.lowercase() }
                         ?: emptyList()
                 } else {
                     _errorMessage.value =
@@ -63,8 +64,7 @@ class AdminReservasViewModel : ViewModel() {
                     _ubicaciones.value = ubicacionesResponse.body()
                         ?.ubicaciones
                         ?.filter { it.activo }
-                        ?.map { it.nombre }
-                        ?.sortedBy { it.lowercase() }
+                        ?.sortedBy { it.nombre.lowercase() }
                         ?: emptyList()
                 } else {
                     _errorMessage.value =
@@ -174,8 +174,8 @@ class AdminReservasViewModel : ViewModel() {
                 val request = ReservaEntrenamientosAsignarRequest(
                     entrenamientos = entrenamientos.map { entrenamiento ->
                         EntrenamientoAsignacionRequest(
-                            nombreEntrenador = entrenamiento.nombreEntrenador,
-                            ubicacion = entrenamiento.ubicacion,
+                            idEntrenador = entrenamiento.idEntrenador,
+                            idUbicacion = entrenamiento.idUbicacion,
                             horaInicio = entrenamiento.horaInicio,
                             horaFin = entrenamiento.horaFin
                         )
@@ -249,8 +249,8 @@ class AdminReservasViewModel : ViewModel() {
                 val request = ReservaEntrenamientosAsignarRequest(
                     entrenamientos = entrenamientos.map { entrenamiento ->
                         EntrenamientoAsignacionRequest(
-                            nombreEntrenador = entrenamiento.nombreEntrenador,
-                            ubicacion = entrenamiento.ubicacion,
+                            idEntrenador = entrenamiento.idEntrenador,
+                            idUbicacion = entrenamiento.idUbicacion,
                             horaInicio = entrenamiento.horaInicio,
                             horaFin = entrenamiento.horaFin
                         )

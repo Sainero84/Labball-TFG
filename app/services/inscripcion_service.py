@@ -4,11 +4,13 @@ from sqlalchemy.orm import Session
 from app.repositories import (
     descuento_repository,
     entrenamiento_repository,
+    entrenador_repository,
     inscripcion_repository,
     inscripcion_semana_repository,
     jugador_repository,
     semana_repository,
-    tarifa_repository
+    tarifa_repository,
+    ubicacion_repository
 )
 from app.schemas.inscripcion_schema import (
     ReservaEntrenamientosAsignadosResponseSchema,
@@ -141,6 +143,48 @@ def to_reserva_admin_list_item(db: Session, reserva) -> ReservaAdminListItemSche
     )
 
 
+def get_entrenamiento_nombre_entrenador(entrenamiento) -> str:
+    entrenador = getattr(entrenamiento, "entrenador", None)
+
+    if entrenador is not None:
+        return entrenador.nombre
+
+    return entrenamiento.nombre_entrenador
+
+
+def get_entrenamiento_ubicacion(entrenamiento) -> str:
+    ubicacion = getattr(entrenamiento, "ubicacion_catalogo", None)
+
+    if ubicacion is not None:
+        return ubicacion.nombre
+
+    return entrenamiento.ubicacion
+
+
+def resolve_catalogos_entrenamiento(
+    db: Session,
+    id_entrenador: int,
+    id_ubicacion: int
+):
+    entrenador = entrenador_repository.get_by_id(db, id_entrenador)
+
+    if entrenador is None:
+        raise HTTPException(status_code=404, detail="Entrenador no encontrado")
+
+    if not entrenador.activo:
+        raise HTTPException(status_code=400, detail="El entrenador no esta activo")
+
+    ubicacion = ubicacion_repository.get_by_id(db, id_ubicacion)
+
+    if ubicacion is None:
+        raise HTTPException(status_code=404, detail="Ubicacion no encontrada")
+
+    if not ubicacion.activo:
+        raise HTTPException(status_code=400, detail="La ubicacion no esta activa")
+
+    return entrenador, ubicacion
+
+
 def to_entrenamiento_response(db: Session, entrenamiento) -> EntrenamientoResponseSchema:
     id_inscripcion = entrenamiento.id_inscripcion or entrenamiento.id_reserva
     id_usuario = entrenamiento.id_usuario
@@ -157,8 +201,10 @@ def to_entrenamiento_response(db: Session, entrenamiento) -> EntrenamientoRespon
 
     return EntrenamientoResponseSchema(
         id_entrenamiento=entrenamiento.id_entrenamiento,
-        nombre_entrenador=entrenamiento.nombre_entrenador,
-        ubicacion=entrenamiento.ubicacion,
+        id_entrenador=entrenamiento.id_entrenador,
+        nombre_entrenador=get_entrenamiento_nombre_entrenador(entrenamiento),
+        id_ubicacion=entrenamiento.id_ubicacion,
+        ubicacion=get_entrenamiento_ubicacion(entrenamiento),
         hora_inicio=entrenamiento.hora_inicio,
         hora_fin=entrenamiento.hora_fin,
         id_inscripcion=id_inscripcion,
@@ -387,15 +433,28 @@ def asignar_entrenamientos_reserva(
                 detail="La hora de fin debe ser posterior a la hora de inicio"
             )
 
+        resolve_catalogos_entrenamiento(
+            db,
+            entrenamiento_data.id_entrenador,
+            entrenamiento_data.id_ubicacion
+        )
+
     entrenamientos_creados = []
 
     try:
         for entrenamiento_data in asignacion_data.entrenamientos:
+            entrenador, ubicacion = resolve_catalogos_entrenamiento(
+                db,
+                entrenamiento_data.id_entrenador,
+                entrenamiento_data.id_ubicacion
+            )
             entrenamiento = entrenamiento_repository.create_without_commit(
                 db,
                 {
-                    "nombre_entrenador": entrenamiento_data.nombre_entrenador,
-                    "ubicacion": entrenamiento_data.ubicacion,
+                    "id_entrenador": entrenador.id_entrenador,
+                    "nombre_entrenador": entrenador.nombre,
+                    "id_ubicacion": ubicacion.id_ubicacion,
+                    "ubicacion": ubicacion.nombre,
                     "hora_inicio": entrenamiento_data.hora_inicio,
                     "hora_fin": entrenamiento_data.hora_fin,
                     "id_inscripcion": reserva.id_inscripcion,
@@ -480,6 +539,12 @@ def reemplazar_entrenamientos_reserva_admin(
                 detail="La hora de fin debe ser posterior a la hora de inicio"
             )
 
+        resolve_catalogos_entrenamiento(
+            db,
+            entrenamiento_data.id_entrenador,
+            entrenamiento_data.id_ubicacion
+        )
+
     entrenamientos_creados = []
 
     try:
@@ -489,11 +554,18 @@ def reemplazar_entrenamientos_reserva_admin(
         )
 
         for entrenamiento_data in asignacion_data.entrenamientos:
+            entrenador, ubicacion = resolve_catalogos_entrenamiento(
+                db,
+                entrenamiento_data.id_entrenador,
+                entrenamiento_data.id_ubicacion
+            )
             entrenamiento = entrenamiento_repository.create_without_commit(
                 db,
                 {
-                    "nombre_entrenador": entrenamiento_data.nombre_entrenador,
-                    "ubicacion": entrenamiento_data.ubicacion,
+                    "id_entrenador": entrenador.id_entrenador,
+                    "nombre_entrenador": entrenador.nombre,
+                    "id_ubicacion": ubicacion.id_ubicacion,
+                    "ubicacion": ubicacion.nombre,
                     "hora_inicio": entrenamiento_data.hora_inicio,
                     "hora_fin": entrenamiento_data.hora_fin,
                     "id_inscripcion": reserva.id_inscripcion,

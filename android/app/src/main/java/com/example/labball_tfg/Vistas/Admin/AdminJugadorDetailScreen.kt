@@ -759,8 +759,15 @@ private fun String.normalizedSelectorValue(): String {
 }
 
 private fun JugadorResponse.trainingSummary(): String {
+    val entrenador = (entrenadores.map { it.nombre } + listOfNotNull(nombreEntrenador))
+        .map { it.trim() }
+        .firstOrNull { it.isNotBlank() }
+    val ubicacionAsignada = (ubicaciones.map { it.nombre } + listOfNotNull(ubicacion))
+        .map { it.trim() }
+        .firstOrNull { it.isNotBlank() }
+
     return listOfNotNull(
-        nombreEntrenador?.takeIf { it.isNotBlank() },
-        ubicacion?.takeIf { it.isNotBlank() }
+        entrenador,
+        ubicacionAsignada
     ).joinToString(" - ")
 }
