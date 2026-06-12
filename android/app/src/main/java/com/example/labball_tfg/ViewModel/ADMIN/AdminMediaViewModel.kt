@@ -5,7 +5,6 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.labball_tfg.Modelo.API
-import com.example.labball_tfg.Modelo.MediaCreateRequest
 import com.example.labball_tfg.Modelo.MediaResponse
 import com.example.labball_tfg.Modelo.MediaUpdateRequest
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +19,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
+// Mantiene el estado y las operaciones de admin media view model para la interfaz.
 class AdminMediaViewModel : ViewModel() {
 
     private val _mediaGuardado = MutableStateFlow<MediaResponse?>(null)
@@ -34,37 +34,7 @@ class AdminMediaViewModel : ViewModel() {
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
-    fun crearVideo(
-        token: String,
-        media: MediaCreateRequest
-    ) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            _errorMessage.value = null
-            _mediaGuardado.value = null
-            _mediaEliminado.value = false
-
-            try {
-                val response = API.apiDao.createVideo(
-                    token = "Bearer $token",
-                    request = media
-                )
-
-                if (response.isSuccessful) {
-                    _mediaGuardado.value = response.body()?.media
-                } else {
-                    _errorMessage.value =
-                        "Error al crear video: ${response.code()} ${response.errorBody()?.string()}"
-                }
-
-            } catch (e: Exception) {
-                _errorMessage.value = "Error conectando con FastAPI: ${e.message}"
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
-
+    // Actualiza actualizar video y refleja la respuesta en la pantalla.
     fun actualizarVideo(
         token: String,
         idMedia: Int,
@@ -98,6 +68,7 @@ class AdminMediaViewModel : ViewModel() {
         }
     }
 
+    // Elimina eliminar video y sincroniza el estado local.
     fun eliminarVideo(
         token: String,
         idMedia: Int
@@ -129,12 +100,14 @@ class AdminMediaViewModel : ViewModel() {
         }
     }
 
+    // Limpia limpiar estado para reiniciar el estado temporal.
     fun limpiarEstado() {
         _mediaGuardado.value = null
         _mediaEliminado.value = false
         _errorMessage.value = null
     }
 
+    // Encapsula la operacion subir video usada por la pantalla o el estado.
     fun subirVideo(
         token: String,
         titulo: String,
@@ -185,6 +158,7 @@ class AdminMediaViewModel : ViewModel() {
         }
     }
 
+    // Encapsula la operacion subir video desde uri usada por la pantalla o el estado.
     fun subirVideoDesdeUri(
         token: String,
         titulo: String,

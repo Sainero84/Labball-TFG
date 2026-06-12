@@ -3,18 +3,13 @@ package com.example.labball_tfg.ViewModel
 import androidx.lifecycle.ViewModel
 import com.example.labball_tfg.ViewModel.Firebase.FirebaseAuthManager
 
+// Mantiene el estado y las operaciones de password reset view model para la interfaz.
 class PasswordResetViewModel : ViewModel() {
 
     // Instancia del manager que se comunica con Firebase
     private val firebaseAuthManager = FirebaseAuthManager()
 
-    /**
-     * Función que gestiona el envío del email de recuperación de contraseña
-     *
-     * @param email correo introducido por el usuario
-     * @param onSuccess acción a ejecutar si todo va bien
-     * @param onError acción a ejecutar si ocurre un error
-     */
+    // Solicita a Firebase el envio del correo de recuperacion de contrasena.
     fun sendPasswordResetEmail(
         email: String,
         onSuccess: () -> Unit,

@@ -40,6 +40,7 @@ import com.example.labball_tfg.ui.theme.secondaryColor
 import com.example.labball_tfg.ui.theme.secondaryTextColor
 import com.example.labball_tfg.ui.theme.textColor
 
+// Renderiza la pantalla olvido password screen y conecta sus acciones principales.
 @Composable
 fun OlvidoPasswordScreen(
     viewModel: PasswordResetViewModel = viewModel(),

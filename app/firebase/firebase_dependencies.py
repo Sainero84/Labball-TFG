@@ -13,6 +13,7 @@ security = HTTPBearer()
 def get_current_firebase_user(
     credentials: HTTPAuthorizationCredentials = Depends(security)
 ):
+    """Gestiona la integracion con Firebase para get current firebase user."""
     token = credentials.credentials
 
     if not token:
@@ -28,6 +29,7 @@ def get_current_user(
     firebase_user: dict = Depends(get_current_firebase_user),
     db: Session = Depends(get_db)
 ):
+    """Gestiona la integracion con Firebase para get current user."""
     firebase_uid = firebase_user.get("uid")
 
     if not firebase_uid:
@@ -48,6 +50,7 @@ def get_current_user(
 
 
 def get_current_admin_user(current_user=Depends(get_current_user)):
+    """Gestiona la integracion con Firebase para get current admin user."""
     if not current_user.es_admin and not current_user.es_super_admin:
         raise HTTPException(
             status_code=403,
@@ -58,6 +61,7 @@ def get_current_admin_user(current_user=Depends(get_current_user)):
 
 
 def get_current_super_admin_user(current_user=Depends(get_current_user)):
+    """Gestiona la integracion con Firebase para get current super admin user."""
     if not current_user.es_super_admin:
         raise HTTPException(
             status_code=403,

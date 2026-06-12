@@ -1,13 +1,12 @@
-from sqlalchemy import Integer, String, ForeignKey, DateTime
+from sqlalchemy import Integer, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
 
 from app.database.base import Base
-from app.entities.entrenador_entity import EntrenadorEntity
-from app.entities.ubicacion_entity import UbicacionEntity
 
 
 class EntrenamientoEntity(Base):
+    """Mapea la entidad ORM entrenamiento entity con sus columnas y relaciones."""
     __tablename__ = "entrenamientos"
 
     id_entrenamiento: Mapped[int] = mapped_column(
@@ -16,18 +15,8 @@ class EntrenamientoEntity(Base):
         autoincrement=True
     )
 
-    nombre_entrenador: Mapped[str] = mapped_column(
-        String(150),
-        nullable=False
-    )
-
     id_entrenador: Mapped[int] = mapped_column(
         ForeignKey("entrenadores.id_entrenador"),
-        nullable=False
-    )
-
-    ubicacion: Mapped[str] = mapped_column(
-        String(200),
         nullable=False
     )
 
@@ -49,31 +38,15 @@ class EntrenamientoEntity(Base):
         nullable=True
     )
 
-    id_usuario: Mapped[int | None] = mapped_column(
-        ForeignKey("usuarios.id_usuario"),
-        nullable=True
-    )
-
-    id_reserva: Mapped[int | None] = mapped_column(
-        ForeignKey("inscripciones.id_inscripcion"),
-        nullable=True
-    )
-
     id_inscripcion: Mapped[int | None] = mapped_column(
         ForeignKey("inscripciones.id_inscripcion"),
         nullable=True
     )
 
     jugador = relationship("JugadorEntity")
-    usuario = relationship("UsuarioEntity")
     entrenador = relationship("EntrenadorEntity")
     ubicacion_catalogo = relationship("UbicacionEntity")
     inscripcion = relationship(
         "InscripcionEntity",
         foreign_keys=[id_inscripcion]
-    )
-    reserva_legacy = relationship(
-        "InscripcionEntity",
-        foreign_keys=[id_reserva],
-        viewonly=True
     )

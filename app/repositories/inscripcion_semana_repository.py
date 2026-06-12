@@ -8,6 +8,7 @@ from app.entities.inscripcion_semana_entity import InscripcionSemanaEntity
 # --------------------------------------------------
 
 def get_all(db: Session):
+    """Realiza la operacion get all contra la base de datos."""
     return db.query(InscripcionSemanaEntity).all()
 
 
@@ -16,6 +17,7 @@ def get_all(db: Session):
 # --------------------------------------------------
 
 def get_by_ids(db: Session, id_inscripcion: int, id_semana: int):
+    """Realiza la operacion get by ids contra la base de datos."""
     return db.query(InscripcionSemanaEntity).filter(
         InscripcionSemanaEntity.id_inscripcion == id_inscripcion,
         InscripcionSemanaEntity.id_semana == id_semana
@@ -27,6 +29,7 @@ def get_by_ids(db: Session, id_inscripcion: int, id_semana: int):
 # --------------------------------------------------
 
 def get_by_inscripcion_id(db: Session, id_inscripcion: int):
+    """Realiza la operacion get by inscripcion id contra la base de datos."""
     return db.query(InscripcionSemanaEntity).filter(
         InscripcionSemanaEntity.id_inscripcion == id_inscripcion
     ).all()
@@ -37,6 +40,7 @@ def get_by_inscripcion_id(db: Session, id_inscripcion: int):
 # --------------------------------------------------
 
 def get_by_semana_id(db: Session, id_semana: int):
+    """Realiza la operacion get by semana id contra la base de datos."""
     return db.query(InscripcionSemanaEntity).filter(
         InscripcionSemanaEntity.id_semana == id_semana
     ).all()
@@ -47,6 +51,7 @@ def get_by_semana_id(db: Session, id_semana: int):
 # --------------------------------------------------
 
 def create(db: Session, relation_data: dict):
+    """Realiza la operacion create contra la base de datos."""
     new_relation = InscripcionSemanaEntity(
         id_inscripcion=relation_data["id_inscripcion"],
         id_semana=relation_data["id_semana"]
@@ -64,6 +69,7 @@ def create(db: Session, relation_data: dict):
 # --------------------------------------------------
 
 def delete(db: Session, id_inscripcion: int, id_semana: int):
+    """Realiza la operacion delete contra la base de datos."""
     relation = get_by_ids(db, id_inscripcion, id_semana)
 
     if relation is None:

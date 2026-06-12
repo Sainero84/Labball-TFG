@@ -28,6 +28,7 @@ def preview_reserva(
     current_user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de preview reserva y delega la logica principal."""
     return preview_reserva_precio(db, preview_data)
 
 
@@ -37,6 +38,7 @@ def create_new_reserva(
     current_user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de create new reserva y delega la logica principal."""
     return create_reserva(db, reserva_data, current_user)
 
 
@@ -45,6 +47,7 @@ def get_reservas_me(
     current_user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de get reservas me y delega la logica principal."""
     return get_reservas_by_user(db, current_user)
 
 
@@ -54,4 +57,5 @@ def get_reserva_me_by_id(
     current_user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de get reserva me by id y delega la logica principal."""
     return get_reserva_by_user(db, reserva_id, current_user)

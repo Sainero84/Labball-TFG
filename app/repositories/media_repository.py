@@ -7,6 +7,7 @@ from app.entities.media_entity import MediaEntity
 # --------------------------------------------------
 
 def get_all(db: Session):
+    """Realiza la operacion get all contra la base de datos."""
     return db.query(MediaEntity).all()
 
 
@@ -15,10 +16,12 @@ def get_all(db: Session):
 # --------------------------------------------------
 
 def get_by_id(db: Session, media_id: int):
+    """Realiza la operacion get by id contra la base de datos."""
     return db.query(MediaEntity).filter(MediaEntity.id_media == media_id).first()
 
 
 def get_videos(db: Session):
+    """Realiza la operacion get videos contra la base de datos."""
     return db.query(MediaEntity).filter(
         MediaEntity.mime_type.like("video/%")
     ).all()
@@ -29,6 +32,7 @@ def get_videos(db: Session):
 # --------------------------------------------------
 
 def create(db: Session, media_data: dict):
+    """Realiza la operacion create contra la base de datos."""
     new_media = MediaEntity(
         id_usuario=media_data["id_usuario"],
         titulo=media_data["titulo"],
@@ -50,6 +54,7 @@ def create(db: Session, media_data: dict):
 # --------------------------------------------------
 
 def update(db: Session, media_id: int, updated_fields: dict):
+    """Realiza la operacion update contra la base de datos."""
     media = get_by_id(db, media_id)
 
     if media is None:
@@ -69,6 +74,7 @@ def update(db: Session, media_id: int, updated_fields: dict):
 # --------------------------------------------------
 
 def delete(db: Session, media_id: int):
+    """Realiza la operacion delete contra la base de datos."""
     media = get_by_id(db, media_id)
 
     if media is None:

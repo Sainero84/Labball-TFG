@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+// Mantiene el estado y las operaciones de admin jugadores view model para la interfaz.
 class AdminJugadoresViewModel : ViewModel() {
 
     private val _jugadores = MutableStateFlow<List<JugadorResponse>>(emptyList())
@@ -42,6 +43,7 @@ class AdminJugadoresViewModel : ViewModel() {
     private val _successMessage = MutableStateFlow<String?>(null)
     val successMessage: StateFlow<String?> = _successMessage.asStateFlow()
 
+    // Carga cargar catalogos desde la API y actualiza el estado asociado.
     fun cargarCatalogos(token: String) {
         viewModelScope.launch {
             try {
@@ -78,6 +80,7 @@ class AdminJugadoresViewModel : ViewModel() {
         }
     }
 
+    // Carga cargar usuarios clientes desde la API y actualiza el estado asociado.
     fun cargarUsuariosClientes(token: String) {
         viewModelScope.launch {
             try {
@@ -99,6 +102,7 @@ class AdminJugadoresViewModel : ViewModel() {
         }
     }
 
+    // Carga cargar jugadores desde la API y actualiza el estado asociado.
     fun cargarJugadores(token: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -123,6 +127,7 @@ class AdminJugadoresViewModel : ViewModel() {
         }
     }
 
+    // Carga cargar jugador por id desde la API y actualiza el estado asociado.
     fun cargarJugadorPorId(
         token: String,
         idJugador: Int
@@ -153,6 +158,7 @@ class AdminJugadoresViewModel : ViewModel() {
         }
     }
 
+    // Crea crear jugador mediante la API y comunica el resultado.
     fun crearJugador(
         token: String,
         jugador: JugadorCreateRequest
@@ -186,6 +192,7 @@ class AdminJugadoresViewModel : ViewModel() {
         }
     }
 
+    // Actualiza actualizar jugador y refleja la respuesta en la pantalla.
     fun actualizarJugador(
         token: String,
         idJugador: Int,
@@ -223,6 +230,7 @@ class AdminJugadoresViewModel : ViewModel() {
         }
     }
 
+    // Actualiza actualizar estadisticas y refleja la respuesta en la pantalla.
     fun actualizarEstadisticas(
         token: String,
         idJugador: Int,
@@ -260,10 +268,12 @@ class AdminJugadoresViewModel : ViewModel() {
         }
     }
 
+    // Limpia limpiar jugador seleccionado para reiniciar el estado temporal.
     fun limpiarJugadorSeleccionado() {
         _jugadorSeleccionado.value = null
     }
 
+    // Limpia limpiar estado para reiniciar el estado temporal.
     fun limpiarEstado() {
         _jugadorGuardado.value = null
         _errorMessage.value = null

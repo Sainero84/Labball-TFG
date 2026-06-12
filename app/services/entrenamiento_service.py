@@ -20,23 +20,27 @@ from app.schemas.entrenamiento_schema import (
 
 
 def get_entrenamiento_inscripcion_id(entrenamiento) -> int | None:
-    return entrenamiento.id_inscripcion or entrenamiento.id_reserva
+    """Aplica la logica de negocio necesaria para get entrenamiento inscripcion id."""
+    return entrenamiento.id_inscripcion
 
 
 def get_entrenamiento_usuario_id(db: Session, entrenamiento) -> int | None:
-    if entrenamiento.id_usuario is not None:
-        return entrenamiento.id_usuario
-
+    """Aplica la logica de negocio necesaria para get entrenamiento usuario id."""
     inscripcion_id = get_entrenamiento_inscripcion_id(entrenamiento)
 
-    if inscripcion_id is None:
-        return None
+    if inscripcion_id is not None:
+        inscripcion = inscripcion_repository.get_by_id(db, inscripcion_id)
+        return inscripcion.id_usuario if inscripcion is not None else None
 
-    inscripcion = inscripcion_repository.get_by_id(db, inscripcion_id)
-    return inscripcion.id_usuario if inscripcion is not None else None
+    if entrenamiento.id_jugador is not None:
+        jugador = jugador_repository.get_by_id(db, entrenamiento.id_jugador)
+        return jugador.id_usuario if jugador is not None else None
+
+    return None
 
 
 def get_entrenamiento_jugador_id(db: Session, entrenamiento) -> int | None:
+    """Aplica la logica de negocio necesaria para get entrenamiento jugador id."""
     if entrenamiento.id_jugador is not None:
         return entrenamiento.id_jugador
 
@@ -50,21 +54,23 @@ def get_entrenamiento_jugador_id(db: Session, entrenamiento) -> int | None:
 
 
 def get_entrenamiento_nombre_entrenador(entrenamiento) -> str:
+    """Aplica la logica de negocio necesaria para get entrenamiento nombre entrenador."""
     entrenador = getattr(entrenamiento, "entrenador", None)
 
     if entrenador is not None:
         return entrenador.nombre
 
-    return entrenamiento.nombre_entrenador
+    return ""
 
 
 def get_entrenamiento_ubicacion(entrenamiento) -> str:
+    """Aplica la logica de negocio necesaria para get entrenamiento ubicacion."""
     ubicacion = getattr(entrenamiento, "ubicacion_catalogo", None)
 
     if ubicacion is not None:
         return ubicacion.nombre
 
-    return entrenamiento.ubicacion
+    return ""
 
 
 def resolve_catalogos_entrenamiento(
@@ -72,6 +78,7 @@ def resolve_catalogos_entrenamiento(
     id_entrenador: int,
     id_ubicacion: int
 ):
+    """Aplica la logica de negocio necesaria para resolve catalogos entrenamiento."""
     entrenador = entrenador_repository.get_by_id(db, id_entrenador)
 
     if entrenador is None:
@@ -95,6 +102,7 @@ def to_entrenamiento_response(
     db: Session,
     entrenamiento
 ) -> EntrenamientoResponseSchema:
+    """Aplica la logica de negocio necesaria para to entrenamiento response."""
     id_inscripcion = get_entrenamiento_inscripcion_id(entrenamiento)
 
     return EntrenamientoResponseSchema(
@@ -117,6 +125,7 @@ def resolve_inscripcion_for_entrenamiento(
     id_inscripcion: int | None,
     id_reserva: int | None
 ):
+    """Aplica la logica de negocio necesaria para resolve inscripcion for entrenamiento."""
     resolved_id = id_inscripcion or id_reserva
 
     if resolved_id is None:
@@ -138,6 +147,7 @@ def resolve_legacy_jugador_id(
     inscripcion,
     requested_jugador_id: int | None
 ) -> int | None:
+    """Aplica la logica de negocio necesaria para resolve legacy jugador id."""
     if requested_jugador_id is None:
         jugador = jugador_repository.get_by_usuario_id(
             db,
@@ -163,6 +173,7 @@ def assert_usuario_matches_inscripcion(
     requested_usuario_id: int | None,
     inscripcion
 ):
+    """Aplica la logica de negocio necesaria para assert usuario matches inscripcion."""
     if (
         requested_usuario_id is not None
         and requested_usuario_id != inscripcion.id_usuario
@@ -176,6 +187,7 @@ def assert_usuario_matches_inscripcion(
 def get_all_entrenamientos(
     db: Session
 ) -> EntrenamientoListResponseSchema:
+    """Aplica la logica de negocio necesaria para get all entrenamientos."""
     entrenamientos = entrenamiento_repository.get_all(db)
 
     return EntrenamientoListResponseSchema(
@@ -190,6 +202,7 @@ def get_entrenamiento_by_id(
     db: Session,
     entrenamiento_id: int
 ) -> EntrenamientoResponseSchema:
+    """Aplica la logica de negocio necesaria para get entrenamiento by id."""
     entrenamiento = entrenamiento_repository.get_by_id(db, entrenamiento_id)
 
     if entrenamiento is None:
@@ -205,6 +218,7 @@ def get_entrenamientos_by_user(
     db: Session,
     current_user
 ) -> EntrenamientoListResponseSchema:
+    """Aplica la logica de negocio necesaria para get entrenamientos by user."""
     entrenamientos = entrenamiento_repository.get_by_usuario_id(
         db,
         current_user.id_usuario
@@ -223,6 +237,7 @@ def get_entrenamiento_by_user(
     entrenamiento_id: int,
     current_user
 ) -> EntrenamientoResponseSchema:
+    """Aplica la logica de negocio necesaria para get entrenamiento by user."""
     entrenamiento = entrenamiento_repository.get_by_id_and_usuario_id(
         db,
         entrenamiento_id,
@@ -242,6 +257,7 @@ def create_entrenamiento(
     db: Session,
     entrenamiento_data: EntrenamientoCreateSchema
 ) -> EntrenamientoMessageResponseSchema:
+    """Aplica la logica de negocio necesaria para create entrenamiento."""
     inscripcion = resolve_inscripcion_for_entrenamiento(
         db,
         entrenamiento_data.id_inscripcion,
@@ -276,14 +292,10 @@ def create_entrenamiento(
 
     new_entrenamiento_data = {
         "id_entrenador": entrenador.id_entrenador,
-        "nombre_entrenador": entrenador.nombre,
         "id_ubicacion": ubicacion.id_ubicacion,
-        "ubicacion": ubicacion.nombre,
         "hora_inicio": entrenamiento_data.hora_inicio,
         "hora_fin": entrenamiento_data.hora_fin,
         "id_inscripcion": inscripcion.id_inscripcion,
-        "id_reserva": inscripcion.id_inscripcion,
-        "id_usuario": inscripcion.id_usuario,
         "id_jugador": id_jugador
     }
 
@@ -303,6 +315,7 @@ def update_entrenamiento(
     entrenamiento_id: int,
     entrenamiento_data: EntrenamientoUpdateSchema
 ) -> EntrenamientoMessageResponseSchema:
+    """Aplica la logica de negocio necesaria para update entrenamiento."""
     entrenamiento_actual = entrenamiento_repository.get_by_id(
         db,
         entrenamiento_id
@@ -329,7 +342,6 @@ def update_entrenamiento(
             raise HTTPException(status_code=400, detail="El entrenador no esta activo")
 
         updated_fields["id_entrenador"] = entrenador.id_entrenador
-        updated_fields["nombre_entrenador"] = entrenador.nombre
 
     if entrenamiento_data.id_ubicacion is not None:
         ubicacion = ubicacion_repository.get_by_id(
@@ -344,7 +356,6 @@ def update_entrenamiento(
             raise HTTPException(status_code=400, detail="La ubicacion no esta activa")
 
         updated_fields["id_ubicacion"] = ubicacion.id_ubicacion
-        updated_fields["ubicacion"] = ubicacion.nombre
 
     if entrenamiento_data.hora_inicio is not None:
         updated_fields["hora_inicio"] = entrenamiento_data.hora_inicio
@@ -369,8 +380,6 @@ def update_entrenamiento(
         )
 
         updated_fields["id_inscripcion"] = inscripcion.id_inscripcion
-        updated_fields["id_reserva"] = inscripcion.id_inscripcion
-        updated_fields["id_usuario"] = inscripcion.id_usuario
         updated_fields["id_jugador"] = resolve_legacy_jugador_id(
             db,
             inscripcion,
@@ -390,20 +399,6 @@ def update_entrenamiento(
                 )
 
             updated_fields["id_jugador"] = entrenamiento_data.id_jugador
-
-        if entrenamiento_data.id_usuario is not None:
-            usuario = usuario_repository.get_by_id(
-                db,
-                entrenamiento_data.id_usuario
-            )
-
-            if usuario is None:
-                raise HTTPException(
-                    status_code=404,
-                    detail="Usuario no encontrado"
-                )
-
-            updated_fields["id_usuario"] = entrenamiento_data.id_usuario
 
     hora_inicio_final = updated_fields.get(
         "hora_inicio",
@@ -437,6 +432,7 @@ def delete_entrenamiento(
     db: Session,
     entrenamiento_id: int
 ) -> EntrenamientoMessageResponseSchema:
+    """Aplica la logica de negocio necesaria para delete entrenamiento."""
     entrenamiento = entrenamiento_repository.get_by_id(db, entrenamiento_id)
 
     if entrenamiento is None:

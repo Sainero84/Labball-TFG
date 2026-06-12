@@ -10,6 +10,7 @@ from app.database.base import Base
 
 # Esta clase representa la tabla "media"
 class MediaEntity(Base):
+    """Mapea la entidad ORM media entity con sus columnas y relaciones."""
     __tablename__ = "media"
 
     # Clave primaria

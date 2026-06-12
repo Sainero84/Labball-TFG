@@ -21,10 +21,12 @@ DEFAULT_TARIFAS = [
 
 
 def calcular_precio_por_sesion(precio_total: float, numero_sesiones: int) -> float:
+    """Aplica la logica de negocio necesaria para calcular precio por sesion."""
     return round(float(precio_total) / numero_sesiones, 2)
 
 
 def schema_to_dict(schema, **kwargs) -> dict:
+    """Aplica la logica de negocio necesaria para schema to dict."""
     if hasattr(schema, "model_dump"):
         return schema.model_dump(**kwargs)
 
@@ -32,6 +34,7 @@ def schema_to_dict(schema, **kwargs) -> dict:
 
 
 def seed_default_tarifas(db: Session):
+    """Aplica la logica de negocio necesaria para seed default tarifas."""
     for tarifa_data in DEFAULT_TARIFAS:
         existing = tarifa_repository.get_by_numero_sesiones(
             db,
@@ -43,6 +46,7 @@ def seed_default_tarifas(db: Session):
 
 
 def to_tarifa_response(tarifa) -> TarifaResponseSchema:
+    """Aplica la logica de negocio necesaria para to tarifa response."""
     return TarifaResponseSchema(
         id_tarifa=tarifa.id_tarifa,
         numero_sesiones=tarifa.numero_sesiones,
@@ -53,6 +57,7 @@ def to_tarifa_response(tarifa) -> TarifaResponseSchema:
 
 
 def get_all_tarifas(db: Session) -> TarifaListResponseSchema:
+    """Aplica la logica de negocio necesaria para get all tarifas."""
     tarifas = tarifa_repository.get_all(db)
 
     return TarifaListResponseSchema(
@@ -61,6 +66,7 @@ def get_all_tarifas(db: Session) -> TarifaListResponseSchema:
 
 
 def get_active_tarifas(db: Session) -> TarifaListResponseSchema:
+    """Aplica la logica de negocio necesaria para get active tarifas."""
     tarifas = tarifa_repository.get_all_active(db)
 
     return TarifaListResponseSchema(
@@ -69,6 +75,7 @@ def get_active_tarifas(db: Session) -> TarifaListResponseSchema:
 
 
 def get_tarifa_by_id(db: Session, tarifa_id: int) -> TarifaResponseSchema:
+    """Aplica la logica de negocio necesaria para get tarifa by id."""
     tarifa = tarifa_repository.get_by_id(db, tarifa_id)
 
     if tarifa is None:
@@ -81,6 +88,7 @@ def create_tarifa(
     db: Session,
     tarifa_data: TarifaCreateSchema
 ) -> TarifaMessageResponseSchema:
+    """Aplica la logica de negocio necesaria para create tarifa."""
     existing = tarifa_repository.get_by_numero_sesiones(
         db,
         tarifa_data.numero_sesiones
@@ -111,6 +119,7 @@ def update_tarifa(
     tarifa_id: int,
     tarifa_data: TarifaUpdateSchema
 ) -> TarifaMessageResponseSchema:
+    """Aplica la logica de negocio necesaria para update tarifa."""
     updated_fields = schema_to_dict(tarifa_data, exclude_unset=True)
     updated_fields.pop("precio_por_sesion", None)
 
@@ -158,6 +167,7 @@ def update_tarifa(
 
 
 def delete_tarifa(db: Session, tarifa_id: int) -> TarifaMessageResponseSchema:
+    """Aplica la logica de negocio necesaria para delete tarifa."""
     tarifa = tarifa_repository.delete(db, tarifa_id)
 
     if tarifa is None:

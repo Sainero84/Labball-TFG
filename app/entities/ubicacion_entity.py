@@ -5,6 +5,7 @@ from app.database.base import Base
 
 
 class UbicacionEntity(Base):
+    """Mapea la entidad ORM ubicacion entity con sus columnas y relaciones."""
     __tablename__ = "ubicaciones"
 
     id_ubicacion: Mapped[int] = mapped_column(

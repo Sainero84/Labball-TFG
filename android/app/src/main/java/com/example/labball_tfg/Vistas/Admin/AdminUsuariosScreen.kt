@@ -80,6 +80,7 @@ import com.example.labball_tfg.ui.theme.secondaryColor
 import com.example.labball_tfg.ui.theme.textColor
 import java.util.Locale
 
+// Renderiza la pantalla admin usuarios screen y conecta sus acciones principales.
 @Composable
 fun AdminUsuariosScreen(
     token: String,
@@ -416,6 +417,7 @@ fun AdminUsuariosScreen(
     }
 }
 
+// Encapsula la operacion admin negocio tabs usada por la pantalla o el estado.
 @Composable
 private fun AdminNegocioTabs(
     tabs: List<AdminNegocioTab>,
@@ -451,6 +453,7 @@ private fun AdminNegocioTabs(
     }
 }
 
+// Encapsula la operacion admin negocio usuarios content usada por la pantalla o el estado.
 @Composable
 private fun AdminNegocioUsuariosContent(
     usuarios: List<AdminUsuarioResponse>,
@@ -481,6 +484,7 @@ private fun AdminNegocioUsuariosContent(
     }
 }
 
+// Encapsula la operacion admin negocio descuentos content usada por la pantalla o el estado.
 @Composable
 private fun AdminNegocioDescuentosContent(
     descuentos: List<DescuentoResponse>,
@@ -511,6 +515,7 @@ private fun AdminNegocioDescuentosContent(
     }
 }
 
+// Encapsula la operacion admin negocio ubicaciones content usada por la pantalla o el estado.
 @Composable
 private fun AdminNegocioUbicacionesContent(
     ubicaciones: List<UbicacionResponse>,
@@ -539,6 +544,7 @@ private fun AdminNegocioUbicacionesContent(
     }
 }
 
+// Encapsula la operacion admin negocio list layout usada por la pantalla o el estado.
 @Composable
 private fun AdminNegocioListLayout(
     searchText: String,
@@ -589,6 +595,7 @@ private fun AdminNegocioListLayout(
     }
 }
 
+// Encapsula la operacion admin business search field usada por la pantalla o el estado.
 @Composable
 private fun AdminBusinessSearchField(
     value: String,
@@ -609,6 +616,7 @@ private fun AdminBusinessSearchField(
     )
 }
 
+// Encapsula la operacion admin usuario card usada por la pantalla o el estado.
 @Composable
 private fun AdminUsuarioCard(
     usuario: AdminUsuarioResponse,
@@ -667,6 +675,7 @@ private fun AdminUsuarioCard(
     }
 }
 
+// Encapsula la operacion admin usuario avatar usada por la pantalla o el estado.
 @Composable
 private fun AdminUsuarioAvatar(usuario: AdminUsuarioResponse) {
     Box(
@@ -689,6 +698,7 @@ private fun AdminUsuarioAvatar(usuario: AdminUsuarioResponse) {
     }
 }
 
+// Encapsula la operacion admin descuento card usada por la pantalla o el estado.
 @Composable
 private fun AdminDescuentoCard(
     descuento: DescuentoResponse,
@@ -716,6 +726,7 @@ private fun AdminDescuentoCard(
     }
 }
 
+// Encapsula la operacion admin ubicacion card usada por la pantalla o el estado.
 @Composable
 private fun AdminUbicacionCard(
     ubicacion: UbicacionResponse,
@@ -739,6 +750,7 @@ private fun AdminUbicacionCard(
     }
 }
 
+// Encapsula la operacion admin business card usada por la pantalla o el estado.
 @Composable
 private fun AdminBusinessCard(content: @Composable RowScope.() -> Unit) {
     Row(
@@ -752,6 +764,7 @@ private fun AdminBusinessCard(content: @Composable RowScope.() -> Unit) {
     )
 }
 
+// Encapsula la operacion admin usuario manage dialog usada por la pantalla o el estado.
 @Composable
 private fun AdminUsuarioManageDialog(
     usuario: AdminUsuarioResponse,
@@ -824,6 +837,7 @@ private fun AdminUsuarioManageDialog(
     )
 }
 
+// Encapsula la operacion admin usuario create dialog usada por la pantalla o el estado.
 @Composable
 private fun AdminUsuarioCreateDialog(
     email: String,
@@ -898,6 +912,7 @@ private fun AdminUsuarioCreateDialog(
     )
 }
 
+// Encapsula la operacion admin trainer toggle usada por la pantalla o el estado.
 @Composable
 private fun AdminTrainerToggle(
     checked: Boolean,
@@ -928,6 +943,7 @@ private fun AdminTrainerToggle(
     }
 }
 
+// Encapsula la operacion admin usuario role selector usada por la pantalla o el estado.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AdminUsuarioRoleSelector(
@@ -975,6 +991,7 @@ private fun AdminUsuarioRoleSelector(
     }
 }
 
+// Encapsula la operacion admin usuario role confirm dialog usada por la pantalla o el estado.
 @Composable
 private fun AdminUsuarioRoleConfirmDialog(
     roleChange: AdminUsuarioRoleChange,
@@ -1002,6 +1019,7 @@ private fun AdminUsuarioRoleConfirmDialog(
     )
 }
 
+// Encapsula la operacion admin delete user dialog usada por la pantalla o el estado.
 @Composable
 private fun AdminDeleteUserDialog(
     usuario: AdminUsuarioResponse,
@@ -1040,6 +1058,7 @@ private fun AdminDeleteUserDialog(
     )
 }
 
+// Encapsula la operacion admin descuento edit dialog usada por la pantalla o el estado.
 @Composable
 private fun AdminDescuentoEditDialog(
     descuento: DescuentoResponse?,
@@ -1101,6 +1120,7 @@ private fun AdminDescuentoEditDialog(
     )
 }
 
+// Encapsula la operacion admin ubicacion dialog usada por la pantalla o el estado.
 @Composable
 private fun AdminUbicacionDialog(
     nombre: String,
@@ -1136,6 +1156,7 @@ private fun AdminUbicacionDialog(
     )
 }
 
+// Encapsula la operacion admin simple delete dialog usada por la pantalla o el estado.
 @Composable
 private fun AdminSimpleDeleteDialog(
     title: String,
@@ -1157,6 +1178,7 @@ private fun AdminSimpleDeleteDialog(
     )
 }
 
+// Encapsula la operacion admin info dialog usada por la pantalla o el estado.
 @Composable
 private fun AdminInfoDialog(
     title: String,
@@ -1181,6 +1203,7 @@ private fun AdminInfoDialog(
     )
 }
 
+// Encapsula la operacion admin business loading usada por la pantalla o el estado.
 @Composable
 private fun AdminBusinessLoading() {
     Box(
@@ -1193,6 +1216,7 @@ private fun AdminBusinessLoading() {
     }
 }
 
+// Encapsula la operacion admin business message usada por la pantalla o el estado.
 @Composable
 private fun AdminBusinessMessage(message: String) {
     Text(
@@ -1203,6 +1227,7 @@ private fun AdminBusinessMessage(message: String) {
     )
 }
 
+// Encapsula la operacion admin usuario text field colors usada por la pantalla o el estado.
 @Composable
 private fun adminUsuarioTextFieldColors() = OutlinedTextFieldDefaults.colors(
     focusedTextColor = textColor,
@@ -1219,6 +1244,7 @@ private fun adminUsuarioTextFieldColors() = OutlinedTextFieldDefaults.colors(
     unfocusedPlaceholderColor = textColor.copy(alpha = 0.55f)
 )
 
+// Encapsula la operacion list usada por la pantalla o el estado.
 private fun List<AdminUsuarioResponse>.businessUserFilter(query: String): List<AdminUsuarioResponse> {
     val normalizedQuery = query.normalizedBusiness()
     if (normalizedQuery.isBlank()) return this
@@ -1232,6 +1258,7 @@ private fun List<AdminUsuarioResponse>.businessUserFilter(query: String): List<A
     }
 }
 
+// Encapsula la operacion list usada por la pantalla o el estado.
 private fun List<DescuentoResponse>.businessDiscountFilter(query: String): List<DescuentoResponse> {
     val normalizedQuery = query.normalizedBusiness()
     if (normalizedQuery.isBlank()) return this
@@ -1241,16 +1268,19 @@ private fun List<DescuentoResponse>.businessDiscountFilter(query: String): List<
     }
 }
 
+// Encapsula la operacion list usada por la pantalla o el estado.
 private fun List<UbicacionResponse>.businessLocationFilter(query: String): List<UbicacionResponse> {
     val normalizedQuery = query.normalizedBusiness()
     if (normalizedQuery.isBlank()) return this
     return filter { ubicacion -> ubicacion.nombre.normalizedBusiness().contains(normalizedQuery) }
 }
 
+// Encapsula la operacion string usada por la pantalla o el estado.
 private fun String.normalizedBusiness(): String {
     return lowercase(Locale.getDefault()).trim()
 }
 
+// Encapsula la operacion admin usuario response usada por la pantalla o el estado.
 private fun AdminUsuarioResponse.role(): AdminUsuarioRole {
     return when {
         esSuperAdmin -> AdminUsuarioRole.SuperAdmin
@@ -1259,6 +1289,7 @@ private fun AdminUsuarioResponse.role(): AdminUsuarioRole {
     }
 }
 
+// Encapsula la operacion admin usuario response usada por la pantalla o el estado.
 private fun AdminUsuarioResponse.roleLabel(): String {
     return if (esEntrenador && role() != AdminUsuarioRole.Cliente) {
         "${role().label} - Entrenador"
@@ -1267,6 +1298,7 @@ private fun AdminUsuarioResponse.roleLabel(): String {
     }
 }
 
+// Encapsula la operacion admin usuario response usada por la pantalla o el estado.
 private fun AdminUsuarioResponse.displayName(): String {
     return listOfNotNull(
         nombre?.takeIf { it.isNotBlank() },
@@ -1274,6 +1306,7 @@ private fun AdminUsuarioResponse.displayName(): String {
     ).joinToString(" ")
 }
 
+// Encapsula la operacion admin usuario response usada por la pantalla o el estado.
 private fun AdminUsuarioResponse.canBeManagedBy(currentUser: UsuarioMeResponse?): Boolean {
     if (currentUser == null) return false
     if (currentUser.idUsuario == idUsuario) return false
@@ -1284,10 +1317,12 @@ private fun AdminUsuarioResponse.canBeManagedBy(currentUser: UsuarioMeResponse?)
     }
 }
 
+// Encapsula la operacion admin usuario response usada por la pantalla o el estado.
 private fun AdminUsuarioResponse.canBeDeletedBy(currentUser: UsuarioMeResponse?): Boolean {
     return currentUser?.esSuperAdmin == true && canBeManagedBy(currentUser)
 }
 
+// Encapsula la operacion usuario me response usada por la pantalla o el estado.
 private fun UsuarioMeResponse?.availableRoles(): List<AdminUsuarioRole> {
     return when {
         this?.esSuperAdmin == true -> AdminUsuarioRole.values().toList()
@@ -1296,36 +1331,42 @@ private fun UsuarioMeResponse?.availableRoles(): List<AdminUsuarioRole> {
     }
 }
 
+// Agrupa la pantalla admin negocio tab y su estado visual principal.
 private enum class AdminNegocioTab(val label: String) {
     Usuarios("Usuarios"),
     Descuentos("Descuentos"),
     Ubicaciones("Ubicaciones");
 
     companion object {
+        // Encapsula la operacion from name usada por la pantalla o el estado.
         fun fromName(name: String): AdminNegocioTab {
             return values().firstOrNull { it.name == name } ?: Usuarios
         }
     }
 }
 
+// Agrupa la pantalla admin usuario role y su estado visual principal.
 private enum class AdminUsuarioRole(val label: String) {
     Cliente("Cliente"),
     Admin("Admin"),
     SuperAdmin("Super-admin");
 
     companion object {
+        // Encapsula la operacion from name usada por la pantalla o el estado.
         fun fromName(name: String): AdminUsuarioRole {
             return values().firstOrNull { it.name == name } ?: Cliente
         }
     }
 }
 
+// Agrupa la pantalla admin usuario role change y su estado visual principal.
 private data class AdminUsuarioRoleChange(
     val usuario: AdminUsuarioResponse,
     val role: AdminUsuarioRole,
     val esEntrenador: Boolean
 )
 
+// Encapsula la operacion admin usuario role change usada por la pantalla o el estado.
 private fun AdminUsuarioRoleChange.previewLabel(): String {
     val base = role.label
     return if (esEntrenador && role != AdminUsuarioRole.Cliente) "$base - Entrenador" else base

@@ -16,7 +16,9 @@ import com.example.labball_tfg.Vistas.Cliente.ClienteScaffoldScreen
 import com.example.labball_tfg.Vistas.OlvidoPasswordScreen
 import com.example.labball_tfg.Vistas.RegisterScreen
 
+// Mantiene el estado y las operaciones de main activity para la interfaz.
 class MainActivity : ComponentActivity() {
+    // Encapsula la operacion on create usada por la pantalla o el estado.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -25,6 +27,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// Encapsula la operacion app navigation usada por la pantalla o el estado.
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()

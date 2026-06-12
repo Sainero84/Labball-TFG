@@ -15,10 +15,7 @@ from app.firebase.firebase_dependencies import (
     get_current_super_admin_user
 )
 from app.schemas.entrenamiento_schema import (
-    EntrenamientoCreateSchema,
-    EntrenamientoListResponseSchema,
-    EntrenamientoMessageResponseSchema,
-    EntrenamientoUpdateSchema
+    EntrenamientoListResponseSchema
 )
 from app.schemas.inscripcion_schema import (
     ReservaEntrenamientosAsignadosResponseSchema,
@@ -35,13 +32,6 @@ from app.schemas.jugador_schema import (
     JugadorMessageResponseSchema,
     JugadorResponseSchema,
     JugadorUpdateSchema
-)
-from app.schemas.codigo_administrador_schema import (
-    CodigoAdministradorGenerateResponseSchema,
-    CodigoAdministradorGenerateSchema,
-    CodigoAdministradorListResponseSchema,
-    CodigoAdministradorValidateResponseSchema,
-    CodigoAdministradorValidateSchema
 )
 from app.schemas.catalogo_schema import (
     EntrenadorListResponseSchema,
@@ -62,13 +52,6 @@ from app.schemas.media_schema import (
     MediaMessageResponseSchema,
     MediaUpdateSchema
 )
-from app.schemas.tarifa_schema import (
-    TarifaCreateSchema,
-    TarifaListResponseSchema,
-    TarifaMessageResponseSchema,
-    TarifaResponseSchema,
-    TarifaUpdateSchema
-)
 from app.schemas.usuario_schema import (
     AdminUsuarioCreateSchema,
     AdminUsuarioDeleteResponseSchema,
@@ -79,11 +62,8 @@ from app.schemas.usuario_schema import (
 from app.services import (
     admin_usuario_service,
     catalogo_service,
-    codigo_administrador_service,
-    entrenamiento_service,
     jugador_service,
-    media_service,
-    tarifa_service
+    media_service
 )
 from app.services.inscripcion_service import (
     asignar_entrenamientos_reserva,
@@ -114,6 +94,7 @@ def get_admin_usuarios(
     admin=Depends(get_current_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de get admin usuarios y delega la logica principal."""
     return admin_usuario_service.get_admin_usuarios(db)
 
 
@@ -123,6 +104,7 @@ def create_admin_usuario(
     admin=Depends(get_current_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de create admin usuario y delega la logica principal."""
     return admin_usuario_service.create_admin_usuario(db, usuario_data, admin)
 
 
@@ -133,6 +115,7 @@ def update_admin_usuario_rol(
     admin=Depends(get_current_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de update admin usuario rol y delega la logica principal."""
     return admin_usuario_service.update_admin_usuario_rol(
         db,
         usuario_id,
@@ -147,10 +130,12 @@ def delete_admin_usuario(
     admin=Depends(get_current_super_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de delete admin usuario y delega la logica principal."""
     return admin_usuario_service.delete_admin_usuario(db, usuario_id, admin)
 
 
 def get_safe_extension(filename: str, content_type: str | None, allowed_extensions: set[str]) -> str:
+    """Expone la ruta encargada de get safe extension y delega la logica principal."""
     extension = Path(filename or "").suffix.lower()
 
     if extension in allowed_extensions:
@@ -174,6 +159,7 @@ def get_safe_extension(filename: str, content_type: str | None, allowed_extensio
 
 
 def parse_multipart_body(content_type: str, body: bytes) -> tuple[dict[str, str], dict[str, dict]]:
+    """Expone la ruta encargada de parse multipart body y delega la logica principal."""
     if not content_type.startswith("multipart/form-data"):
         raise HTTPException(status_code=400, detail="La peticion debe ser multipart/form-data")
 
@@ -218,6 +204,7 @@ def save_uploaded_content(
     allowed_extensions: set[str],
     max_size: int
 ) -> tuple[str, str]:
+    """Expone la ruta encargada de save uploaded content y delega la logica principal."""
     if len(content) > max_size:
         raise HTTPException(status_code=400, detail="El archivo supera el tamaño máximo permitido")
 
@@ -234,6 +221,7 @@ def save_uploaded_content(
 
 
 def generate_thumbnail_from_video(video_path: Path) -> str:
+    """Expone la ruta encargada de generate thumbnail from video y delega la logica principal."""
     configured_ffmpeg = os.getenv("FFMPEG_PATH")
     ffmpeg_path = configured_ffmpeg or shutil.which("ffmpeg")
 
@@ -289,43 +277,12 @@ def generate_thumbnail_from_video(video_path: Path) -> str:
     return thumbnail_filename
 
 
-@router.get("/codigos-administrador", response_model=CodigoAdministradorListResponseSchema)
-def get_admin_codigos_administrador(
-    admin=Depends(get_current_super_admin_user),
-    db: Session = Depends(get_db)
-):
-    return codigo_administrador_service.get_all_codigos(db)
-
-
-@router.post(
-    "/codigos-administrador",
-    response_model=CodigoAdministradorGenerateResponseSchema
-)
-def generate_admin_codigos_administrador(
-    codigo_data: CodigoAdministradorGenerateSchema,
-    admin=Depends(get_current_super_admin_user),
-    db: Session = Depends(get_db)
-):
-    return codigo_administrador_service.generate_codigos(db, codigo_data)
-
-
-@router.post(
-    "/codigos-administrador/validar",
-    response_model=CodigoAdministradorValidateResponseSchema
-)
-def validate_admin_codigo_administrador(
-    codigo_data: CodigoAdministradorValidateSchema,
-    admin=Depends(get_current_super_admin_user),
-    db: Session = Depends(get_db)
-):
-    return codigo_administrador_service.validate_codigo(db, codigo_data)
-
-
 @router.get("/entrenadores", response_model=EntrenadorListResponseSchema)
 def get_admin_entrenadores(
     admin=Depends(get_current_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de get admin entrenadores y delega la logica principal."""
     return catalogo_service.get_all_entrenadores(db)
 
 
@@ -334,6 +291,7 @@ def get_admin_ubicaciones(
     admin=Depends(get_current_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de get admin ubicaciones y delega la logica principal."""
     return catalogo_service.get_all_ubicaciones(db)
 
 
@@ -343,6 +301,7 @@ def create_admin_ubicacion(
     admin=Depends(get_current_super_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de create admin ubicacion y delega la logica principal."""
     return catalogo_service.create_ubicacion(db, ubicacion_data)
 
 
@@ -352,6 +311,7 @@ def delete_admin_ubicacion(
     admin=Depends(get_current_super_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de delete admin ubicacion y delega la logica principal."""
     return catalogo_service.delete_ubicacion(db, ubicacion_id)
 
 
@@ -360,6 +320,7 @@ def get_admin_descuentos(
     admin=Depends(get_current_super_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de get admin descuentos y delega la logica principal."""
     return catalogo_service.get_all_admin_descuentos(db)
 
 
@@ -369,6 +330,7 @@ def create_admin_descuento(
     admin=Depends(get_current_super_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de create admin descuento y delega la logica principal."""
     return catalogo_service.create_admin_descuento(db, descuento_data)
 
 
@@ -379,6 +341,7 @@ def update_admin_descuento(
     admin=Depends(get_current_super_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de update admin descuento y delega la logica principal."""
     return catalogo_service.update_admin_descuento(db, descuento_id, descuento_data)
 
 
@@ -388,52 +351,8 @@ def delete_admin_descuento(
     admin=Depends(get_current_super_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de delete admin descuento y delega la logica principal."""
     return catalogo_service.delete_admin_descuento(db, descuento_id)
-
-
-@router.get("/tarifas", response_model=TarifaListResponseSchema)
-def get_admin_tarifas(
-    admin=Depends(get_current_admin_user),
-    db: Session = Depends(get_db)
-):
-    return tarifa_service.get_all_tarifas(db)
-
-
-@router.get("/tarifas/{tarifa_id}", response_model=TarifaResponseSchema)
-def get_admin_tarifa(
-    tarifa_id: int,
-    admin=Depends(get_current_admin_user),
-    db: Session = Depends(get_db)
-):
-    return tarifa_service.get_tarifa_by_id(db, tarifa_id)
-
-
-@router.post("/tarifas", response_model=TarifaMessageResponseSchema)
-def create_admin_tarifa(
-    tarifa_data: TarifaCreateSchema,
-    admin=Depends(get_current_admin_user),
-    db: Session = Depends(get_db)
-):
-    return tarifa_service.create_tarifa(db, tarifa_data)
-
-
-@router.put("/tarifas/{tarifa_id}", response_model=TarifaMessageResponseSchema)
-def update_admin_tarifa(
-    tarifa_id: int,
-    tarifa_data: TarifaUpdateSchema,
-    admin=Depends(get_current_admin_user),
-    db: Session = Depends(get_db)
-):
-    return tarifa_service.update_tarifa(db, tarifa_id, tarifa_data)
-
-
-@router.delete("/tarifas/{tarifa_id}", response_model=TarifaMessageResponseSchema)
-def delete_admin_tarifa(
-    tarifa_id: int,
-    admin=Depends(get_current_admin_user),
-    db: Session = Depends(get_db)
-):
-    return tarifa_service.delete_tarifa(db, tarifa_id)
 
 
 @router.get("/reservas", response_model=ReservaAdminListResponseSchema)
@@ -441,6 +360,7 @@ def get_admin_reservas(
     admin=Depends(get_current_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de get admin reservas y delega la logica principal."""
     return get_all_reservas_admin(db)
 
 
@@ -450,6 +370,7 @@ def get_admin_reserva(
     admin=Depends(get_current_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de get admin reserva y delega la logica principal."""
     return get_reserva_admin_by_id(db, reserva_id)
 
 
@@ -460,6 +381,7 @@ def update_admin_reserva_pagado(
     admin=Depends(get_current_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de update admin reserva pagado y delega la logica principal."""
     return update_reserva_pagado(db, reserva_id, pagado_data.pagado)
 
 
@@ -473,6 +395,7 @@ def asignar_admin_entrenamientos_reserva(
     admin=Depends(get_current_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de asignar admin entrenamientos reserva y delega la logica principal."""
     return asignar_entrenamientos_reserva(db, reserva_id, asignacion_data)
 
 
@@ -485,6 +408,7 @@ def get_admin_entrenamientos_reserva(
     admin=Depends(get_current_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de get admin entrenamientos reserva y delega la logica principal."""
     return get_entrenamientos_reserva_admin(db, reserva_id)
 
 
@@ -498,48 +422,8 @@ def reemplazar_admin_entrenamientos_reserva(
     admin=Depends(get_current_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de reemplazar admin entrenamientos reserva y delega la logica principal."""
     return reemplazar_entrenamientos_reserva_admin(db, reserva_id, asignacion_data)
-
-
-@router.post("/entrenamientos", response_model=EntrenamientoMessageResponseSchema)
-def create_admin_entrenamiento(
-    entrenamiento_data: EntrenamientoCreateSchema,
-    admin=Depends(get_current_admin_user),
-    db: Session = Depends(get_db)
-):
-    return entrenamiento_service.create_entrenamiento(db, entrenamiento_data)
-
-
-@router.put("/entrenamientos/{entrenamiento_id}", response_model=EntrenamientoMessageResponseSchema)
-def update_admin_entrenamiento(
-    entrenamiento_id: int,
-    entrenamiento_data: EntrenamientoUpdateSchema,
-    admin=Depends(get_current_admin_user),
-    db: Session = Depends(get_db)
-):
-    return entrenamiento_service.update_entrenamiento(
-        db,
-        entrenamiento_id,
-        entrenamiento_data
-    )
-
-
-@router.delete("/entrenamientos/{entrenamiento_id}", response_model=EntrenamientoMessageResponseSchema)
-def delete_admin_entrenamiento(
-    entrenamiento_id: int,
-    admin=Depends(get_current_admin_user),
-    db: Session = Depends(get_db)
-):
-    return entrenamiento_service.delete_entrenamiento(db, entrenamiento_id)
-
-
-@router.post("/media/videos", response_model=MediaMessageResponseSchema)
-def create_admin_video(
-    media_data: MediaCreateSchema,
-    admin=Depends(get_current_admin_user),
-    db: Session = Depends(get_db)
-):
-    return media_service.create_media(db, media_data)
 
 
 @router.post("/media/videos/upload", response_model=MediaMessageResponseSchema)
@@ -548,6 +432,7 @@ async def upload_admin_video(
     admin=Depends(get_current_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de upload admin video y delega la logica principal."""
     fields, files = parse_multipart_body(
         request.headers.get("content-type", ""),
         await request.body()
@@ -649,6 +534,7 @@ def update_admin_video(
     admin=Depends(get_current_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de update admin video y delega la logica principal."""
     return media_service.update_media(db, media_id, media_data)
 
 
@@ -658,6 +544,7 @@ def delete_admin_video(
     admin=Depends(get_current_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de delete admin video y delega la logica principal."""
     return media_service.delete_media(db, media_id)
 
 
@@ -666,6 +553,7 @@ def get_admin_jugadores(
     admin=Depends(get_current_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de get admin jugadores y delega la logica principal."""
     return jugador_service.get_all_jugadores(db)
 
 
@@ -675,6 +563,7 @@ def get_admin_jugador(
     admin=Depends(get_current_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de get admin jugador y delega la logica principal."""
     return jugador_service.get_jugador_by_id(db, jugador_id)
 
 
@@ -684,6 +573,7 @@ def create_admin_jugador(
     admin=Depends(get_current_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de create admin jugador y delega la logica principal."""
     return jugador_service.create_jugador(db, jugador_data)
 
 
@@ -694,6 +584,7 @@ def update_admin_jugador(
     admin=Depends(get_current_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de update admin jugador y delega la logica principal."""
     return jugador_service.update_jugador(db, jugador_id, jugador_data)
 
 
@@ -704,4 +595,5 @@ def update_admin_jugador_estadisticas(
     admin=Depends(get_current_admin_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de update admin jugador estadisticas y delega la logica principal."""
     return jugador_service.update_jugador(db, jugador_id, estadisticas_data)

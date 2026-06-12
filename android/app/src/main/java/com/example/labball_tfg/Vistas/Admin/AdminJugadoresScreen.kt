@@ -68,6 +68,7 @@ import com.example.labball_tfg.ui.theme.textColor
 import java.text.Normalizer
 import java.util.Locale
 
+// Renderiza la pantalla admin jugadores screen y conecta sus acciones principales.
 @Composable
 fun AdminJugadoresScreen(
     token: String,
@@ -261,6 +262,7 @@ fun AdminJugadoresScreen(
     }
 }
 
+// Encapsula la operacion admin jugadores list content usada por la pantalla o el estado.
 @Composable
 private fun AdminJugadoresListContent(
     jugadores: List<JugadorResponse>,
@@ -380,6 +382,7 @@ private fun AdminJugadoresListContent(
     }
 }
 
+// Encapsula la operacion admin jugadores search field usada por la pantalla o el estado.
 @Composable
 private fun AdminJugadoresSearchField(
     value: String,
@@ -413,6 +416,7 @@ private fun AdminJugadoresSearchField(
     )
 }
 
+// Encapsula la operacion admin jugadores filters usada por la pantalla o el estado.
 @Composable
 private fun AdminJugadoresFilters(
     entrenadores: List<String>,
@@ -446,6 +450,7 @@ private fun AdminJugadoresFilters(
     }
 }
 
+// Encapsula la operacion admin jugadores filter selector usada por la pantalla o el estado.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AdminJugadoresFilterSelector(
@@ -525,6 +530,7 @@ private fun AdminJugadoresFilterSelector(
     }
 }
 
+// Encapsula la operacion admin jugador summary card usada por la pantalla o el estado.
 @Composable
 private fun AdminJugadorSummaryCard(
     jugador: JugadorResponse,
@@ -586,6 +592,7 @@ private fun AdminJugadorSummaryCard(
     )
 }
 
+// Encapsula la operacion admin jugador avatar usada por la pantalla o el estado.
 @Composable
 private fun AdminJugadorAvatar(jugador: JugadorResponse) {
     Box(
@@ -613,6 +620,7 @@ private fun AdminJugadorAvatar(jugador: JugadorResponse) {
     }
 }
 
+// Encapsula la operacion admin jugador metadata usada por la pantalla o el estado.
 @Composable
 private fun AdminJugadorMetadata(value: String) {
     Text(
@@ -624,6 +632,7 @@ private fun AdminJugadorMetadata(value: String) {
     )
 }
 
+// Encapsula la operacion admin jugadores loading message usada por la pantalla o el estado.
 @Composable
 private fun AdminJugadoresLoadingMessage() {
     Box(
@@ -636,6 +645,7 @@ private fun AdminJugadoresLoadingMessage() {
     }
 }
 
+// Encapsula la operacion admin jugadores message usada por la pantalla o el estado.
 @Composable
 private fun AdminJugadoresMessage(message: String) {
     Text(
@@ -646,6 +656,7 @@ private fun AdminJugadoresMessage(message: String) {
     )
 }
 
+// Encapsula la operacion admin jugador user selector dialog usada por la pantalla o el estado.
 @Composable
 private fun AdminJugadorUserSelectorDialog(
     usuarios: List<AdminUsuarioResponse>,
@@ -734,6 +745,7 @@ private fun AdminJugadorUserSelectorDialog(
     )
 }
 
+// Encapsula la operacion admin jugador user row usada por la pantalla o el estado.
 @Composable
 private fun AdminJugadorUserRow(
     usuario: AdminUsuarioResponse,
@@ -772,6 +784,7 @@ private fun AdminJugadorUserRow(
     HorizontalDivider(color = secondaryColor.copy(alpha = 0.4f))
 }
 
+// Encapsula la operacion admin jugador user avatar usada por la pantalla o el estado.
 @Composable
 private fun AdminJugadorUserAvatar(usuario: AdminUsuarioResponse) {
     Box(
@@ -799,6 +812,7 @@ private fun AdminJugadorUserAvatar(usuario: AdminUsuarioResponse) {
     }
 }
 
+// Encapsula la operacion admin jugador create confirm dialog usada por la pantalla o el estado.
 @Composable
 private fun AdminJugadorCreateConfirmDialog(
     usuario: AdminUsuarioResponse,
@@ -850,6 +864,7 @@ private fun AdminJugadorCreateConfirmDialog(
     )
 }
 
+// Encapsula la operacion admin jugador user text field colors usada por la pantalla o el estado.
 @Composable
 private fun adminJugadorUserTextFieldColors() = OutlinedTextFieldDefaults.colors(
     focusedTextColor = textColor,
@@ -863,6 +878,7 @@ private fun adminJugadorUserTextFieldColors() = OutlinedTextFieldDefaults.colors
     unfocusedPlaceholderColor = textColor.copy(alpha = 0.55f)
 )
 
+// Encapsula la operacion string usada por la pantalla o el estado.
 private fun String.normalizedForSearch(): String {
     return Normalizer
         .normalize(this, Normalizer.Form.NFD)
@@ -871,12 +887,14 @@ private fun String.normalizedForSearch(): String {
         .trim()
 }
 
+// Encapsula la operacion format altura usada por la pantalla o el estado.
 private fun formatAltura(altura: Double?): String {
     return altura?.let {
         String.format(Locale("es", "ES"), "%.2f m", it)
     } ?: "- m"
 }
 
+// Encapsula la operacion format peso usada por la pantalla o el estado.
 private fun formatPeso(peso: Double?): String {
     return peso?.let {
         if (it % 1.0 == 0.0) {
@@ -887,6 +905,7 @@ private fun formatPeso(peso: Double?): String {
     } ?: "- kg"
 }
 
+// Encapsula la operacion jugador response usada por la pantalla o el estado.
 private fun JugadorResponse.trainingSummary(): String {
     val entrenador = assignedEntrenadorNames().firstOrNull()
     val ubicacion = assignedUbicacionNames().firstOrNull()
@@ -897,6 +916,7 @@ private fun JugadorResponse.trainingSummary(): String {
     ).joinToString(" - ")
 }
 
+// Encapsula la operacion jugador response usada por la pantalla o el estado.
 private fun JugadorResponse.assignedEntrenadorNames(): List<String> {
     return (entrenadores.map { it.nombre } + listOfNotNull(nombreEntrenador))
         .map { it.trim() }
@@ -904,6 +924,7 @@ private fun JugadorResponse.assignedEntrenadorNames(): List<String> {
         .distinctBy { it.normalizedForSearch() }
 }
 
+// Encapsula la operacion jugador response usada por la pantalla o el estado.
 private fun JugadorResponse.assignedUbicacionNames(): List<String> {
     return (ubicaciones.map { it.nombre } + listOfNotNull(ubicacion))
         .map { it.trim() }
@@ -911,16 +932,19 @@ private fun JugadorResponse.assignedUbicacionNames(): List<String> {
         .distinctBy { it.normalizedForSearch() }
 }
 
+// Encapsula la operacion jugador response usada por la pantalla o el estado.
 private fun JugadorResponse.matchesEntrenador(selectedEntrenador: String): Boolean {
     val selected = selectedEntrenador.normalizedForSearch()
     return assignedEntrenadorNames().any { it.normalizedForSearch() == selected }
 }
 
+// Encapsula la operacion jugador response usada por la pantalla o el estado.
 private fun JugadorResponse.matchesUbicacion(selectedUbicacion: String): Boolean {
     val selected = selectedUbicacion.normalizedForSearch()
     return assignedUbicacionNames().any { it.normalizedForSearch() == selected }
 }
 
+// Encapsula la operacion admin usuario response usada por la pantalla o el estado.
 private fun AdminUsuarioResponse.displayNameForPlayer(): String {
     return listOfNotNull(
         nombre?.trim()?.takeIf { it.isNotBlank() },
@@ -930,6 +954,7 @@ private fun AdminUsuarioResponse.displayNameForPlayer(): String {
     }
 }
 
+// Encapsula la operacion admin usuario response usada por la pantalla o el estado.
 private fun AdminUsuarioResponse.matchesPlayerUserSearch(query: String): Boolean {
     return listOf(
         correo,
@@ -938,6 +963,7 @@ private fun AdminUsuarioResponse.matchesPlayerUserSearch(query: String): Boolean
     ).any { it.normalizedForSearch().contains(query) }
 }
 
+// Encapsula la operacion admin usuario response usada por la pantalla o el estado.
 private fun AdminUsuarioResponse.toJugadorCreateRequest(): JugadorCreateRequest {
     return JugadorCreateRequest(
         idUsuario = idUsuario,

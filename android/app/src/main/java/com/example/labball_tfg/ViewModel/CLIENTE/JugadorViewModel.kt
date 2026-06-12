@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+// Mantiene el estado y las operaciones de jugador view model para la interfaz.
 class JugadorViewModel : ViewModel() {
 
     private val _jugador = MutableStateFlow<JugadorResponse?>(null)
@@ -20,6 +21,7 @@ class JugadorViewModel : ViewModel() {
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
+    // Carga cargar jugador me desde la API y actualiza el estado asociado.
     fun cargarJugadorMe(token: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -45,10 +47,12 @@ class JugadorViewModel : ViewModel() {
         }
     }
 
+    // Limpia limpiar jugador para reiniciar el estado temporal.
     fun limpiarJugador() {
         _jugador.value = null
     }
 
+    // Limpia limpiar error para reiniciar el estado temporal.
     fun limpiarError() {
         _errorMessage.value = null
     }

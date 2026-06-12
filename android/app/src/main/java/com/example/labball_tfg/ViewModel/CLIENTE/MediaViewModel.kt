@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+// Mantiene el estado y las operaciones de media view model para la interfaz.
 class MediaViewModel : ViewModel() {
 
     private val _videos = MutableStateFlow<List<VideoListItemResponse>>(emptyList())
@@ -25,6 +26,7 @@ class MediaViewModel : ViewModel() {
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
+    // Carga cargar videos desde la API y actualiza el estado asociado.
     fun cargarVideos(token: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -48,6 +50,7 @@ class MediaViewModel : ViewModel() {
         }
     }
 
+    // Carga cargar video por id desde la API y actualiza el estado asociado.
     fun cargarVideoPorId(
         token: String,
         idMedia: Int
@@ -77,10 +80,12 @@ class MediaViewModel : ViewModel() {
         }
     }
 
+    // Limpia limpiar video seleccionado para reiniciar el estado temporal.
     fun limpiarVideoSeleccionado() {
         _videoSeleccionado.value = null
     }
 
+    // Limpia limpiar error para reiniciar el estado temporal.
     fun limpiarError() {
         _errorMessage.value = null
     }

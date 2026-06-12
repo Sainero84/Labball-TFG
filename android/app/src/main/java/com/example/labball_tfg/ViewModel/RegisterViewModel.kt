@@ -9,10 +9,12 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Locale
 
+// Mantiene el estado y las operaciones de register view model para la interfaz.
 class RegisterViewModel : ViewModel() {
 
     private val firebaseAuthManager = FirebaseAuthManager()
 
+    // Crea register user mediante la API y comunica el resultado.
     fun registerUser(
         email: String,
         password: String,
@@ -91,6 +93,7 @@ class RegisterViewModel : ViewModel() {
         )
     }
 
+    // Encapsula la operacion normalizar fecha nacimiento usada por la pantalla o el estado.
     private fun normalizarFechaNacimiento(fecha: String): String? {
         val limpia = fecha.trim()
 
@@ -116,6 +119,7 @@ class RegisterViewModel : ViewModel() {
         return String.format(Locale.ROOT, "%04d-%02d-%02d", anio, mes, dia)
     }
 
+    // Encapsula la operacion tiene al menos16 usada por la pantalla o el estado.
     private fun tieneAlMenos16(fechaNormalizada: String): Boolean {
         val partes = fechaNormalizada.split("-")
         val nacimiento = Calendar.getInstance().apply {

@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+// Mantiene el estado y las operaciones de admin reservas view model para la interfaz.
 class AdminReservasViewModel : ViewModel() {
 
     private val _reservas = MutableStateFlow<List<ReservaAdminListItemResponse>>(emptyList())
@@ -42,6 +43,7 @@ class AdminReservasViewModel : ViewModel() {
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
+    // Carga cargar catalogos desde la API y actualiza el estado asociado.
     fun cargarCatalogos(token: String) {
         viewModelScope.launch {
             try {
@@ -76,6 +78,7 @@ class AdminReservasViewModel : ViewModel() {
         }
     }
 
+    // Carga cargar reservas desde la API y actualiza el estado asociado.
     fun cargarReservas(token: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -99,6 +102,7 @@ class AdminReservasViewModel : ViewModel() {
         }
     }
 
+    // Carga cargar reserva por id desde la API y actualiza el estado asociado.
     fun cargarReservaPorId(
         token: String,
         idReserva: Int
@@ -128,6 +132,7 @@ class AdminReservasViewModel : ViewModel() {
         }
     }
 
+    // Actualiza actualizar pagado y refleja la respuesta en la pantalla.
     fun actualizarPagado(
         token: String,
         idReserva: Int,
@@ -160,6 +165,7 @@ class AdminReservasViewModel : ViewModel() {
         }
     }
 
+    // Encapsula la operacion asignar entrenamientos usada por la pantalla o el estado.
     fun asignarEntrenamientos(
         token: String,
         idReserva: Int,
@@ -203,6 +209,7 @@ class AdminReservasViewModel : ViewModel() {
         }
     }
 
+    // Carga cargar entrenamientos reserva desde la API y actualiza el estado asociado.
     fun cargarEntrenamientosReserva(
         token: String,
         idReserva: Int,
@@ -235,6 +242,7 @@ class AdminReservasViewModel : ViewModel() {
         }
     }
 
+    // Encapsula la operacion editar entrenamientos usada por la pantalla o el estado.
     fun editarEntrenamientos(
         token: String,
         idReserva: Int,
@@ -279,14 +287,17 @@ class AdminReservasViewModel : ViewModel() {
         }
     }
 
+    // Limpia limpiar reserva seleccionada para reiniciar el estado temporal.
     fun limpiarReservaSeleccionada() {
         _reservaSeleccionada.value = null
     }
 
+    // Limpia limpiar entrenamientos reserva para reiniciar el estado temporal.
     fun limpiarEntrenamientosReserva() {
         _entrenamientosReserva.value = emptyList()
     }
 
+    // Limpia limpiar error para reiniciar el estado temporal.
     fun limpiarError() {
         _errorMessage.value = null
     }

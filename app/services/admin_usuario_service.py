@@ -22,6 +22,7 @@ from app.schemas.usuario_schema import (
 
 
 def to_admin_usuario_response(user) -> AdminUsuarioResponseSchema:
+    """Aplica la logica de negocio necesaria para to admin usuario response."""
     jugador = getattr(user, "jugador", None)
 
     return AdminUsuarioResponseSchema(
@@ -38,6 +39,7 @@ def to_admin_usuario_response(user) -> AdminUsuarioResponseSchema:
 
 
 def get_admin_usuarios(db: Session) -> AdminUsuarioListResponseSchema:
+    """Aplica la logica de negocio necesaria para get admin usuarios."""
     usuarios = usuario_repository.get_all(db)
 
     return AdminUsuarioListResponseSchema(
@@ -46,6 +48,7 @@ def get_admin_usuarios(db: Session) -> AdminUsuarioListResponseSchema:
 
 
 def get_firebase_web_api_key() -> str:
+    """Aplica la logica de negocio necesaria para get firebase web api key."""
     api_key = os.getenv("FIREBASE_WEB_API_KEY")
 
     if not api_key:
@@ -58,6 +61,7 @@ def get_firebase_web_api_key() -> str:
 
 
 def send_password_reset_email(correo: str, api_key: str):
+    """Aplica la logica de negocio necesaria para send password reset email."""
     endpoint = (
         "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?"
         + urlencode({"key": api_key})
@@ -100,6 +104,7 @@ def send_password_reset_email(correo: str, api_key: str):
 
 
 def delete_firebase_user_if_exists(firebase_uid: str):
+    """Aplica la logica de negocio necesaria para delete firebase user if exists."""
     try:
         auth.delete_user(firebase_uid)
     except auth.UserNotFoundError:
@@ -111,6 +116,7 @@ def create_admin_usuario(
     usuario_data: AdminUsuarioCreateSchema,
     current_admin
 ) -> AdminUsuarioMessageResponseSchema:
+    """Aplica la logica de negocio necesaria para create admin usuario."""
     correo = usuario_data.correo.strip().lower()
     codigo_administrador = None
     es_super_admin = usuario_data.es_super_admin
@@ -241,6 +247,7 @@ def update_admin_usuario_rol(
     rol_data: AdminUsuarioRolUpdateSchema,
     current_admin
 ) -> AdminUsuarioMessageResponseSchema:
+    """Aplica la logica de negocio necesaria para update admin usuario rol."""
     usuario = usuario_repository.get_by_id(db, usuario_id)
 
     if usuario is None:
@@ -364,6 +371,7 @@ def update_admin_usuario_rol(
 
 
 def delete_admin_usuario(db: Session, usuario_id: int, current_admin) -> dict[str, str]:
+    """Aplica la logica de negocio necesaria para delete admin usuario."""
     usuario = usuario_repository.get_by_id(db, usuario_id)
 
     if usuario is None:

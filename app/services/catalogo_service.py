@@ -30,10 +30,12 @@ from app.schemas.descuento_schema import (
 
 
 def normalize_nombre(nombre: str) -> str:
+    """Aplica la logica de negocio necesaria para normalize nombre."""
     return " ".join(nombre.strip().split())
 
 
 def to_entrenador_response(entrenador) -> EntrenadorResponseSchema:
+    """Aplica la logica de negocio necesaria para to entrenador response."""
     return EntrenadorResponseSchema(
         id_entrenador=entrenador.id_entrenador,
         nombre=entrenador.nombre,
@@ -42,6 +44,7 @@ def to_entrenador_response(entrenador) -> EntrenadorResponseSchema:
 
 
 def entrenador_nombre_from_usuario(usuario) -> str:
+    """Aplica la logica de negocio necesaria para entrenador nombre from usuario."""
     jugador = getattr(usuario, "jugador", None)
 
     if jugador is not None:
@@ -58,6 +61,7 @@ def entrenador_nombre_from_usuario(usuario) -> str:
 
 
 def sync_entrenador_for_usuario(db: Session, usuario, activo: bool = True):
+    """Aplica la logica de negocio necesaria para sync entrenador for usuario."""
     nombre = normalize_nombre(entrenador_nombre_from_usuario(usuario))
     entrenador = entrenador_repository.get_by_usuario_id(db, usuario.id_usuario)
 
@@ -93,6 +97,7 @@ def sync_entrenador_for_usuario(db: Session, usuario, activo: bool = True):
 
 
 def set_entrenador_usuario_activo(db: Session, usuario_id: int, activo: bool):
+    """Aplica la logica de negocio necesaria para set entrenador usuario activo."""
     entrenador = entrenador_repository.get_by_usuario_id(db, usuario_id)
 
     if entrenador is not None:
@@ -102,6 +107,7 @@ def set_entrenador_usuario_activo(db: Session, usuario_id: int, activo: bool):
 
 
 def to_ubicacion_response(ubicacion) -> UbicacionResponseSchema:
+    """Aplica la logica de negocio necesaria para to ubicacion response."""
     return UbicacionResponseSchema(
         id_ubicacion=ubicacion.id_ubicacion,
         nombre=ubicacion.nombre,
@@ -110,6 +116,7 @@ def to_ubicacion_response(ubicacion) -> UbicacionResponseSchema:
 
 
 def to_descuento_response(descuento) -> DescuentoResponseSchema:
+    """Aplica la logica de negocio necesaria para to descuento response."""
     return DescuentoResponseSchema(
         id_descuento=descuento.id_descuento,
         codigo=descuento.codigo,
@@ -118,6 +125,7 @@ def to_descuento_response(descuento) -> DescuentoResponseSchema:
 
 
 def get_all_entrenadores(db: Session) -> EntrenadorListResponseSchema:
+    """Aplica la logica de negocio necesaria para get all entrenadores."""
     entrenadores = [
         to_entrenador_response(entrenador)
         for entrenador in entrenador_repository.get_all(db)
@@ -127,6 +135,7 @@ def get_all_entrenadores(db: Session) -> EntrenadorListResponseSchema:
 
 
 def get_all_ubicaciones(db: Session) -> UbicacionListResponseSchema:
+    """Aplica la logica de negocio necesaria para get all ubicaciones."""
     ubicaciones = ubicacion_repository.get_all(db)
 
     return UbicacionListResponseSchema(
@@ -141,6 +150,7 @@ def create_ubicacion(
     db: Session,
     ubicacion_data: UbicacionCreateSchema
 ) -> UbicacionMessageResponseSchema:
+    """Aplica la logica de negocio necesaria para create ubicacion."""
     nombre = normalize_nombre(ubicacion_data.nombre)
 
     if ubicacion_repository.get_by_nombre(db, nombre) is not None:
@@ -164,6 +174,7 @@ def delete_ubicacion(
     db: Session,
     ubicacion_id: int
 ) -> UbicacionDeleteResponseSchema:
+    """Aplica la logica de negocio necesaria para delete ubicacion."""
     try:
         ubicacion = ubicacion_repository.delete(db, ubicacion_id)
     except IntegrityError as exception:
@@ -180,6 +191,7 @@ def delete_ubicacion(
 
 
 def get_all_admin_descuentos(db: Session) -> DescuentoListResponseSchema:
+    """Aplica la logica de negocio necesaria para get all admin descuentos."""
     descuentos = descuento_repository.get_all(db)
 
     return DescuentoListResponseSchema(
@@ -191,6 +203,7 @@ def get_all_admin_descuentos(db: Session) -> DescuentoListResponseSchema:
 
 
 def generate_discount_code(db: Session) -> str:
+    """Aplica la logica de negocio necesaria para generate discount code."""
     alphabet = string.ascii_uppercase + string.digits
 
     for _ in range(20):
@@ -206,6 +219,7 @@ def create_admin_descuento(
     db: Session,
     descuento_data: DescuentoAdminCreateSchema
 ) -> DescuentoMessageResponseSchema:
+    """Aplica la logica de negocio necesaria para create admin descuento."""
     codigo = (
         descuento_data.codigo.strip().upper()
         if descuento_data.codigo and descuento_data.codigo.strip()
@@ -234,6 +248,7 @@ def update_admin_descuento(
     descuento_id: int,
     descuento_data: DescuentoUpdateSchema
 ) -> DescuentoMessageResponseSchema:
+    """Aplica la logica de negocio necesaria para update admin descuento."""
     descuento = descuento_repository.get_by_id(db, descuento_id)
 
     if descuento is None:
@@ -282,6 +297,7 @@ def delete_admin_descuento(
     db: Session,
     descuento_id: int
 ) -> DescuentoDeleteResponseSchema:
+    """Aplica la logica de negocio necesaria para delete admin descuento."""
     try:
         descuento = descuento_repository.delete(db, descuento_id)
     except IntegrityError as exception:

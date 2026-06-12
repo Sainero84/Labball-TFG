@@ -19,6 +19,7 @@ CODE_ALPHABET = string.ascii_uppercase + string.digits
 
 
 def to_codigo_response(codigo_administrador) -> CodigoAdministradorResponseSchema:
+    """Aplica la logica de negocio necesaria para to codigo response."""
     return CodigoAdministradorResponseSchema(
         id_codigo_administrador=codigo_administrador.id_codigo_administrador,
         codigo=codigo_administrador.codigo
@@ -26,10 +27,12 @@ def to_codigo_response(codigo_administrador) -> CodigoAdministradorResponseSchem
 
 
 def generate_raw_code() -> str:
+    """Aplica la logica de negocio necesaria para generate raw code."""
     return "".join(secrets.choice(CODE_ALPHABET) for _ in range(CODE_LENGTH))
 
 
 def is_codigo_valid(db: Session, codigo: str) -> bool:
+    """Aplica la logica de negocio necesaria para is codigo valid."""
     codigo_administrador = codigo_administrador_repository.get_by_codigo(
         db,
         codigo.strip().upper()
@@ -47,6 +50,7 @@ def is_codigo_valid(db: Session, codigo: str) -> bool:
 
 
 def ensure_codigo_valid(db: Session, codigo: str):
+    """Aplica la logica de negocio necesaria para ensure codigo valid."""
     normalized_code = codigo.strip().upper()
     codigo_administrador = codigo_administrador_repository.get_by_codigo(
         db,
@@ -68,6 +72,7 @@ def ensure_codigo_valid(db: Session, codigo: str):
 
 
 def get_all_codigos(db: Session) -> CodigoAdministradorListResponseSchema:
+    """Aplica la logica de negocio necesaria para get all codigos."""
     codigos = codigo_administrador_repository.get_all(db)
 
     return CodigoAdministradorListResponseSchema(
@@ -79,6 +84,7 @@ def generate_codigos(
     db: Session,
     generate_data: CodigoAdministradorGenerateSchema
 ) -> CodigoAdministradorGenerateResponseSchema:
+    """Aplica la logica de negocio necesaria para generate codigos."""
     codigos = []
 
     for _ in range(generate_data.cantidad):
@@ -99,6 +105,7 @@ def validate_codigo(
     db: Session,
     codigo_data
 ) -> CodigoAdministradorValidateResponseSchema:
+    """Aplica la logica de negocio necesaria para validate codigo."""
     codigo = codigo_data.codigo.strip().upper()
     valido = is_codigo_valid(db, codigo)
 

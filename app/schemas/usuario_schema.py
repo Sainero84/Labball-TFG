@@ -4,6 +4,7 @@ from typing import Optional
 
 
 class UsuarioCreateSchema(BaseModel):
+    """Define el esquema de datos usuario create schema para validar entradas y respuestas."""
     correo: str = Field(..., min_length=1, max_length=150)
     firebase_uid: str = Field(..., min_length=1, max_length=128)
     es_admin: bool = False
@@ -20,6 +21,7 @@ class UsuarioCreateSchema(BaseModel):
     @field_validator("fecha_nacimiento", mode="before")
     @classmethod
     def empty_fecha_nacimiento_to_none(cls, value):
+        """Coordina la operacion empty fecha nacimiento to none del modulo."""
         if value == "":
             return None
 
@@ -27,6 +29,7 @@ class UsuarioCreateSchema(BaseModel):
 
 
 class UsuarioUpdateSchema(BaseModel):
+    """Define el esquema de datos usuario update schema para validar entradas y respuestas."""
     correo: Optional[str] = Field(default=None, min_length=1, max_length=150)
     es_admin: Optional[bool] = None
     es_super_admin: Optional[bool] = None
@@ -42,6 +45,7 @@ class UsuarioUpdateSchema(BaseModel):
     @field_validator("fecha_nacimiento", mode="before")
     @classmethod
     def empty_fecha_nacimiento_to_none(cls, value):
+        """Coordina la operacion empty fecha nacimiento to none del modulo."""
         if value == "":
             return None
 
@@ -49,6 +53,7 @@ class UsuarioUpdateSchema(BaseModel):
 
 
 class UsuarioMeResponseSchema(BaseModel):
+    """Define el esquema de datos usuario me response schema para validar entradas y respuestas."""
     id_usuario: int
     correo: str
     es_admin: bool
@@ -62,10 +67,12 @@ class UsuarioMeResponseSchema(BaseModel):
 
 
 class UsuarioTelefonoUpdateSchema(BaseModel):
+    """Define el esquema de datos usuario telefono update schema para validar entradas y respuestas."""
     telefono: Optional[str] = Field(default=None, max_length=20)
 
 
 class UsuarioPerfilUpdateSchema(BaseModel):
+    """Define el esquema de datos usuario perfil update schema para validar entradas y respuestas."""
     nombre: Optional[str] = Field(default=None, max_length=100)
     apellido_1: Optional[str] = Field(default=None, max_length=150)
     fecha_nacimiento: Optional[date] = None
@@ -74,6 +81,7 @@ class UsuarioPerfilUpdateSchema(BaseModel):
     @field_validator("fecha_nacimiento", mode="before")
     @classmethod
     def empty_fecha_nacimiento_to_none(cls, value):
+        """Coordina la operacion empty fecha nacimiento to none del modulo."""
         if value == "":
             return None
 
@@ -81,11 +89,13 @@ class UsuarioPerfilUpdateSchema(BaseModel):
 
 
 class UsuarioFotoPerfilUpdateSchema(BaseModel):
+    """Define el esquema de datos usuario foto perfil update schema para validar entradas y respuestas."""
     foto_perfil_url: str = Field(..., min_length=1, max_length=500)
     foto_perfil_mime_type: Optional[str] = Field(default=None, max_length=100)
 
 
 class UsuarioResponseSchema(BaseModel):
+    """Define el esquema de datos usuario response schema para validar entradas y respuestas."""
     id_usuario: int
     firebase_uid: str
     correo: str
@@ -103,15 +113,18 @@ class UsuarioResponseSchema(BaseModel):
 
 
 class UsuarioListResponseSchema(BaseModel):
+    """Define el esquema de datos usuario list response schema para validar entradas y respuestas."""
     usuarios: list[UsuarioResponseSchema]
 
 
 class UsuarioMessageResponseSchema(BaseModel):
+    """Define el esquema de datos usuario message response schema para validar entradas y respuestas."""
     message: str
     usuario: UsuarioResponseSchema
 
 
 class AdminUsuarioCreateSchema(BaseModel):
+    """Define el esquema de datos admin usuario create schema para validar entradas y respuestas."""
     correo: str = Field(..., min_length=1, max_length=150)
     es_admin: bool = False
     es_super_admin: bool = False
@@ -120,6 +133,7 @@ class AdminUsuarioCreateSchema(BaseModel):
 
 
 class AdminUsuarioRolUpdateSchema(BaseModel):
+    """Define el esquema de datos admin usuario rol update schema para validar entradas y respuestas."""
     es_admin: Optional[bool] = None
     es_super_admin: Optional[bool] = None
     es_entrenador: Optional[bool] = None
@@ -127,6 +141,7 @@ class AdminUsuarioRolUpdateSchema(BaseModel):
 
 
 class AdminUsuarioResponseSchema(BaseModel):
+    """Define el esquema de datos admin usuario response schema para validar entradas y respuestas."""
     id_usuario: int
     correo: str
     es_admin: bool
@@ -139,13 +154,16 @@ class AdminUsuarioResponseSchema(BaseModel):
 
 
 class AdminUsuarioListResponseSchema(BaseModel):
+    """Define el esquema de datos admin usuario list response schema para validar entradas y respuestas."""
     usuarios: list[AdminUsuarioResponseSchema]
 
 
 class AdminUsuarioMessageResponseSchema(BaseModel):
+    """Define el esquema de datos admin usuario message response schema para validar entradas y respuestas."""
     message: str
     usuario: AdminUsuarioResponseSchema
 
 
 class AdminUsuarioDeleteResponseSchema(BaseModel):
+    """Define el esquema de datos admin usuario delete response schema para validar entradas y respuestas."""
     message: str

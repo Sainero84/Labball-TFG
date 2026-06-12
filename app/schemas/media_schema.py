@@ -7,6 +7,7 @@ from typing import Optional
 # --------------------------------------------------
 
 class MediaCreateSchema(BaseModel):
+    """Define el esquema de datos media create schema para validar entradas y respuestas."""
     id_usuario: int
     titulo: str = Field(..., min_length=1, max_length=150)
     descripcion: Optional[str] = None
@@ -20,6 +21,7 @@ class MediaCreateSchema(BaseModel):
 # --------------------------------------------------
 
 class MediaUpdateSchema(BaseModel):
+    """Define el esquema de datos media update schema para validar entradas y respuestas."""
     id_usuario: Optional[int] = None
     titulo: Optional[str] = Field(default=None, min_length=1, max_length=150)
     descripcion: Optional[str] = None
@@ -33,6 +35,7 @@ class MediaUpdateSchema(BaseModel):
 # --------------------------------------------------
 
 class MediaResponseSchema(BaseModel):
+    """Define el esquema de datos media response schema para validar entradas y respuestas."""
     id_media: int
     id_usuario: int
     titulo: str
@@ -47,6 +50,7 @@ class MediaResponseSchema(BaseModel):
 # --------------------------------------------------
 
 class MediaListResponseSchema(BaseModel):
+    """Define el esquema de datos media list response schema para validar entradas y respuestas."""
     media: list[MediaResponseSchema]
 
 
@@ -55,11 +59,13 @@ class MediaListResponseSchema(BaseModel):
 # --------------------------------------------------
 
 class MediaMessageResponseSchema(BaseModel):
+    """Define el esquema de datos media message response schema para validar entradas y respuestas."""
     message: str
     media: MediaResponseSchema
 
 
 class VideoListItemSchema(BaseModel):
+    """Define el esquema de datos video list item schema para validar entradas y respuestas."""
     id_media: int
     titulo: str
     descripcion: Optional[str] = None
@@ -67,10 +73,12 @@ class VideoListItemSchema(BaseModel):
 
 
 class VideoListResponseSchema(BaseModel):
+    """Define el esquema de datos video list response schema para validar entradas y respuestas."""
     videos: list[VideoListItemSchema]
 
 
 class VideoDetailResponseSchema(BaseModel):
+    """Define el esquema de datos video detail response schema para validar entradas y respuestas."""
     id_media: int
     titulo: str
     descripcion: Optional[str] = None

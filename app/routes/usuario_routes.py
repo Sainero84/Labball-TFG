@@ -8,28 +8,13 @@ from sqlalchemy.orm import Session
 
 from app.database.connection import get_db
 from app.schemas.usuario_schema import (
-    UsuarioCreateSchema,
-    UsuarioUpdateSchema,
     UsuarioFotoPerfilUpdateSchema,
     UsuarioMeResponseSchema,
-    UsuarioResponseSchema,
-    UsuarioListResponseSchema,
-    UsuarioMessageResponseSchema,
     UsuarioPerfilUpdateSchema,
     UsuarioTelefonoUpdateSchema
 )
-from app.services.usuario_service import (
-    get_all_usuarios,
-    get_usuario_by_id,
-    create_usuario,
-    update_usuario,
-    delete_usuario
-)
-from app.firebase.firebase_dependencies import (
-    get_current_admin_user,
-    get_current_super_admin_user,
-    get_current_user
-)
+from app.services.usuario_service import update_usuario
+from app.firebase.firebase_dependencies import get_current_user
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 
@@ -40,6 +25,7 @@ MAX_PROFILE_IMAGE_SIZE = 5 * 1024 * 1024
 
 
 def normalize_static_url(url: str | None) -> str | None:
+    """Expone la ruta encargada de normalize static url y delega la logica principal."""
     if url is None:
         return None
 
@@ -55,6 +41,7 @@ def normalize_static_url(url: str | None) -> str | None:
 
 
 def get_public_base_url(request: Request) -> str:
+    """Expone la ruta encargada de get public base url y delega la logica principal."""
     return (
         os.getenv("PUBLIC_BASE_URL")
         or str(request.base_url).rstrip("/")
@@ -62,6 +49,7 @@ def get_public_base_url(request: Request) -> str:
 
 
 def to_usuario_me_response(user) -> UsuarioMeResponseSchema:
+    """Expone la ruta encargada de to usuario me response y delega la logica principal."""
     return UsuarioMeResponseSchema(
         id_usuario=user.id_usuario,
         correo=user.correo,
@@ -78,6 +66,7 @@ def to_usuario_me_response(user) -> UsuarioMeResponseSchema:
 
 @router.get("/me", response_model=UsuarioMeResponseSchema)
 def get_usuario_me(current_user=Depends(get_current_user)):
+    """Expone la ruta encargada de get usuario me y delega la logica principal."""
     return to_usuario_me_response(current_user)
 
 
@@ -87,6 +76,7 @@ def update_usuario_me_telefono(
     current_user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de update usuario me telefono y delega la logica principal."""
     updated_user = update_usuario(db, current_user.id_usuario, user_data)
 
     return to_usuario_me_response(updated_user.usuario)
@@ -98,6 +88,7 @@ def update_usuario_me_perfil(
     current_user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de update usuario me perfil y delega la logica principal."""
     updated_user = update_usuario(db, current_user.id_usuario, user_data)
 
     return to_usuario_me_response(updated_user.usuario)
@@ -109,6 +100,7 @@ def update_usuario_me_foto_perfil(
     current_user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de update usuario me foto perfil y delega la logica principal."""
     updated_user = update_usuario(db, current_user.id_usuario, user_data)
 
     return to_usuario_me_response(updated_user.usuario)
@@ -120,6 +112,7 @@ async def upload_usuario_me_foto_perfil(
     current_user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de upload usuario me foto perfil y delega la logica principal."""
     content_type = request.headers.get("content-type")
 
     if content_type is None or not content_type.startswith("image/"):
@@ -156,47 +149,3 @@ async def upload_usuario_me_foto_perfil(
 
     return to_usuario_me_response(updated_user.usuario)
 
-
-@router.get("/", response_model=UsuarioListResponseSchema)
-def get_usuarios(
-    admin=Depends(get_current_admin_user),
-    db: Session = Depends(get_db)
-):
-    return get_all_usuarios(db)
-
-
-@router.get("/{user_id}", response_model=UsuarioResponseSchema)
-def get_usuario(
-    user_id: int,
-    admin=Depends(get_current_admin_user),
-    db: Session = Depends(get_db)
-):
-    return get_usuario_by_id(db, user_id)
-
-
-@router.post("/", response_model=UsuarioMessageResponseSchema)
-def create_new_usuario(
-    user_data: UsuarioCreateSchema,
-    admin=Depends(get_current_super_admin_user),
-    db: Session = Depends(get_db)
-):
-    return create_usuario(db, user_data)
-
-
-@router.put("/{user_id}", response_model=UsuarioMessageResponseSchema)
-def update_existing_usuario(
-    user_id: int,
-    user_data: UsuarioUpdateSchema,
-    admin=Depends(get_current_super_admin_user),
-    db: Session = Depends(get_db)
-):
-    return update_usuario(db, user_id, user_data)
-
-
-@router.delete("/{user_id}", response_model=UsuarioMessageResponseSchema)
-def delete_existing_usuario(
-    user_id: int,
-    admin=Depends(get_current_super_admin_user),
-    db: Session = Depends(get_db)
-):
-    return delete_usuario(db, user_id)

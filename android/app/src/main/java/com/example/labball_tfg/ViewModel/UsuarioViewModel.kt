@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 
+// Mantiene el estado y las operaciones de usuario view model para la interfaz.
 class UsuarioViewModel : ViewModel() {
 
     private val _usuario = MutableStateFlow<UsuarioMeResponse?>(null)
@@ -25,6 +26,7 @@ class UsuarioViewModel : ViewModel() {
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
+    // Carga cargar usuario me desde la API y actualiza el estado asociado.
     fun cargarUsuarioMe(token: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -48,6 +50,7 @@ class UsuarioViewModel : ViewModel() {
         }
     }
 
+    // Actualiza actualizar telefono y refleja la respuesta en la pantalla.
     fun actualizarTelefono(
         token: String,
         telefono: String?
@@ -77,6 +80,7 @@ class UsuarioViewModel : ViewModel() {
         }
     }
 
+    // Actualiza actualizar perfil y refleja la respuesta en la pantalla.
     fun actualizarPerfil(
         token: String,
         nombre: String,
@@ -114,6 +118,7 @@ class UsuarioViewModel : ViewModel() {
         }
     }
 
+    // Actualiza actualizar foto perfil y refleja la respuesta en la pantalla.
     fun actualizarFotoPerfil(
         token: String,
         fotoPerfilUrl: String,
@@ -147,6 +152,7 @@ class UsuarioViewModel : ViewModel() {
         }
     }
 
+    // Encapsula la operacion subir foto perfil usada por la pantalla o el estado.
     fun subirFotoPerfil(
         token: String,
         bytes: ByteArray,
@@ -182,6 +188,7 @@ class UsuarioViewModel : ViewModel() {
         }
     }
 
+    // Limpia limpiar error para reiniciar el estado temporal.
     fun limpiarError() {
         _errorMessage.value = null
     }

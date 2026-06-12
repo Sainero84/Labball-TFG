@@ -7,6 +7,7 @@ from app.entities.descuento_entity import DescuentoEntity
 # --------------------------------------------------
 
 def get_all(db: Session):
+    """Realiza la operacion get all contra la base de datos."""
     return db.query(DescuentoEntity).all()
 
 
@@ -15,6 +16,7 @@ def get_all(db: Session):
 # --------------------------------------------------
 
 def get_by_id(db: Session, descuento_id: int):
+    """Realiza la operacion get by id contra la base de datos."""
     return db.query(DescuentoEntity).filter(
         DescuentoEntity.id_descuento == descuento_id
     ).first()
@@ -25,6 +27,7 @@ def get_by_id(db: Session, descuento_id: int):
 # --------------------------------------------------
 
 def get_by_codigo(db: Session, codigo: str):
+    """Realiza la operacion get by codigo contra la base de datos."""
     return db.query(DescuentoEntity).filter(
         DescuentoEntity.codigo == codigo
     ).first()
@@ -35,6 +38,7 @@ def get_by_codigo(db: Session, codigo: str):
 # --------------------------------------------------
 
 def create(db: Session, descuento_data: dict):
+    """Realiza la operacion create contra la base de datos."""
     new_descuento = DescuentoEntity(
         codigo=descuento_data["codigo"],
         porcentaje=descuento_data["porcentaje"]
@@ -52,6 +56,7 @@ def create(db: Session, descuento_data: dict):
 # --------------------------------------------------
 
 def update(db: Session, descuento_id: int, updated_fields: dict):
+    """Realiza la operacion update contra la base de datos."""
     descuento = get_by_id(db, descuento_id)
 
     if descuento is None:
@@ -71,6 +76,7 @@ def update(db: Session, descuento_id: int, updated_fields: dict):
 # --------------------------------------------------
 
 def delete(db: Session, descuento_id: int):
+    """Realiza la operacion delete contra la base de datos."""
     descuento = get_by_id(db, descuento_id)
 
     if descuento is None:

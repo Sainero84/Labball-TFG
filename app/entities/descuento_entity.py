@@ -5,6 +5,7 @@ from app.database.base import Base
 
 # Esta clase representa la tabla "descuentos"
 class DescuentoEntity(Base):
+    """Mapea la entidad ORM descuento entity con sus columnas y relaciones."""
     __tablename__ = "descuentos"
 
     id_descuento: Mapped[int] = mapped_column(

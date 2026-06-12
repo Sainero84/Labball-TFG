@@ -28,8 +28,6 @@ from app.routes.reserva_routes import router as reserva_router
 from app.routes.admin_routes import router as admin_router
 from app.routes.tarifa_routes import router as tarifa_router
 from app.firebase.firebase_admin_config import initialize_firebase
-from fastapi import Depends
-from app.firebase.firebase_dependencies import get_current_firebase_user
 from app.services.tarifa_service import seed_default_tarifas
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -41,6 +39,7 @@ app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 @app.on_event("startup")
 def on_startup():
+    """Coordina la operacion on startup del modulo."""
     initialize_firebase()
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
@@ -48,19 +47,6 @@ def on_startup():
         seed_default_tarifas(db)
     finally:
         db.close()
-
-
-@app.get("/")
-def root():
-    return {"message": "API funcionando correctamente"}
-
-
-@app.get("/me")
-def get_me(current_user: dict = Depends(get_current_firebase_user)):
-    return {
-        "message": "Token válido",
-        "firebase_user": current_user
-    }
 
 
 app.include_router(usuario_router)

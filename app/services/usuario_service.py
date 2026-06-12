@@ -23,6 +23,7 @@ from app.schemas.usuario_schema import (
 # --------------------------------------------------
 
 def to_usuario_response(user) -> UsuarioResponseSchema:
+    """Aplica la logica de negocio necesaria para to usuario response."""
     return UsuarioResponseSchema(
         id_usuario=user.id_usuario,
         firebase_uid=user.firebase_uid,
@@ -48,6 +49,7 @@ def to_usuario_response(user) -> UsuarioResponseSchema:
 # --------------------------------------------------
 
 def get_all_usuarios(db: Session) -> UsuarioListResponseSchema:
+    """Aplica la logica de negocio necesaria para get all usuarios."""
     usuarios = usuario_repository.get_all(db)
 
     return UsuarioListResponseSchema(
@@ -60,6 +62,7 @@ def get_all_usuarios(db: Session) -> UsuarioListResponseSchema:
 # --------------------------------------------------
 
 def get_usuario_by_id(db: Session, user_id: int) -> UsuarioResponseSchema:
+    """Aplica la logica de negocio necesaria para get usuario by id."""
     user = usuario_repository.get_by_id(db, user_id)
 
     if user is None:
@@ -72,6 +75,7 @@ def get_usuario_by_id(db: Session, user_id: int) -> UsuarioResponseSchema:
 # --------------------------------------------------
 
 def create_usuario(db: Session, user_data: UsuarioCreateSchema) -> UsuarioMessageResponseSchema:
+    """Aplica la logica de negocio necesaria para create usuario."""
     existing_uid = usuario_repository.get_by_firebase_uid(db, user_data.firebase_uid)
 
     if existing_uid is not None:
@@ -123,6 +127,7 @@ def update_usuario(
     user_id: int,
     user_data: UsuarioUpdateSchema
 ) -> UsuarioMessageResponseSchema:
+    """Aplica la logica de negocio necesaria para update usuario."""
     updated_fields = {}
 
     correo = getattr(user_data, "correo", None)
@@ -187,6 +192,7 @@ def update_usuario(
 # --------------------------------------------------
 
 def delete_usuario(db: Session, user_id: int) -> UsuarioMessageResponseSchema:
+    """Aplica la logica de negocio necesaria para delete usuario."""
     deleted_user = usuario_repository.delete(db, user_id)
 
     if deleted_user is None:

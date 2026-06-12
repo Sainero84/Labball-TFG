@@ -71,19 +71,23 @@ private const val FIELD_FECHA_VISIBLE = 4
 private const val FIELD_FECHA_API = 5
 private const val FIELD_HORA_INICIO = 6
 
+// Agrupa la pantalla admin catalog option y su estado visual principal.
 private data class AdminCatalogOption(
     val id: Int,
     val nombre: String
 )
 
+// Agrupa la pantalla admin date target y su estado visual principal.
 private data class AdminDateTarget(
     val sessionIndex: Int
 )
 
+// Agrupa la pantalla admin time target y su estado visual principal.
 private data class AdminTimeTarget(
     val sessionIndex: Int
 )
 
+// Renderiza la pantalla admin asignar entrenamiento screen y conecta sus acciones principales.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminAsignarEntrenamientoScreen(
@@ -315,6 +319,7 @@ fun AdminAsignarEntrenamientoScreen(
     }
 }
 
+// Encapsula la operacion admin asignar header usada por la pantalla o el estado.
 @Composable
 private fun AdminAsignarHeader(
     reserva: ReservaResponse,
@@ -373,6 +378,7 @@ private fun AdminAsignarHeader(
     }
 }
 
+// Encapsula la operacion admin entrenamiento form card usada por la pantalla o el estado.
 @Composable
 private fun AdminEntrenamientoFormCard(
     index: Int,
@@ -457,6 +463,7 @@ private fun AdminEntrenamientoFormCard(
     }
 }
 
+// Encapsula la operacion admin training text field usada por la pantalla o el estado.
 @Composable
 private fun AdminTrainingTextField(
     value: String,
@@ -484,6 +491,7 @@ private fun AdminTrainingTextField(
     )
 }
 
+// Encapsula la operacion admin picker box usada por la pantalla o el estado.
 @Composable
 private fun AdminPickerBox(
     text: String,
@@ -509,10 +517,12 @@ private fun AdminPickerBox(
     }
 }
 
+// Encapsula la operacion list usada por la pantalla o el estado.
 private fun List<String>.adminTrainingField(index: Int, field: Int): String {
     return this[index * FIELD_COUNT + field]
 }
 
+// Encapsula la operacion list usada por la pantalla o el estado.
 private fun List<String>.adminUpdateTrainingField(
     index: Int,
     field: Int,
@@ -523,6 +533,7 @@ private fun List<String>.adminUpdateTrainingField(
     return updated
 }
 
+// Encapsula la operacion list usada por la pantalla o el estado.
 private fun List<String>.adminTrainingSessionComplete(index: Int): Boolean {
     return adminTrainingField(index, FIELD_ENTRENADOR_ID).isNotBlank() &&
             adminTrainingField(index, FIELD_UBICACION_ID).isNotBlank() &&
@@ -530,6 +541,7 @@ private fun List<String>.adminTrainingSessionComplete(index: Int): Boolean {
             adminTrainingField(index, FIELD_HORA_INICIO).isNotBlank()
 }
 
+// Encapsula la operacion admin training selector usada por la pantalla o el estado.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AdminTrainingSelector(
@@ -611,6 +623,7 @@ private fun AdminTrainingSelector(
     }
 }
 
+// Encapsula la operacion admin entrenador options usada por la pantalla o el estado.
 private fun adminEntrenadorOptions(
     catalog: List<EntrenadorResponse>,
     currentId: String,
@@ -626,6 +639,7 @@ private fun adminEntrenadorOptions(
     return adminCatalogOptions(options, currentId, currentName)
 }
 
+// Encapsula la operacion admin ubicacion options usada por la pantalla o el estado.
 private fun adminUbicacionOptions(
     catalog: List<UbicacionResponse>,
     currentId: String,
@@ -641,6 +655,7 @@ private fun adminUbicacionOptions(
     return adminCatalogOptions(options, currentId, currentName)
 }
 
+// Encapsula la operacion admin catalog options usada por la pantalla o el estado.
 private fun adminCatalogOptions(
     catalog: List<AdminCatalogOption>,
     currentId: String,
@@ -654,6 +669,7 @@ private fun adminCatalogOptions(
         .distinctBy { it.id }
         .sortedBy { it.nombre.lowercase() }
 }
+// Encapsula la operacion admin initial training values usada por la pantalla o el estado.
 private fun adminInitialTrainingValues(
     totalSesiones: Int,
     entrenamientos: List<EntrenamientoResponse>
@@ -676,6 +692,7 @@ private fun adminInitialTrainingValues(
     return values
 }
 
+// Encapsula la operacion list usada por la pantalla o el estado.
 private fun List<String>.adminToEntrenamientoRequests(
     totalSesiones: Int,
     idJugador: Int,
@@ -701,6 +718,7 @@ private fun List<String>.adminToEntrenamientoRequests(
     }
 }
 
+// Encapsula la operacion admin training date time value usada por la pantalla o el estado.
 private fun adminTrainingDateTimeValue(
     date: String,
     time: String
@@ -709,6 +727,7 @@ private fun adminTrainingDateTimeValue(
     return "${date}T${time}:00"
 }
 
+// Encapsula la operacion admin training end date time value usada por la pantalla o el estado.
 private fun adminTrainingEndDateTimeValue(
     date: String,
     time: String
@@ -725,6 +744,7 @@ private fun adminTrainingEndDateTimeValue(
     return formatter.format(calendar.time)
 }
 
+// Encapsula la operacion admin training end text usada por la pantalla o el estado.
 private fun adminTrainingEndText(
     dateVisible: String,
     dateApi: String,
@@ -740,10 +760,12 @@ private fun adminTrainingEndText(
     return "Fin: $dateVisible ${end.substring(11, 16)}"
 }
 
+// Encapsula la operacion admin api date from date time usada por la pantalla o el estado.
 private fun adminApiDateFromDateTime(value: String): String {
     return if (value.length >= 10) value.substring(0, 10) else ""
 }
 
+// Encapsula la operacion admin visible date from date time usada por la pantalla o el estado.
 private fun adminVisibleDateFromDateTime(value: String): String {
     val date = adminApiDateFromDateTime(value)
     val parts = date.split("-")
@@ -754,12 +776,14 @@ private fun adminVisibleDateFromDateTime(value: String): String {
     }
 }
 
+// Encapsula la operacion admin time from date time usada por la pantalla o el estado.
 private fun adminTimeFromDateTime(value: String): String {
     val timeStart = value.indexOf("T").takeIf { it >= 0 } ?: value.indexOf(" ")
     if (timeStart < 0 || value.length < timeStart + 6) return ""
     return value.substring(timeStart + 1, timeStart + 6)
 }
 
+// Encapsula la operacion admin format date usada por la pantalla o el estado.
 private fun adminFormatDate(
     millis: Long,
     pattern: String

@@ -11,6 +11,7 @@ from app.entities.jugador_entity import JugadorEntity
 # --------------------------------------------------
 
 def get_all(db: Session):
+    """Realiza la operacion get all contra la base de datos."""
     return db.query(JugadorEntity).options(
         joinedload(JugadorEntity.usuario)
     ).all()
@@ -21,6 +22,7 @@ def get_all(db: Session):
 # --------------------------------------------------
 
 def get_by_id(db: Session, jugador_id: int):
+    """Realiza la operacion get by id contra la base de datos."""
     return db.query(JugadorEntity).options(
         joinedload(JugadorEntity.usuario)
     ).filter(
@@ -33,6 +35,7 @@ def get_by_id(db: Session, jugador_id: int):
 # --------------------------------------------------
 
 def get_by_usuario_id(db: Session, usuario_id: int):
+    """Realiza la operacion get by usuario id contra la base de datos."""
     return db.query(JugadorEntity).options(
         joinedload(JugadorEntity.usuario)
     ).filter(
@@ -41,6 +44,7 @@ def get_by_usuario_id(db: Session, usuario_id: int):
 
 
 def get_entrenamientos_catalogo_by_jugador(db: Session, jugador: JugadorEntity):
+    """Realiza la operacion get entrenamientos catalogo by jugador contra la base de datos."""
     return db.query(EntrenamientoEntity).options(
         joinedload(EntrenamientoEntity.entrenador),
         joinedload(EntrenamientoEntity.ubicacion_catalogo)
@@ -50,7 +54,6 @@ def get_entrenamientos_catalogo_by_jugador(db: Session, jugador: JugadorEntity):
     ).filter(
         or_(
             EntrenamientoEntity.id_jugador == jugador.id_jugador,
-            EntrenamientoEntity.id_usuario == jugador.id_usuario,
             InscripcionEntity.id_usuario == jugador.id_usuario
         )
     ).order_by(EntrenamientoEntity.hora_inicio.desc()).all()
@@ -61,6 +64,7 @@ def get_entrenamientos_catalogo_by_jugador(db: Session, jugador: JugadorEntity):
 # --------------------------------------------------
 
 def create(db: Session, jugador_data: dict):
+    """Realiza la operacion create contra la base de datos."""
     new_jugador = JugadorEntity(
         id_usuario=jugador_data["id_usuario"],
         nombre=jugador_data["nombre"],
@@ -84,6 +88,7 @@ def create(db: Session, jugador_data: dict):
 
 
 def create_without_commit(db: Session, jugador_data: dict):
+    """Realiza la operacion create without commit contra la base de datos."""
     new_jugador = JugadorEntity(
         id_usuario=jugador_data["id_usuario"],
         nombre=jugador_data["nombre"],
@@ -109,6 +114,7 @@ def create_without_commit(db: Session, jugador_data: dict):
 # --------------------------------------------------
 
 def update(db: Session, jugador_id: int, updated_fields: dict):
+    """Realiza la operacion update contra la base de datos."""
     jugador = get_by_id(db, jugador_id)
 
     if jugador is None:
@@ -128,6 +134,7 @@ def update(db: Session, jugador_id: int, updated_fields: dict):
 # --------------------------------------------------
 
 def delete(db: Session, jugador_id: int):
+    """Realiza la operacion delete contra la base de datos."""
     jugador = get_by_id(db, jugador_id)
 
     if jugador is None:

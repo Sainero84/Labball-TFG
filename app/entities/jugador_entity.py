@@ -5,6 +5,7 @@ from app.database.base import Base
 
 # Esta clase representa la tabla "jugadores"
 class JugadorEntity(Base):
+    """Mapea la entidad ORM jugador entity con sus columnas y relaciones."""
     __tablename__ = "jugadores"
 
     id_jugador: Mapped[int] = mapped_column(

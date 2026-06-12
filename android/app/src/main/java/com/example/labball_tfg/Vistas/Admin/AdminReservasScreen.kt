@@ -54,6 +54,7 @@ import com.example.labball_tfg.ui.theme.secondaryColor
 import com.example.labball_tfg.ui.theme.textColor
 import java.util.Locale
 
+// Renderiza la pantalla admin reservas screen y conecta sus acciones principales.
 @Composable
 fun AdminReservasScreen(
     token: String,
@@ -253,6 +254,7 @@ fun AdminReservasScreen(
     }
 }
 
+// Encapsula la operacion admin reservas list content usada por la pantalla o el estado.
 @Composable
 private fun AdminReservasListContent(
     reservas: List<ReservaAdminListItemResponse>,
@@ -318,6 +320,7 @@ private fun AdminReservasListContent(
     }
 }
 
+// Encapsula la operacion admin reservas tabs usada por la pantalla o el estado.
 @Composable
 private fun AdminReservasTabs(
     selectedTab: Int,
@@ -345,6 +348,7 @@ private fun AdminReservasTabs(
     }
 }
 
+// Encapsula la operacion admin reservas tab button usada por la pantalla o el estado.
 @Composable
 private fun AdminReservasTabButton(
     text: String,
@@ -369,6 +373,7 @@ private fun AdminReservasTabButton(
     }
 }
 
+// Encapsula la operacion admin reserva search field usada por la pantalla o el estado.
 @Composable
 private fun AdminReservaSearchField(
     value: String,
@@ -402,6 +407,7 @@ private fun AdminReservaSearchField(
     )
 }
 
+// Encapsula la operacion admin reserva summary card usada por la pantalla o el estado.
 @Composable
 private fun AdminReservaSummaryCard(
     reserva: ReservaAdminListItemResponse,
@@ -456,6 +462,7 @@ private fun AdminReservaSummaryCard(
     }
 }
 
+// Encapsula la operacion admin reserva detail content usada por la pantalla o el estado.
 @Composable
 private fun AdminReservaDetailContent(
     reserva: ReservaResponse?,
@@ -515,6 +522,7 @@ private fun AdminReservaDetailContent(
     }
 }
 
+// Encapsula la operacion admin reserva action button usada por la pantalla o el estado.
 @Composable
 private fun AdminReservaActionButton(
     text: String,
@@ -541,6 +549,7 @@ private fun AdminReservaActionButton(
     }
 }
 
+// Encapsula la operacion admin reserva detail fields usada por la pantalla o el estado.
 @Composable
 private fun AdminReservaDetailFields(reserva: ReservaResponse) {
     Column(
@@ -576,6 +585,7 @@ private fun AdminReservaDetailFields(reserva: ReservaResponse) {
     }
 }
 
+// Encapsula la operacion admin reserva detail row usada por la pantalla o el estado.
 @Composable
 private fun AdminReservaDetailRow(
     leftLabel: String,
@@ -592,6 +602,7 @@ private fun AdminReservaDetailRow(
     }
 }
 
+// Encapsula la operacion admin reserva detail field usada por la pantalla o el estado.
 @Composable
 private fun AdminReservaDetailField(
     label: String,
@@ -611,6 +622,7 @@ private fun AdminReservaDetailField(
     }
 }
 
+// Encapsula la operacion admin reserva weeks section usada por la pantalla o el estado.
 @Composable
 private fun AdminReservaWeeksSection(reserva: ReservaResponse) {
     Column(
@@ -641,6 +653,7 @@ private fun AdminReservaWeeksSection(reserva: ReservaResponse) {
     }
 }
 
+// Encapsula la operacion admin semana chip usada por la pantalla o el estado.
 @Composable
 private fun AdminSemanaChip(
     text: String,
@@ -658,6 +671,7 @@ private fun AdminSemanaChip(
     }
 }
 
+// Encapsula la operacion admin reserva price section usada por la pantalla o el estado.
 @Composable
 private fun AdminReservaPriceSection(reserva: ReservaResponse) {
     Column(
@@ -693,6 +707,7 @@ private fun AdminReservaPriceSection(reserva: ReservaResponse) {
     }
 }
 
+// Encapsula la operacion admin reserva loading message usada por la pantalla o el estado.
 @Composable
 private fun AdminReservaLoadingMessage(text: String) {
     Column(
@@ -706,6 +721,7 @@ private fun AdminReservaLoadingMessage(text: String) {
     }
 }
 
+// Encapsula la operacion admin reserva error message usada por la pantalla o el estado.
 @Composable
 private fun AdminReservaErrorMessage(text: String) {
     Text(
@@ -716,6 +732,7 @@ private fun AdminReservaErrorMessage(text: String) {
     )
 }
 
+// Encapsula la operacion admin reserva empty message usada por la pantalla o el estado.
 @Composable
 private fun AdminReservaEmptyMessage(text: String) {
     Text(
@@ -726,6 +743,7 @@ private fun AdminReservaEmptyMessage(text: String) {
     )
 }
 
+// Encapsula la operacion admin reserva matches search usada por la pantalla o el estado.
 private fun adminReservaMatchesSearch(
     reserva: ReservaAdminListItemResponse,
     searchText: String
@@ -739,12 +757,14 @@ private fun adminReservaMatchesSearch(
             reserva.apellidos.lowercase(Locale.getDefault()).contains(query)
 }
 
+// Encapsula la operacion admin reserva tiene entrenamiento asignado usada por la pantalla o el estado.
 private fun adminReservaTieneEntrenamientoAsignado(
     reserva: ReservaAdminListItemResponse
 ): Boolean {
     return reserva.tieneEntrenamientos
 }
 
+// Encapsula la operacion admin semana texto usada por la pantalla o el estado.
 private fun adminSemanaTexto(idSemana: Int): String {
     return when (idSemana) {
         1, 2 -> "23/06 - 27/06"
@@ -755,6 +775,7 @@ private fun adminSemanaTexto(idSemana: Int): String {
     }
 }
 
+// Encapsula la operacion admin semana horario usada por la pantalla o el estado.
 private fun adminSemanaHorario(idSemana: Int): String {
     return when (idSemana) {
         1, 3, 5, 7 -> "AM"
@@ -763,17 +784,20 @@ private fun adminSemanaHorario(idSemana: Int): String {
     }
 }
 
+// Encapsula la operacion admin reserva format date usada por la pantalla o el estado.
 private fun adminReservaFormatDate(value: String): String {
     val parts = value.split("-")
     return if (parts.size == 3) "${parts[2]}/${parts[1]}/${parts[0]}" else value
 }
 
+// Encapsula la operacion admin reserva format discount usada por la pantalla o el estado.
 private fun adminReservaFormatDiscount(reserva: ReservaResponse): String {
     if (reserva.precioSinDescuento <= 0.0) return "0%"
     val percent = (reserva.descuentoAplicado / reserva.precioSinDescuento) * 100
     return "${percent.toInt()}%"
 }
 
+// Encapsula la operacion admin reserva format price usada por la pantalla o el estado.
 private fun adminReservaFormatPrice(value: Double): String {
     return if (value % 1.0 == 0.0) {
         "${value.toInt()}â‚¬"

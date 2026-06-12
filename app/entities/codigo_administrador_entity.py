@@ -5,6 +5,7 @@ from app.database.base import Base
 
 
 class CodigoAdministradorEntity(Base):
+    """Mapea la entidad ORM codigo administrador entity con sus columnas y relaciones."""
     __tablename__ = "codigos_administrador"
 
     id_codigo_administrador: Mapped[int] = mapped_column(

@@ -56,6 +56,7 @@ import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
 
+// Renderiza la pantalla register screen y conecta sus acciones principales.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
@@ -262,6 +263,7 @@ fun RegisterScreen(
     }
 }
 
+// Encapsula la operacion register text field usada por la pantalla o el estado.
 @Composable
 private fun RegisterTextField(
     value: String,
@@ -303,6 +305,7 @@ private fun RegisterTextField(
     )
 }
 
+// Encapsula la operacion register date field usada por la pantalla o el estado.
 @Composable
 private fun RegisterDateField(
     value: String,
@@ -344,6 +347,7 @@ private fun RegisterDateField(
     }
 }
 
+// Encapsula la operacion format date millis usada por la pantalla o el estado.
 private fun formatDateMillis(
     millis: Long,
     pattern: String
@@ -364,6 +368,7 @@ private fun formatDateMillis(
     )
 }
 
+// Encapsula la operacion string usada por la pantalla o el estado.
 private fun String.toDisplayDate(): String {
     return if (matches(Regex("^\\d{4}-\\d{2}-\\d{2}$"))) {
         val parts = split("-")
@@ -373,6 +378,7 @@ private fun String.toDisplayDate(): String {
     }
 }
 
+// Encapsula la operacion has at least16 years usada por la pantalla o el estado.
 private fun hasAtLeast16Years(date: String): Boolean {
     val parts = date.split("-")
     if (parts.size != 3) {

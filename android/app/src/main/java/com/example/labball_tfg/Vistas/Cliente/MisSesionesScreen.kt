@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+// Renderiza la pantalla mis sesiones screen y conecta sus acciones principales.
 @Composable
 fun MisSesionesScreen(
     token: String,
@@ -146,6 +147,7 @@ fun MisSesionesScreen(
     }
 }
 
+// Encapsula la operacion sesiones table usada por la pantalla o el estado.
 @Composable
 private fun SesionesTable(
     entrenamientos: List<EntrenamientoResponse>,
@@ -323,28 +325,34 @@ private fun SesionesTable(
     }
 }
 
+// Encapsula la operacion format fecha hora usada por la pantalla o el estado.
 private fun formatFechaHora(value: String): String {
     return formatDateTime(value, "HH:mm - dd/MM/yyyy")
 }
 
+// Encapsula la operacion format fecha usada por la pantalla o el estado.
 private fun formatFecha(value: String): String {
     return formatDateTime(value, "dd/MM/yyyy")
 }
 
+// Encapsula la operacion format hora usada por la pantalla o el estado.
 private fun formatHora(value: String): String {
     return formatDateTime(value, "HH:mm")
 }
 
+// Encapsula la operacion format date time usada por la pantalla o el estado.
 private fun formatDateTime(value: String, outputPattern: String): String {
     val date = parseDateTime(value) ?: return value
     return SimpleDateFormat(outputPattern, Locale.getDefault()).format(date)
 }
 
+// Encapsula la operacion is sesion pendiente usada por la pantalla o el estado.
 private fun isSesionPendiente(value: String, currentTimeMillis: Long): Boolean {
     val sessionDate = parseDateTime(value) ?: return true
     return sessionDate.after(Date(currentTimeMillis))
 }
 
+// Encapsula la operacion parse date time usada por la pantalla o el estado.
 private fun parseDateTime(value: String): Date? {
     val inputFormats = listOf(
         SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()),

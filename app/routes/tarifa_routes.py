@@ -15,4 +15,5 @@ def get_tarifas(
     current_user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de get tarifas y delega la logica principal."""
     return get_active_tarifas(db)

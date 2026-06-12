@@ -15,12 +15,14 @@ from app.entities.usuario_entity import UsuarioEntity
 # --------------------------------------------------
 
 def get_all(db: Session):
+    """Realiza la operacion get all contra la base de datos."""
     return db.query(UsuarioEntity).options(
         joinedload(UsuarioEntity.jugador)
     ).all()
 
 
 def count_admins(db: Session) -> int:
+    """Realiza la operacion count admins contra la base de datos."""
     return db.query(UsuarioEntity).filter(UsuarioEntity.es_admin.is_(True)).count()
 
 
@@ -29,6 +31,7 @@ def count_admins(db: Session) -> int:
 # --------------------------------------------------
 
 def get_by_id(db: Session, user_id: int):
+    """Realiza la operacion get by id contra la base de datos."""
     return db.query(UsuarioEntity).options(
         joinedload(UsuarioEntity.jugador)
     ).filter(UsuarioEntity.id_usuario == user_id).first()
@@ -39,6 +42,7 @@ def get_by_id(db: Session, user_id: int):
 # --------------------------------------------------
 
 def get_by_correo(db: Session, correo: str):
+    """Realiza la operacion get by correo contra la base de datos."""
     return db.query(UsuarioEntity).filter(UsuarioEntity.correo == correo).first()
 
 
@@ -47,6 +51,7 @@ def get_by_correo(db: Session, correo: str):
 # --------------------------------------------------
 
 def create(db: Session, user_data: dict):
+    """Realiza la operacion create contra la base de datos."""
     new_user = UsuarioEntity(
         firebase_uid=user_data["firebase_uid"],
         correo=user_data["correo"],
@@ -70,6 +75,7 @@ def create(db: Session, user_data: dict):
 
 
 def create_without_commit(db: Session, user_data: dict):
+    """Realiza la operacion create without commit contra la base de datos."""
     new_user = UsuarioEntity(
         firebase_uid=user_data["firebase_uid"],
         correo=user_data["correo"],
@@ -94,6 +100,7 @@ def create_without_commit(db: Session, user_data: dict):
 # --------------------------------------------------
 
 def update(db: Session, user_id: int, updated_fields: dict):
+    """Realiza la operacion update contra la base de datos."""
     user = get_by_id(db, user_id)
 
     if user is None:
@@ -113,6 +120,7 @@ def update(db: Session, user_id: int, updated_fields: dict):
 # --------------------------------------------------
 
 def delete(db: Session, user_id: int):
+    """Realiza la operacion delete contra la base de datos."""
     user = get_by_id(db, user_id)
 
     if user is None:
@@ -125,17 +133,22 @@ def delete(db: Session, user_id: int):
 
 
 def delete_without_commit(db: Session, user: UsuarioEntity):
+    """Realiza la operacion delete without commit contra la base de datos."""
     db.delete(user)
 
 
 def get_related_data_counts(db: Session, user_id: int) -> dict[str, int]:
+    """Realiza la operacion get related data counts contra la base de datos."""
     entrenamientos_count = db.query(EntrenamientoEntity).outerjoin(
         InscripcionEntity,
         EntrenamientoEntity.id_inscripcion == InscripcionEntity.id_inscripcion
+    ).outerjoin(
+        JugadorEntity,
+        EntrenamientoEntity.id_jugador == JugadorEntity.id_jugador
     ).filter(
         or_(
-            EntrenamientoEntity.id_usuario == user_id,
-            InscripcionEntity.id_usuario == user_id
+            InscripcionEntity.id_usuario == user_id,
+            JugadorEntity.id_usuario == user_id
         )
     ).count()
 
@@ -153,12 +166,14 @@ def get_related_data_counts(db: Session, user_id: int) -> dict[str, int]:
     }
 
 def get_by_firebase_uid(db: Session, firebase_uid: str):
+    """Realiza la operacion get by firebase uid contra la base de datos."""
     return db.query(UsuarioEntity).filter(
         UsuarioEntity.firebase_uid == firebase_uid
     ).first()
 
 
 def get_by_codigo_administrador_id(db: Session, codigo_administrador_id: int):
+    """Realiza la operacion get by codigo administrador id contra la base de datos."""
     return db.query(UsuarioEntity).filter(
         UsuarioEntity.id_codigo_administrador == codigo_administrador_id
     ).first()

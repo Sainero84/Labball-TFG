@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+// Mantiene el estado y las operaciones de entrenamiento view model para la interfaz.
 class EntrenamientoViewModel : ViewModel() {
 
     private val _entrenamientos = MutableStateFlow<List<EntrenamientoResponse>>(emptyList())
@@ -24,6 +25,7 @@ class EntrenamientoViewModel : ViewModel() {
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
+    // Carga cargar mis entrenamientos desde la API y actualiza el estado asociado.
     fun cargarMisEntrenamientos(token: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -48,6 +50,7 @@ class EntrenamientoViewModel : ViewModel() {
         }
     }
 
+    // Carga cargar entrenamiento por id desde la API y actualiza el estado asociado.
     fun cargarEntrenamientoPorId(
         token: String,
         idEntrenamiento: Int
@@ -77,10 +80,12 @@ class EntrenamientoViewModel : ViewModel() {
         }
     }
 
+    // Limpia limpiar entrenamiento seleccionado para reiniciar el estado temporal.
     fun limpiarEntrenamientoSeleccionado() {
         _entrenamientoSeleccionado.value = null
     }
 
+    // Limpia limpiar error para reiniciar el estado temporal.
     fun limpiarError() {
         _errorMessage.value = null
     }

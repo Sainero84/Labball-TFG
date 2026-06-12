@@ -3,18 +3,13 @@ package com.example.labball_tfg.ViewModel.Firebase
 import com.google.firebase.auth.FirebaseAuth
 
 
+// Mantiene el estado y las operaciones de firebase auth manager para la interfaz.
 class FirebaseAuthManager {
 
     // Instancia de Firebase Authentication
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    /**
-     * Envía un email de recuperación de contraseña al usuario
-     *
-     * @param email correo del usuario
-     * @param onSuccess callback si el envío es correcto
-     * @param onError callback si ocurre un error
-     */
+    // Envia el correo de recuperacion de contrasena mediante Firebase Authentication.
     fun sendPasswordResetEmail(
         email: String,
         onSuccess: () -> Unit,
@@ -32,14 +27,7 @@ class FirebaseAuthManager {
             }
     }
 
-    /**
-     * Crea un nuevo usuario en Firebase Authentication
-     *
-     * @param email correo del usuario
-     * @param password contraseña del usuario
-     * @param onSuccess acción si el registro es correcto
-     * @param onError acción si ocurre un error
-     */
+    // Crea el usuario en Firebase y devuelve su UID junto al token de sesion.
     fun createUserWithEmailAndPassword(
         email: String,
         password: String,
@@ -74,13 +62,7 @@ class FirebaseAuthManager {
             }
     }
 
-
-    /**
-     * Inicia sesión en Firebase con email y contraseña.
-     *
-     * Si el login es correcto, obtiene el ID Token.
-     * Este token se podrá enviar a FastAPI para validar al usuario.
-     */
+    // Inicia sesion en Firebase y obtiene el token para validarlo en FastAPI.
     fun loginWithEmailAndPassword(
         email: String,
         password: String,
@@ -117,4 +99,3 @@ class FirebaseAuthManager {
     }
 
 }
-

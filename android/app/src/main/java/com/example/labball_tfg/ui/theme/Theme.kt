@@ -38,6 +38,7 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+// Encapsula la operacion labball tfgtheme usada por la pantalla o el estado.
 @Composable
 fun LABBALL_TFGTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

@@ -8,17 +8,13 @@ import com.example.labball_tfg.Modelo.API
 import com.example.labball_tfg.Modelo.UsuarioResponse
 import kotlinx.coroutines.launch
 
+// Mantiene el estado y las operaciones de login view model para la interfaz.
 class LoginViewModel : ViewModel() {
 
     // Manager que contiene la lógica de Firebase Authentication
     private val firebaseAuthManager = FirebaseAuthManager()
 
-    /**
-     * Inicia sesión con Firebase.
-     *
-     * Si el login es correcto,
-     * devuelve el ID Token del usuario.
-     */
+    // Inicia sesion con Firebase y devuelve el token junto al usuario del backend.
     fun loginUser(
         email: String,
         password: String,

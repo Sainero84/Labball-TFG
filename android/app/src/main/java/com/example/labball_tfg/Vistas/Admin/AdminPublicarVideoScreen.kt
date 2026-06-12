@@ -49,6 +49,7 @@ import com.example.labball_tfg.ui.theme.primaryColor
 import com.example.labball_tfg.ui.theme.secondaryColor
 import com.example.labball_tfg.ui.theme.textColor
 
+// Renderiza la pantalla admin publicar video screen y conecta sus acciones principales.
 @Composable
 fun AdminPublicarVideoScreen(
     token: String,
@@ -202,6 +203,7 @@ fun AdminPublicarVideoScreen(
     }
 }
 
+// Encapsula la operacion admin video file name usada por la pantalla o el estado.
 private fun adminVideoFileName(
     context: Context,
     uri: Uri
@@ -224,6 +226,7 @@ private fun adminVideoFileName(
     return "Video seleccionado"
 }
 
+// Encapsula la operacion admin video text field usada por la pantalla o el estado.
 @Composable
 private fun AdminVideoTextField(
     value: String,

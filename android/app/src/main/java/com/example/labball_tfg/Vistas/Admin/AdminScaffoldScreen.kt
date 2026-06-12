@@ -45,6 +45,7 @@ import com.example.labball_tfg.ui.theme.backgroundColor
 import com.example.labball_tfg.ui.theme.secondaryColor
 import com.example.labball_tfg.ui.theme.textColor
 
+// Renderiza la pantalla admin scaffold screen y conecta sus acciones principales.
 @Composable
 fun AdminScaffoldScreen(
     token: String,
@@ -178,6 +179,7 @@ fun AdminScaffoldScreen(
 
 
 
+// Encapsula la operacion admin top bar usada por la pantalla o el estado.
 @Composable
 private fun AdminTopBar() {
     Column(
@@ -215,6 +217,7 @@ private fun AdminTopBar() {
     }
 }
 
+// Encapsula la operacion admin section title usada por la pantalla o el estado.
 @Composable
 private fun AdminSectionTitle(title: String) {
     Column(
@@ -238,6 +241,7 @@ private fun AdminSectionTitle(title: String) {
     }
 }
 
+// Encapsula la operacion cliente navigation colors usada por la pantalla o el estado.
 @Composable
 private fun clienteNavigationColors() = NavigationBarItemDefaults.colors(
     selectedIconColor = secondaryColor,
@@ -245,6 +249,7 @@ private fun clienteNavigationColors() = NavigationBarItemDefaults.colors(
     indicatorColor = Color.Transparent
 )
 
+// Muestra una vista previa de admin scaffold screen preview para Compose.
 @Composable
 @Preview(showBackground = true)
 fun AdminScaffoldScreenPreview() {

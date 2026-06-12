@@ -21,6 +21,7 @@ from app.schemas.media_schema import (
 # --------------------------------------------------
 
 def normalize_static_url(url: str | None) -> str | None:
+    """Aplica la logica de negocio necesaria para normalize static url."""
     if url is None:
         return None
 
@@ -36,6 +37,7 @@ def normalize_static_url(url: str | None) -> str | None:
 
 
 def to_media_response(media) -> MediaResponseSchema:
+    """Aplica la logica de negocio necesaria para to media response."""
     return MediaResponseSchema(
         id_media=media.id_media,
         id_usuario=media.id_usuario,
@@ -51,6 +53,7 @@ def to_media_response(media) -> MediaResponseSchema:
 # --------------------------------------------------
 
 def get_all_media(db: Session) -> MediaListResponseSchema:
+    """Aplica la logica de negocio necesaria para get all media."""
     media_list = media_repository.get_all(db)
 
     return MediaListResponseSchema(
@@ -63,6 +66,7 @@ def get_all_media(db: Session) -> MediaListResponseSchema:
 # --------------------------------------------------
 
 def get_media_by_id(db: Session, media_id: int) -> MediaResponseSchema:
+    """Aplica la logica de negocio necesaria para get media by id."""
     media = media_repository.get_by_id(db, media_id)
 
     if media is None:
@@ -72,6 +76,7 @@ def get_media_by_id(db: Session, media_id: int) -> MediaResponseSchema:
 
 
 def get_all_videos(db: Session) -> VideoListResponseSchema:
+    """Aplica la logica de negocio necesaria para get all videos."""
     videos = media_repository.get_videos(db)
 
     return VideoListResponseSchema(
@@ -88,6 +93,7 @@ def get_all_videos(db: Session) -> VideoListResponseSchema:
 
 
 def get_video_by_id(db: Session, media_id: int) -> VideoDetailResponseSchema:
+    """Aplica la logica de negocio necesaria para get video by id."""
     video = media_repository.get_by_id(db, media_id)
 
     if video is None or video.mime_type is None or not video.mime_type.startswith("video/"):
@@ -106,6 +112,7 @@ def get_video_by_id(db: Session, media_id: int) -> VideoDetailResponseSchema:
 # --------------------------------------------------
 
 def create_media(db: Session, media_data: MediaCreateSchema) -> MediaMessageResponseSchema:
+    """Aplica la logica de negocio necesaria para create media."""
     usuario = usuario_repository.get_by_id(db, media_data.id_usuario)
 
     if usuario is None:
@@ -136,6 +143,7 @@ def update_media(
     media_id: int,
     media_data: MediaUpdateSchema
 ) -> MediaMessageResponseSchema:
+    """Aplica la logica de negocio necesaria para update media."""
     updated_fields = {}
 
     if media_data.id_usuario is not None:
@@ -175,6 +183,7 @@ def update_media(
 # --------------------------------------------------
 
 def delete_media(db: Session, media_id: int) -> MediaMessageResponseSchema:
+    """Aplica la logica de negocio necesaria para delete media."""
     deleted_media = media_repository.delete(db, media_id)
 
     if deleted_media is None:

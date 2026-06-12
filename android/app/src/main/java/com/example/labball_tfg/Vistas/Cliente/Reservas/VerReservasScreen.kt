@@ -44,6 +44,7 @@ import com.example.labball_tfg.ui.theme.secondaryColor
 import com.example.labball_tfg.ui.theme.textColor
 import java.util.Locale
 
+// Renderiza la pantalla ver reservas screen y conecta sus acciones principales.
 @Composable
 fun VerReservasScreen(
     token: String,
@@ -92,6 +93,7 @@ fun VerReservasScreen(
     }
 }
 
+// Encapsula la operacion reservas list content usada por la pantalla o el estado.
 @Composable
 private fun ReservasListContent(
     reservas: List<ReservaResponse>,
@@ -131,6 +133,7 @@ private fun ReservasListContent(
     }
 }
 
+// Encapsula la operacion reserva summary card usada por la pantalla o el estado.
 @Composable
 private fun ReservaSummaryCard(
     reserva: ReservaResponse,
@@ -185,6 +188,7 @@ private fun ReservaSummaryCard(
     }
 }
 
+// Encapsula la operacion reserva detail content usada por la pantalla o el estado.
 @Composable
 private fun ReservaDetailContent(
     reserva: ReservaResponse?,
@@ -214,6 +218,7 @@ private fun ReservaDetailContent(
     }
 }
 
+// Encapsula la operacion reserva detail fields usada por la pantalla o el estado.
 @Composable
 private fun ReservaDetailFields(reserva: ReservaResponse) {
     Column(
@@ -229,6 +234,7 @@ private fun ReservaDetailFields(reserva: ReservaResponse) {
     }
 }
 
+// Encapsula la operacion detail row usada por la pantalla o el estado.
 @Composable
 private fun DetailRow(
     leftLabel: String,
@@ -245,6 +251,7 @@ private fun DetailRow(
     }
 }
 
+// Encapsula la operacion detail field usada por la pantalla o el estado.
 @Composable
 private fun DetailField(
     label: String,
@@ -270,6 +277,7 @@ private fun DetailField(
     }
 }
 
+// Encapsula la operacion reserva weeks section usada por la pantalla o el estado.
 @Composable
 private fun ReservaWeeksSection(reserva: ReservaResponse) {
     Column(
@@ -307,6 +315,7 @@ private fun ReservaWeeksSection(reserva: ReservaResponse) {
     }
 }
 
+// Encapsula la operacion semana chip usada por la pantalla o el estado.
 @Composable
 private fun SemanaChip(
     text: String,
@@ -329,6 +338,7 @@ private fun SemanaChip(
     }
 }
 
+// Encapsula la operacion reserva price section usada por la pantalla o el estado.
 @Composable
 private fun ReservaPriceSection(reserva: ReservaResponse) {
     Column(
@@ -364,6 +374,7 @@ private fun ReservaPriceSection(reserva: ReservaResponse) {
     }
 }
 
+// Encapsula la operacion loading message usada por la pantalla o el estado.
 @Composable
 private fun LoadingMessage(text: String) {
     Column(
@@ -381,6 +392,7 @@ private fun LoadingMessage(text: String) {
     }
 }
 
+// Encapsula la operacion error message usada por la pantalla o el estado.
 @Composable
 private fun ErrorMessage(text: String) {
     Text(
@@ -391,6 +403,7 @@ private fun ErrorMessage(text: String) {
     )
 }
 
+// Encapsula la operacion empty message usada por la pantalla o el estado.
 @Composable
 private fun EmptyMessage(text: String) {
     Text(
@@ -401,6 +414,7 @@ private fun EmptyMessage(text: String) {
     )
 }
 
+// Encapsula la operacion semana texto usada por la pantalla o el estado.
 private fun semanaTexto(idSemana: Int): String {
     return when (idSemana) {
         1, 2 -> "23/06 - 27/06"
@@ -411,6 +425,7 @@ private fun semanaTexto(idSemana: Int): String {
     }
 }
 
+// Encapsula la operacion semana horario usada por la pantalla o el estado.
 private fun semanaHorario(idSemana: Int): String {
     return when (idSemana) {
         1, 3, 5, 7 -> "AM"
@@ -419,6 +434,7 @@ private fun semanaHorario(idSemana: Int): String {
     }
 }
 
+// Encapsula la operacion format date usada por la pantalla o el estado.
 private fun formatDate(value: String): String {
     val parts = value.split("-")
     return if (parts.size == 3) {
@@ -428,12 +444,14 @@ private fun formatDate(value: String): String {
     }
 }
 
+// Encapsula la operacion format discount usada por la pantalla o el estado.
 private fun formatDiscount(reserva: ReservaResponse): String {
     if (reserva.precioSinDescuento <= 0.0) return "0%"
     val percent = (reserva.descuentoAplicado / reserva.precioSinDescuento) * 100
     return "${percent.toInt()}%"
 }
 
+// Encapsula la operacion format price usada por la pantalla o el estado.
 private fun formatPrice(value: Double): String {
     return if (value % 1.0 == 0.0) {
         "${value.toInt()}€"

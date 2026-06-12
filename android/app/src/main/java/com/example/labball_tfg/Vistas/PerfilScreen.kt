@@ -72,6 +72,7 @@ import java.io.ByteArrayOutputStream
 import java.util.Calendar
 import java.util.Locale
 
+// Renderiza la pantalla perfil screen y conecta sus acciones principales.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PerfilScreen(
@@ -443,6 +444,7 @@ fun PerfilScreen(
     }
 }
 
+// Carga get file name from uri desde la API y actualiza el estado asociado.
 private fun getFileNameFromUri(
     context: Context,
     uri: Uri
@@ -458,6 +460,7 @@ private fun getFileNameFromUri(
         }
 }
 
+// Encapsula la operacion perfil info box usada por la pantalla o el estado.
 @Composable
 private fun PerfilInfoBox(
     title: String,
@@ -494,6 +497,7 @@ private fun PerfilInfoBox(
     }
 }
 
+// Encapsula la operacion perfil dialog text field usada por la pantalla o el estado.
 @Composable
 private fun PerfilDialogTextField(
     value: String,
@@ -534,6 +538,7 @@ private fun PerfilDialogTextField(
     )
 }
 
+// Encapsula la operacion com usada por la pantalla o el estado.
 private fun com.example.labball_tfg.Modelo.UsuarioMeResponse?.toRoleLabel(): String {
     return when {
         this?.esSuperAdmin == true -> "Super-admin"
@@ -542,6 +547,7 @@ private fun com.example.labball_tfg.Modelo.UsuarioMeResponse?.toRoleLabel(): Str
     }
 }
 
+// Agrupa la pantalla perfil edit field y su estado visual principal.
 private enum class PerfilEditField(
     val dialogTitle: String,
     val fieldLabel: String,
@@ -565,6 +571,7 @@ private enum class PerfilEditField(
     )
 }
 
+// Encapsula la operacion string usada por la pantalla o el estado.
 private fun String?.toPerfilDateInput(): String {
     val value = this.orEmpty()
     return if (value.matches(Regex("^\\d{4}-\\d{2}-\\d{2}$"))) {
@@ -575,10 +582,12 @@ private fun String?.toPerfilDateInput(): String {
     }
 }
 
+// Encapsula la operacion string usada por la pantalla o el estado.
 private fun String?.toPerfilDateLabel(): String {
     return toPerfilDateInput()
 }
 
+// Encapsula la operacion normalizar fecha perfil usada por la pantalla o el estado.
 private fun normalizarFechaPerfil(fecha: String): String? {
     val limpia = fecha.trim()
 
@@ -604,6 +613,7 @@ private fun normalizarFechaPerfil(fecha: String): String? {
     return String.format(Locale.ROOT, "%04d-%02d-%02d", anio, mes, dia)
 }
 
+// Encapsula la operacion perfil format date millis usada por la pantalla o el estado.
 private fun perfilFormatDateMillis(millis: Long): String {
     val calendar = Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC")).apply {
         timeInMillis = millis
@@ -618,6 +628,7 @@ private fun perfilFormatDateMillis(millis: Long): String {
     )
 }
 
+// Encapsula la operacion has at least16 years usada por la pantalla o el estado.
 private fun hasAtLeast16Years(date: String): Boolean {
     val parts = date.split("-")
     if (parts.size != 3) {
@@ -636,6 +647,7 @@ private fun hasAtLeast16Years(date: String): Boolean {
     return !birthDate.after(limit)
 }
 
+// Muestra una vista previa de perfil screen preview para Compose.
 @Composable
 @Preview(showBackground = true)
 fun PerfilScreenPreview() {

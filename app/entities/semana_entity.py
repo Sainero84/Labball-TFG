@@ -5,6 +5,7 @@ from app.database.base import Base
 
 # Esta clase representa la tabla "semanas"
 class SemanaEntity(Base):
+    """Mapea la entidad ORM semana entity con sus columnas y relaciones."""
     __tablename__ = "semanas"
 
     id_semana: Mapped[int] = mapped_column(

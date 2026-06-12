@@ -11,6 +11,7 @@ from app.database.base import Base
 # Esta clase representa la tabla "usuarios"
 class UsuarioEntity(Base):
     # Nombre real de la tabla en MySQL
+    """Mapea la entidad ORM usuario entity con sus columnas y relaciones."""
     __tablename__ = "usuarios"
 
     # Clave primaria autoincremental

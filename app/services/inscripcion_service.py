@@ -31,6 +31,7 @@ from app.schemas.entrenamiento_schema import (
 
 
 def calcular_precio_final(precio_sin_descuento: float, porcentaje_descuento: float | None) -> float:
+    """Aplica la logica de negocio necesaria para calcular precio final."""
     if porcentaje_descuento is None:
         return round(precio_sin_descuento, 2)
 
@@ -39,6 +40,7 @@ def calcular_precio_final(precio_sin_descuento: float, porcentaje_descuento: flo
 
 
 def calcular_descuento_aplicado(precio_sin_descuento: float, porcentaje_descuento: float | None) -> float:
+    """Aplica la logica de negocio necesaria para calcular descuento aplicado."""
     if porcentaje_descuento is None:
         return 0.0
 
@@ -50,6 +52,7 @@ def resolve_tarifa(
     id_tarifa: int | None = None,
     numero_sesiones: int | None = None
 ):
+    """Aplica la logica de negocio necesaria para resolve tarifa."""
     if id_tarifa is None and numero_sesiones is None:
         raise HTTPException(
             status_code=400,
@@ -89,6 +92,7 @@ def resolve_tarifa(
 
 
 def to_reserva_response(db: Session, reserva) -> ReservaResponseSchema:
+    """Aplica la logica de negocio necesaria para to reserva response."""
     relaciones = inscripcion_semana_repository.get_by_inscripcion_id(
         db,
         reserva.id_inscripcion
@@ -124,6 +128,7 @@ def to_reserva_response(db: Session, reserva) -> ReservaResponseSchema:
 
 
 def to_reserva_admin_list_item(db: Session, reserva) -> ReservaAdminListItemSchema:
+    """Aplica la logica de negocio necesaria para to reserva admin list item."""
     entrenamientos_asignados = entrenamiento_repository.count_by_reserva_id(
         db,
         reserva.id_inscripcion
@@ -144,21 +149,23 @@ def to_reserva_admin_list_item(db: Session, reserva) -> ReservaAdminListItemSche
 
 
 def get_entrenamiento_nombre_entrenador(entrenamiento) -> str:
+    """Aplica la logica de negocio necesaria para get entrenamiento nombre entrenador."""
     entrenador = getattr(entrenamiento, "entrenador", None)
 
     if entrenador is not None:
         return entrenador.nombre
 
-    return entrenamiento.nombre_entrenador
+    return ""
 
 
 def get_entrenamiento_ubicacion(entrenamiento) -> str:
+    """Aplica la logica de negocio necesaria para get entrenamiento ubicacion."""
     ubicacion = getattr(entrenamiento, "ubicacion_catalogo", None)
 
     if ubicacion is not None:
         return ubicacion.nombre
 
-    return entrenamiento.ubicacion
+    return ""
 
 
 def resolve_catalogos_entrenamiento(
@@ -166,6 +173,7 @@ def resolve_catalogos_entrenamiento(
     id_entrenador: int,
     id_ubicacion: int
 ):
+    """Aplica la logica de negocio necesaria para resolve catalogos entrenamiento."""
     entrenador = entrenador_repository.get_by_id(db, id_entrenador)
 
     if entrenador is None:
@@ -186,12 +194,17 @@ def resolve_catalogos_entrenamiento(
 
 
 def to_entrenamiento_response(db: Session, entrenamiento) -> EntrenamientoResponseSchema:
-    id_inscripcion = entrenamiento.id_inscripcion or entrenamiento.id_reserva
-    id_usuario = entrenamiento.id_usuario
+    """Aplica la logica de negocio necesaria para to entrenamiento response."""
+    id_inscripcion = entrenamiento.id_inscripcion
+    id_usuario = None
 
-    if id_usuario is None and id_inscripcion is not None:
+    if id_inscripcion is not None:
         inscripcion = inscripcion_repository.get_by_id(db, id_inscripcion)
         id_usuario = inscripcion.id_usuario if inscripcion is not None else None
+
+    if id_usuario is None and entrenamiento.id_jugador is not None:
+        jugador = jugador_repository.get_by_id(db, entrenamiento.id_jugador)
+        id_usuario = jugador.id_usuario if jugador is not None else None
 
     id_jugador = entrenamiento.id_jugador
 
@@ -218,6 +231,7 @@ def create_reserva(
     reserva_data: ReservaCreateSchema,
     current_user
 ) -> ReservaMessageResponseSchema:
+    """Aplica la logica de negocio necesaria para create reserva."""
     descuento = None
     porcentaje_descuento = None
 
@@ -290,6 +304,7 @@ def preview_reserva_precio(
     db: Session,
     preview_data: ReservaPreviewRequestSchema
 ) -> ReservaPreviewResponseSchema:
+    """Aplica la logica de negocio necesaria para preview reserva precio."""
     tarifa = resolve_tarifa(
         db,
         id_tarifa=preview_data.id_tarifa,
@@ -331,6 +346,7 @@ def preview_reserva_precio(
 
 
 def get_reservas_by_user(db: Session, current_user) -> ReservaListResponseSchema:
+    """Aplica la logica de negocio necesaria para get reservas by user."""
     reservas = inscripcion_repository.get_by_usuario_id(db, current_user.id_usuario)
 
     return ReservaListResponseSchema(
@@ -343,6 +359,7 @@ def get_reserva_by_user(
     reserva_id: int,
     current_user
 ) -> ReservaResponseSchema:
+    """Aplica la logica de negocio necesaria para get reserva by user."""
     reserva = inscripcion_repository.get_by_id_and_usuario_id(
         db,
         reserva_id,
@@ -356,6 +373,7 @@ def get_reserva_by_user(
 
 
 def get_all_reservas_admin(db: Session) -> ReservaAdminListResponseSchema:
+    """Aplica la logica de negocio necesaria para get all reservas admin."""
     reservas = inscripcion_repository.get_all(db)
 
     return ReservaAdminListResponseSchema(
@@ -364,6 +382,7 @@ def get_all_reservas_admin(db: Session) -> ReservaAdminListResponseSchema:
 
 
 def get_reserva_admin_by_id(db: Session, reserva_id: int) -> ReservaResponseSchema:
+    """Aplica la logica de negocio necesaria para get reserva admin by id."""
     reserva = inscripcion_repository.get_by_id(db, reserva_id)
 
     if reserva is None:
@@ -373,6 +392,7 @@ def get_reserva_admin_by_id(db: Session, reserva_id: int) -> ReservaResponseSche
 
 
 def update_reserva_pagado(db: Session, reserva_id: int, pagado: bool) -> ReservaMessageResponseSchema:
+    """Aplica la logica de negocio necesaria para update reserva pagado."""
     reserva = inscripcion_repository.update(
         db,
         reserva_id,
@@ -393,6 +413,7 @@ def asignar_entrenamientos_reserva(
     reserva_id: int,
     asignacion_data: ReservaEntrenamientosAsignarSchema
 ) -> ReservaEntrenamientosAsignadosResponseSchema:
+    """Aplica la logica de negocio necesaria para asignar entrenamientos reserva."""
     reserva = inscripcion_repository.get_by_id(db, reserva_id)
 
     if reserva is None:
@@ -452,15 +473,11 @@ def asignar_entrenamientos_reserva(
                 db,
                 {
                     "id_entrenador": entrenador.id_entrenador,
-                    "nombre_entrenador": entrenador.nombre,
                     "id_ubicacion": ubicacion.id_ubicacion,
-                    "ubicacion": ubicacion.nombre,
                     "hora_inicio": entrenamiento_data.hora_inicio,
                     "hora_fin": entrenamiento_data.hora_fin,
                     "id_inscripcion": reserva.id_inscripcion,
-                    "id_jugador": jugador.id_jugador if jugador is not None else None,
-                    "id_usuario": reserva.id_usuario,
-                    "id_reserva": reserva.id_inscripcion
+                    "id_jugador": jugador.id_jugador if jugador is not None else None
                 }
             )
             entrenamientos_creados.append(entrenamiento)
@@ -487,6 +504,7 @@ def get_entrenamientos_reserva_admin(
     db: Session,
     reserva_id: int
 ) -> EntrenamientoListResponseSchema:
+    """Aplica la logica de negocio necesaria para get entrenamientos reserva admin."""
     reserva = inscripcion_repository.get_by_id(db, reserva_id)
 
     if reserva is None:
@@ -510,6 +528,7 @@ def reemplazar_entrenamientos_reserva_admin(
     reserva_id: int,
     asignacion_data: ReservaEntrenamientosAsignarSchema
 ) -> ReservaEntrenamientosAsignadosResponseSchema:
+    """Aplica la logica de negocio necesaria para reemplazar entrenamientos reserva admin."""
     reserva = inscripcion_repository.get_by_id(db, reserva_id)
 
     if reserva is None:
@@ -563,15 +582,11 @@ def reemplazar_entrenamientos_reserva_admin(
                 db,
                 {
                     "id_entrenador": entrenador.id_entrenador,
-                    "nombre_entrenador": entrenador.nombre,
                     "id_ubicacion": ubicacion.id_ubicacion,
-                    "ubicacion": ubicacion.nombre,
                     "hora_inicio": entrenamiento_data.hora_inicio,
                     "hora_fin": entrenamiento_data.hora_fin,
                     "id_inscripcion": reserva.id_inscripcion,
-                    "id_jugador": jugador.id_jugador if jugador is not None else None,
-                    "id_usuario": reserva.id_usuario,
-                    "id_reserva": reserva.id_inscripcion
+                    "id_jugador": jugador.id_jugador if jugador is not None else None
                 }
             )
             entrenamientos_creados.append(entrenamiento)

@@ -8,6 +8,7 @@ from app.database.base import Base
 
 # Esta clase representa la tabla "inscripciones"
 class InscripcionEntity(Base):
+    """Mapea la entidad ORM inscripcion entity con sus columnas y relaciones."""
     __tablename__ = "inscripciones"
 
     id_inscripcion: Mapped[int] = mapped_column(

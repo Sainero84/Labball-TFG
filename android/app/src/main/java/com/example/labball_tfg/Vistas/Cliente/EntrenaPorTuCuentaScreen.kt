@@ -49,6 +49,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.example.labball_tfg.ui.theme.primaryColor
 
+// Renderiza la pantalla entrena por tu cuenta screen y conecta sus acciones principales.
 @Composable
 fun EntrenaPorTuCuentaScreen(
     token: String,
@@ -150,6 +151,7 @@ fun EntrenaPorTuCuentaScreen(
     }
 }
 
+// Encapsula la operacion video list item usada por la pantalla o el estado.
 @Composable
 private fun VideoListItem(
     video: VideoListItemResponse,
@@ -192,6 +194,7 @@ private fun VideoListItem(
     }
 }
 
+// Renderiza la pantalla video full screen y conecta sus acciones principales.
 @OptIn(UnstableApi::class)
 @Composable
 private fun VideoFullScreen(
@@ -322,6 +325,7 @@ private fun VideoFullScreen(
     }
 }
 
+// Encapsula la operacion context usada por la pantalla o el estado.
 private fun Context.findActivity(): Activity? = when (this) {
     is Activity -> this
     is ContextWrapper -> baseContext.findActivity()

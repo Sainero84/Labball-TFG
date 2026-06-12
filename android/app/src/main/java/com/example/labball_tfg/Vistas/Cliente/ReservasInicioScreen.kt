@@ -28,6 +28,7 @@ import com.example.labball_tfg.ui.theme.backgroundColor
 import com.example.labball_tfg.ui.theme.secondaryColor
 import com.example.labball_tfg.ui.theme.textColor
 
+// Renderiza la pantalla reservas inicio screen y conecta sus acciones principales.
 @Composable
 fun ReservasInicioScreen(
     onAddReservaClick: () -> Unit,
@@ -75,6 +76,7 @@ fun ReservasInicioScreen(
     }
 }
 
+// Encapsula la operacion reserva inicio button usada por la pantalla o el estado.
 @Composable
 private fun ReservaInicioButton(
     text: String,

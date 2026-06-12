@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+// Mantiene el estado y las operaciones de admin usuarios view model para la interfaz.
 class AdminUsuariosViewModel : ViewModel() {
 
     private val _usuarios = MutableStateFlow<List<AdminUsuarioResponse>>(emptyList())
@@ -43,6 +44,7 @@ class AdminUsuariosViewModel : ViewModel() {
     private val _successMessage = MutableStateFlow<String?>(null)
     val successMessage: StateFlow<String?> = _successMessage.asStateFlow()
 
+    // Carga cargar negocio desde la API y actualiza el estado asociado.
     fun cargarNegocio(token: String) {
         cargarUsuarioActual(token)
         cargarUsuarios(token)
@@ -50,6 +52,7 @@ class AdminUsuariosViewModel : ViewModel() {
         cargarUbicaciones(token)
     }
 
+    // Carga cargar usuario actual desde la API y actualiza el estado asociado.
     fun cargarUsuarioActual(token: String) {
         viewModelScope.launch {
             try {
@@ -67,6 +70,7 @@ class AdminUsuariosViewModel : ViewModel() {
         }
     }
 
+    // Carga cargar usuarios desde la API y actualiza el estado asociado.
     fun cargarUsuarios(token: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -89,6 +93,7 @@ class AdminUsuariosViewModel : ViewModel() {
         }
     }
 
+    // Carga cargar descuentos desde la API y actualiza el estado asociado.
     fun cargarDescuentos(token: String) {
         viewModelScope.launch {
             try {
@@ -106,6 +111,7 @@ class AdminUsuariosViewModel : ViewModel() {
         }
     }
 
+    // Carga cargar ubicaciones desde la API y actualiza el estado asociado.
     fun cargarUbicaciones(token: String) {
         viewModelScope.launch {
             try {
@@ -123,6 +129,7 @@ class AdminUsuariosViewModel : ViewModel() {
         }
     }
 
+    // Crea crear usuario mediante la API y comunica el resultado.
     fun crearUsuario(
         token: String,
         correo: String,
@@ -173,6 +180,7 @@ class AdminUsuariosViewModel : ViewModel() {
         }
     }
 
+    // Actualiza actualizar rol y refleja la respuesta en la pantalla.
     fun actualizarRol(
         token: String,
         idUsuario: Int,
@@ -244,6 +252,7 @@ class AdminUsuariosViewModel : ViewModel() {
         }
     }
 
+    // Elimina eliminar usuario y sincroniza el estado local.
     fun eliminarUsuario(token: String, idUsuario: Int) {
         val usuarioActual = _usuarioActual.value
 
@@ -283,6 +292,7 @@ class AdminUsuariosViewModel : ViewModel() {
         }
     }
 
+    // Crea crear descuento mediante la API y comunica el resultado.
     fun crearDescuento(token: String, codigo: String, porcentajeTexto: String) {
         val porcentaje = porcentajeTexto.trim().replace(",", ".").toDoubleOrNull()
 
@@ -320,6 +330,7 @@ class AdminUsuariosViewModel : ViewModel() {
         }
     }
 
+    // Actualiza actualizar descuento y refleja la respuesta en la pantalla.
     fun actualizarDescuento(
         token: String,
         idDescuento: Int,
@@ -368,6 +379,7 @@ class AdminUsuariosViewModel : ViewModel() {
         }
     }
 
+    // Elimina eliminar descuento y sincroniza el estado local.
     fun eliminarDescuento(token: String, idDescuento: Int) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -395,6 +407,7 @@ class AdminUsuariosViewModel : ViewModel() {
         }
     }
 
+    // Crea crear ubicacion mediante la API y comunica el resultado.
     fun crearUbicacion(token: String, nombre: String) {
         val nombreLimpio = nombre.trim()
 
@@ -429,6 +442,7 @@ class AdminUsuariosViewModel : ViewModel() {
         }
     }
 
+    // Elimina eliminar ubicacion y sincroniza el estado local.
     fun eliminarUbicacion(token: String, idUbicacion: Int) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -456,12 +470,14 @@ class AdminUsuariosViewModel : ViewModel() {
         }
     }
 
+    // Limpia limpiar estado para reiniciar el estado temporal.
     fun limpiarEstado() {
         _usuarioGuardado.value = null
         _errorMessage.value = null
         _successMessage.value = null
     }
 
+    // Encapsula la operacion puede asignar rol usada por la pantalla o el estado.
     private fun puedeAsignarRol(esAdmin: Boolean, esSuperAdmin: Boolean): Boolean {
         val usuarioActual = _usuarioActual.value
 

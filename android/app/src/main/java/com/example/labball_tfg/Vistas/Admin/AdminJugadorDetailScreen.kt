@@ -72,6 +72,7 @@ private val adminJugadorPositions = listOf(
     "Pívot"
 )
 
+// Renderiza la pantalla admin jugador detail screen y conecta sus acciones principales.
 @Composable
 fun AdminJugadorDetailScreen(
     jugador: JugadorResponse?,
@@ -384,6 +385,7 @@ fun AdminJugadorDetailScreen(
     }
 }
 
+// Encapsula la operacion admin jugador detail loading usada por la pantalla o el estado.
 @Composable
 private fun AdminJugadorDetailLoading(
     isLoading: Boolean,
@@ -420,6 +422,7 @@ private fun AdminJugadorDetailLoading(
     }
 }
 
+// Encapsula la operacion admin jugador detail header usada por la pantalla o el estado.
 @Composable
 private fun AdminJugadorDetailHeader(
     jugador: JugadorResponse,
@@ -487,6 +490,7 @@ private fun AdminJugadorDetailHeader(
     }
 }
 
+// Encapsula la operacion admin jugador header avatar usada por la pantalla o el estado.
 @Composable
 private fun AdminJugadorHeaderAvatar(jugador: JugadorResponse) {
     Box(
@@ -514,6 +518,7 @@ private fun AdminJugadorHeaderAvatar(jugador: JugadorResponse) {
     }
 }
 
+// Encapsula la operacion admin jugador header metadata usada por la pantalla o el estado.
 @Composable
 private fun AdminJugadorHeaderMetadata(text: String) {
     Text(
@@ -523,6 +528,7 @@ private fun AdminJugadorHeaderMetadata(text: String) {
     )
 }
 
+// Encapsula la operacion admin jugador text input usada por la pantalla o el estado.
 @Composable
 private fun AdminJugadorTextInput(
     label: String,
@@ -561,6 +567,7 @@ private fun AdminJugadorTextInput(
     }
 }
 
+// Encapsula la operacion admin jugador position selector usada por la pantalla o el estado.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AdminJugadorPositionSelector(
@@ -628,6 +635,7 @@ private fun AdminJugadorPositionSelector(
     }
 }
 
+// Encapsula la operacion admin jugador stat input usada por la pantalla o el estado.
 @Composable
 private fun AdminJugadorStatInput(
     label: String,
@@ -662,6 +670,7 @@ private fun AdminJugadorStatInput(
     }
 }
 
+// Encapsula la operacion admin jugador centered button usada por la pantalla o el estado.
 @Composable
 private fun AdminJugadorCenteredButton(
     text: String,
@@ -688,6 +697,7 @@ private fun AdminJugadorCenteredButton(
     }
 }
 
+// Encapsula la operacion admin jugador help text usada por la pantalla o el estado.
 @Composable
 private fun AdminJugadorHelpText(text: String) {
     Text(
@@ -697,6 +707,7 @@ private fun AdminJugadorHelpText(text: String) {
     )
 }
 
+// Encapsula la operacion admin jugador text field colors usada por la pantalla o el estado.
 @Composable
 private fun adminJugadorTextFieldColors() = OutlinedTextFieldDefaults.colors(
     focusedBorderColor = primaryColor,
@@ -711,36 +722,43 @@ private fun adminJugadorTextFieldColors() = OutlinedTextFieldDefaults.colors(
     unfocusedPlaceholderColor = textColor.copy(alpha = 0.55f)
 )
 
+// Encapsula la operacion string usada por la pantalla o el estado.
 private fun String.isValidDecimalInput(): Boolean {
     return matches(Regex("^\\d+,\\d{2}$")) && toDecimalValue() != null
 }
 
+// Encapsula la operacion string usada por la pantalla o el estado.
 private fun String.toDecimalValue(): Double? {
     return replace(',', '.').toDoubleOrNull()
 }
 
+// Encapsula la operacion string usada por la pantalla o el estado.
 private fun String.isValidStatInput(): Boolean {
     return toIntOrNull()?.let { it in 0..100 } == true
 }
 
+// Encapsula la operacion double usada por la pantalla o el estado.
 private fun Double?.toDecimalInput(): String {
     return this?.let {
         String.format(Locale("es", "ES"), "%.2f", it)
     }.orEmpty()
 }
 
+// Encapsula la operacion double usada por la pantalla o el estado.
 private fun Double?.toHeightLabel(): String {
     return this?.let {
         "${String.format(Locale("es", "ES"), "%.2f", it)} m"
     } ?: "- m"
 }
 
+// Encapsula la operacion double usada por la pantalla o el estado.
 private fun Double?.toWeightLabel(): String {
     return this?.let {
         "${String.format(Locale("es", "ES"), "%.2f", it)} kg"
     } ?: "- kg"
 }
 
+// Encapsula la operacion string usada por la pantalla o el estado.
 private fun String?.toSelectablePosition(): String {
     val normalizedPosition = this.orEmpty().normalizedSelectorValue()
 
@@ -749,6 +767,7 @@ private fun String?.toSelectablePosition(): String {
     }.orEmpty()
 }
 
+// Encapsula la operacion string usada por la pantalla o el estado.
 private fun String.normalizedSelectorValue(): String {
     return Normalizer
         .normalize(this, Normalizer.Form.NFD)
@@ -758,6 +777,7 @@ private fun String.normalizedSelectorValue(): String {
         .lowercase(Locale.ROOT)
 }
 
+// Encapsula la operacion jugador response usada por la pantalla o el estado.
 private fun JugadorResponse.trainingSummary(): String {
     val entrenador = (entrenadores.map { it.nombre } + listOfNotNull(nombreEntrenador))
         .map { it.trim() }

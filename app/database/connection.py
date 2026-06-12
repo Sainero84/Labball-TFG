@@ -52,6 +52,7 @@ SessionLocal = sessionmaker(
 
 def get_db():
     # Creamos una sesión nueva
+    """Prepara el acceso a base de datos necesario para get db."""
     db = SessionLocal()
 
     try:

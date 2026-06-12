@@ -7,6 +7,7 @@ from app.entities.semana_entity import SemanaEntity
 # --------------------------------------------------
 
 def get_all(db: Session):
+    """Realiza la operacion get all contra la base de datos."""
     return db.query(SemanaEntity).all()
 
 
@@ -15,6 +16,7 @@ def get_all(db: Session):
 # --------------------------------------------------
 
 def get_by_id(db: Session, semana_id: int):
+    """Realiza la operacion get by id contra la base de datos."""
     return db.query(SemanaEntity).filter(SemanaEntity.id_semana == semana_id).first()
 
 
@@ -23,6 +25,7 @@ def get_by_id(db: Session, semana_id: int):
 # --------------------------------------------------
 
 def create(db: Session, semana_data: dict):
+    """Realiza la operacion create contra la base de datos."""
     new_semana = SemanaEntity(
         semana=semana_data["semana"],
         horario=semana_data["horario"]
@@ -40,6 +43,7 @@ def create(db: Session, semana_data: dict):
 # --------------------------------------------------
 
 def update(db: Session, semana_id: int, updated_fields: dict):
+    """Realiza la operacion update contra la base de datos."""
     semana = get_by_id(db, semana_id)
 
     if semana is None:
@@ -59,6 +63,7 @@ def update(db: Session, semana_id: int, updated_fields: dict):
 # --------------------------------------------------
 
 def delete(db: Session, semana_id: int):
+    """Realiza la operacion delete contra la base de datos."""
     semana = get_by_id(db, semana_id)
 
     if semana is None:

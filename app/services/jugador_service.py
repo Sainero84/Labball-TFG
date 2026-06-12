@@ -21,6 +21,7 @@ from app.schemas.jugador_schema import (
 # --------------------------------------------------
 
 def normalize_static_url(url: str | None) -> str | None:
+    """Aplica la logica de negocio necesaria para normalize static url."""
     if url is None:
         return None
 
@@ -36,24 +37,27 @@ def normalize_static_url(url: str | None) -> str | None:
 
 
 def get_entrenamiento_nombre_entrenador(entrenamiento) -> str:
+    """Aplica la logica de negocio necesaria para get entrenamiento nombre entrenador."""
     entrenador = getattr(entrenamiento, "entrenador", None)
 
     if entrenador is not None:
         return entrenador.nombre
 
-    return entrenamiento.nombre_entrenador
+    return ""
 
 
 def get_entrenamiento_ubicacion(entrenamiento) -> str:
+    """Aplica la logica de negocio necesaria para get entrenamiento ubicacion."""
     ubicacion = getattr(entrenamiento, "ubicacion_catalogo", None)
 
     if ubicacion is not None:
         return ubicacion.nombre
 
-    return entrenamiento.ubicacion
+    return ""
 
 
 def get_jugador_catalogos(db: Session, jugador):
+    """Aplica la logica de negocio necesaria para get jugador catalogos."""
     entrenamientos = jugador_repository.get_entrenamientos_catalogo_by_jugador(
         db,
         jugador
@@ -86,6 +90,7 @@ def get_jugador_catalogos(db: Session, jugador):
 
 
 def to_jugador_response(db: Session, jugador) -> JugadorResponseSchema:
+    """Aplica la logica de negocio necesaria para to jugador response."""
     foto_perfil_url = None
 
     if jugador.usuario is not None:
@@ -136,6 +141,7 @@ def to_jugador_response(db: Session, jugador) -> JugadorResponseSchema:
 # --------------------------------------------------
 
 def get_all_jugadores(db: Session) -> JugadorListResponseSchema:
+    """Aplica la logica de negocio necesaria para get all jugadores."""
     jugadores = jugador_repository.get_all(db)
 
     return JugadorListResponseSchema(
@@ -148,6 +154,7 @@ def get_all_jugadores(db: Session) -> JugadorListResponseSchema:
 # --------------------------------------------------
 
 def get_jugador_by_id(db: Session, jugador_id: int) -> JugadorResponseSchema:
+    """Aplica la logica de negocio necesaria para get jugador by id."""
     jugador = jugador_repository.get_by_id(db, jugador_id)
 
     if jugador is None:
@@ -157,6 +164,7 @@ def get_jugador_by_id(db: Session, jugador_id: int) -> JugadorResponseSchema:
 
 
 def get_jugador_by_user(db: Session, current_user) -> JugadorResponseSchema:
+    """Aplica la logica de negocio necesaria para get jugador by user."""
     jugador = jugador_repository.get_by_usuario_id(db, current_user.id_usuario)
 
     if jugador is None:
@@ -173,6 +181,7 @@ def create_jugador(
     db: Session,
     jugador_data: JugadorCreateSchema
 ) -> JugadorMessageResponseSchema:
+    """Aplica la logica de negocio necesaria para create jugador."""
     usuario = usuario_repository.get_by_id(db, jugador_data.id_usuario)
 
     if usuario is None:
@@ -221,6 +230,7 @@ def update_jugador(
     jugador_id: int,
     jugador_data: JugadorUpdateSchema
 ) -> JugadorMessageResponseSchema:
+    """Aplica la logica de negocio necesaria para update jugador."""
     updated_fields = {}
 
     id_usuario = getattr(jugador_data, "id_usuario", None)
@@ -281,6 +291,7 @@ def delete_jugador(
     db: Session,
     jugador_id: int
 ) -> JugadorMessageResponseSchema:
+    """Aplica la logica de negocio necesaria para delete jugador."""
     deleted_jugador = jugador_repository.delete(db, jugador_id)
 
     if deleted_jugador is None:

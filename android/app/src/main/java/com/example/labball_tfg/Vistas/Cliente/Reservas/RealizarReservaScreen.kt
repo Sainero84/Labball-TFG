@@ -30,6 +30,7 @@ import com.example.labball_tfg.ui.theme.primaryColor
 import com.example.labball_tfg.ui.theme.secondaryColor
 import com.example.labball_tfg.ui.theme.textColor
 
+// Renderiza la pantalla realizar reserva screen y conecta sus acciones principales.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RealizarReservaScreen(
@@ -352,6 +353,7 @@ fun RealizarReservaScreen(
     }
 }
 
+// Encapsula la operacion reserva selector sesiones usada por la pantalla o el estado.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ReservaSelectorSesiones(
@@ -410,6 +412,7 @@ private fun ReservaSelectorSesiones(
     }
 }
 
+// Encapsula la operacion rellenar datos usuario button usada por la pantalla o el estado.
 @Composable
 private fun RellenarDatosUsuarioButton(
     isLoading: Boolean,
@@ -439,6 +442,7 @@ private fun RellenarDatosUsuarioButton(
     }
 }
 
+// Encapsula la operacion reserva input usada por la pantalla o el estado.
 @Composable
 private fun ReservaInput(
     label: String,
@@ -477,6 +481,7 @@ private fun ReservaInput(
     }
 }
 
+// Encapsula la operacion reserva date input usada por la pantalla o el estado.
 @Composable
 private fun ReservaDateInput(
     label: String,
@@ -516,6 +521,7 @@ private fun ReservaDateInput(
     }
 }
 
+// Encapsula la operacion reserva stepper usada por la pantalla o el estado.
 @Composable
 private fun ReservaStepper(
     label: String,
@@ -564,6 +570,7 @@ private fun ReservaStepper(
     }
 }
 
+// Encapsula la operacion semana seleccionada row usada por la pantalla o el estado.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SemanaSeleccionadaRow(
@@ -647,6 +654,7 @@ private fun SemanaSeleccionadaRow(
     }
 }
 
+// Encapsula la operacion precio reserva box usada por la pantalla o el estado.
 @Composable
 private fun PrecioReservaBox(
     precioSinDescuento: Double?,
@@ -691,6 +699,7 @@ private fun PrecioReservaBox(
     }
 }
 
+// Encapsula la operacion reserva text field colors usada por la pantalla o el estado.
 @Composable
 private fun reservaTextFieldColors() = OutlinedTextFieldDefaults.colors(
     focusedBorderColor = primaryColor,
@@ -708,6 +717,7 @@ private fun reservaTextFieldColors() = OutlinedTextFieldDefaults.colors(
     disabledBorderColor = primaryColor
 )
 
+// Encapsula la operacion validar reserva usada por la pantalla o el estado.
 private fun validarReserva(
     nombre: String,
     apellidos: String,
@@ -731,6 +741,7 @@ private fun validarReserva(
     }
 }
 
+// Encapsula la operacion normalizar fecha usada por la pantalla o el estado.
 private fun normalizarFecha(fecha: String): String {
     val partes = fecha.split("/", "-")
 
@@ -744,6 +755,7 @@ private fun normalizarFecha(fecha: String): String {
     }
 }
 
+// Encapsula la operacion reserva format date millis usada por la pantalla o el estado.
 private fun reservaFormatDateMillis(millis: Long): String {
     val calendar = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC")).apply {
         timeInMillis = millis
@@ -758,6 +770,7 @@ private fun reservaFormatDateMillis(millis: Long): String {
     )
 }
 
+// Encapsula la operacion string usada por la pantalla o el estado.
 private fun String.toDisplayDate(): String {
     return if (matches(Regex("^\\d{4}-\\d{2}-\\d{2}$"))) {
         val parts = split("-")
@@ -767,6 +780,7 @@ private fun String.toDisplayDate(): String {
     }
 }
 
+// Encapsula la operacion has at least16 years usada por la pantalla o el estado.
 private fun hasAtLeast16Years(date: String): Boolean {
     val parts = date.split("-")
     if (parts.size != 3) {
@@ -785,6 +799,7 @@ private fun hasAtLeast16Years(date: String): Boolean {
     return !birthDate.after(limit)
 }
 
+// Encapsula la operacion siguiente semana disponible usada por la pantalla o el estado.
 private fun siguienteSemanaDisponible(
     opciones: List<SemanaReserva>,
     seleccionadas: List<SemanaSeleccionada>
@@ -803,12 +818,14 @@ private fun siguienteSemanaDisponible(
     return SemanaSeleccionada(opciones.first(), HorarioSemana.AM)
 }
 
+// Encapsula la operacion list usada por la pantalla o el estado.
 private fun List<SemanaSeleccionada>.idsSeleccionadosExcepto(index: Int): Set<Int> {
     return mapIndexedNotNull { itemIndex, seleccion ->
         if (itemIndex == index) null else seleccion.idSemana
     }.toSet()
 }
 
+// Encapsula la operacion semana seleccionada usada por la pantalla o el estado.
 private fun SemanaSeleccionada.evitarDuplicado(idsUsados: Set<Int>): SemanaSeleccionada? {
     if (idSemana !in idsUsados) {
         return this
@@ -818,12 +835,14 @@ private fun SemanaSeleccionada.evitarDuplicado(idsUsados: Set<Int>): SemanaSelec
     return alternativa.takeIf { it.idSemana !in idsUsados }
 }
 
+// Agrupa la pantalla semana reserva y su estado visual principal.
 private data class SemanaReserva(
     val idAm: Int,
     val idPm: Int,
     val rango: String
 )
 
+// Agrupa la pantalla semana seleccionada y su estado visual principal.
 private data class SemanaSeleccionada(
     val semana: SemanaReserva,
     val horario: HorarioSemana
@@ -832,9 +851,11 @@ private data class SemanaSeleccionada(
         get() = if (horario == HorarioSemana.AM) semana.idAm else semana.idPm
 }
 
+// Agrupa la pantalla horario semana y su estado visual principal.
 private enum class HorarioSemana {
     AM,
     PM;
 
+    // Encapsula la operacion toggle usada por la pantalla o el estado.
     fun toggle(): HorarioSemana = if (this == AM) PM else AM
 }

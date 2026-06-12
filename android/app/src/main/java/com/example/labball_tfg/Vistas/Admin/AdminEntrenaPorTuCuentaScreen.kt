@@ -56,6 +56,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.example.labball_tfg.ui.theme.primaryColor
 
+// Renderiza la pantalla admin entrena por tu cuenta screen y conecta sus acciones principales.
 @Composable
 fun AdminEntrenaPorTuCuentaScreen(
     token: String,
@@ -247,6 +248,7 @@ fun AdminEntrenaPorTuCuentaScreen(
     }
 }
 
+// Encapsula la operacion video list item usada por la pantalla o el estado.
 @Composable
 private fun VideoListItem(
     video: VideoListItemResponse,
@@ -289,6 +291,7 @@ private fun VideoListItem(
     }
 }
 
+// Renderiza la pantalla video full screen y conecta sus acciones principales.
 @OptIn(UnstableApi::class)
 @Composable
 private fun VideoFullScreen(
@@ -576,6 +579,7 @@ private fun VideoFullScreen(
     }
 }
 
+// Encapsula la operacion admin video detail text field colors usada por la pantalla o el estado.
 @Composable
 private fun adminVideoDetailTextFieldColors() = OutlinedTextFieldDefaults.colors(
     focusedTextColor = textColor,
@@ -589,6 +593,7 @@ private fun adminVideoDetailTextFieldColors() = OutlinedTextFieldDefaults.colors
     unfocusedLabelColor = textColor.copy(alpha = 0.65f)
 )
 
+// Encapsula la operacion context usada por la pantalla o el estado.
 private fun Context.findActivity(): Activity? = when (this) {
     is Activity -> this
     is ContextWrapper -> baseContext.findActivity()

@@ -49,6 +49,7 @@ import com.example.labball_tfg.Vistas.PerfilScreen
 import com.example.labball_tfg.Vistas.Cliente.Reservas.RealizarReservaScreen
 import com.example.labball_tfg.Vistas.Cliente.Reservas.VerReservasScreen
 
+// Renderiza la pantalla cliente scaffold screen y conecta sus acciones principales.
 @Composable
 fun ClienteScaffoldScreen(
     token: String,
@@ -214,6 +215,7 @@ fun ClienteScaffoldScreen(
     }
 }
 
+// Encapsula la operacion cliente top bar usada por la pantalla o el estado.
 @Composable
 private fun ClienteTopBar() {
     Column(
@@ -251,6 +253,7 @@ private fun ClienteTopBar() {
     }
 }
 
+// Encapsula la operacion cliente section title usada por la pantalla o el estado.
 @Composable
 private fun ClienteSectionTitle(title: String) {
     Column(
@@ -274,6 +277,7 @@ private fun ClienteSectionTitle(title: String) {
     }
 }
 
+// Encapsula la operacion cliente navigation colors usada por la pantalla o el estado.
 @Composable
 private fun clienteNavigationColors() = NavigationBarItemDefaults.colors(
     selectedIconColor = secondaryColor,
@@ -281,6 +285,7 @@ private fun clienteNavigationColors() = NavigationBarItemDefaults.colors(
     indicatorColor = Color.Transparent
 )
 
+// Muestra una vista previa de cliente scaffold screen preview para Compose.
 @Composable
 @Preview(showBackground = true)
 fun ClienteScaffoldScreenPreview() {

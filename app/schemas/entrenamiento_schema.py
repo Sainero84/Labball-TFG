@@ -9,6 +9,7 @@ from datetime import datetime
 
 class EntrenamientoCreateSchema(BaseModel):
 
+    """Define el esquema de datos entrenamiento create schema para validar entradas y respuestas."""
     id_entrenador: int = Field(..., gt=0)
 
     id_ubicacion: int = Field(..., gt=0)
@@ -32,6 +33,7 @@ class EntrenamientoCreateSchema(BaseModel):
 
 class EntrenamientoUpdateSchema(BaseModel):
 
+    """Define el esquema de datos entrenamiento update schema para validar entradas y respuestas."""
     id_entrenador: Optional[int] = Field(default=None, gt=0)
 
     id_ubicacion: Optional[int] = Field(default=None, gt=0)
@@ -55,6 +57,7 @@ class EntrenamientoUpdateSchema(BaseModel):
 
 class EntrenamientoResponseSchema(BaseModel):
 
+    """Define el esquema de datos entrenamiento response schema para validar entradas y respuestas."""
     id_entrenamiento: int
 
     id_entrenador: int
@@ -84,6 +87,7 @@ class EntrenamientoResponseSchema(BaseModel):
 
 class EntrenamientoListResponseSchema(BaseModel):
 
+    """Define el esquema de datos entrenamiento list response schema para validar entradas y respuestas."""
     entrenamientos: list[EntrenamientoResponseSchema]
 
 
@@ -93,6 +97,7 @@ class EntrenamientoListResponseSchema(BaseModel):
 
 class EntrenamientoMessageResponseSchema(BaseModel):
 
+    """Define el esquema de datos entrenamiento message response schema para validar entradas y respuestas."""
     message: str
 
     entrenamiento: EntrenamientoResponseSchema

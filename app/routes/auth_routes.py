@@ -8,7 +8,6 @@ from app.firebase.firebase_dependencies import (
 )
 from app.repositories import usuario_repository
 from app.schemas.auth_schema import (
-    AuthMessageResponseSchema,
     AuthRegisterSchema,
     AuthUserResponseSchema
 )
@@ -20,6 +19,7 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
 def to_usuario_response(user) -> UsuarioResponseSchema:
+    """Expone la ruta encargada de to usuario response y delega la logica principal."""
     return UsuarioResponseSchema(
         id_usuario=user.id_usuario,
         firebase_uid=user.firebase_uid,
@@ -47,6 +47,7 @@ def register_user(
     firebase_user: dict = Depends(get_current_firebase_user),
     db: Session = Depends(get_db)
 ):
+    """Expone la ruta encargada de register user y delega la logica principal."""
     firebase_uid = firebase_user.get("uid")
 
     if firebase_uid != user_data.firebase_uid:
@@ -112,24 +113,10 @@ def register_user(
     )
 
 
-@router.post("/validate-token", response_model=AuthUserResponseSchema)
-def validate_token(current_user=Depends(get_current_user)):
-    return AuthUserResponseSchema(
-        message="Token valido",
-        usuario=to_usuario_response(current_user)
-    )
-
-
 @router.post("/login", response_model=AuthUserResponseSchema)
 def login(current_user=Depends(get_current_user)):
+    """Expone la ruta encargada de login y delega la logica principal."""
     return AuthUserResponseSchema(
         message="Token valido",
         usuario=to_usuario_response(current_user)
-    )
-
-
-@router.post("/recover-password", response_model=AuthMessageResponseSchema)
-def recover_password():
-    return AuthMessageResponseSchema(
-        message="La recuperacion de password se gestiona desde Firebase en Android"
     )

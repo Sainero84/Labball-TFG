@@ -37,6 +37,7 @@ import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
 
+// Renderiza la pantalla mi jugador screen y conecta sus acciones principales.
 @Composable
 fun MiJugadorScreen(
     token: String,
@@ -101,6 +102,7 @@ fun MiJugadorScreen(
     }
 }
 
+// Encapsula la operacion mi jugador content usada por la pantalla o el estado.
 @Composable
 private fun MiJugadorContent(
     jugador: JugadorResponse
@@ -157,6 +159,7 @@ private fun MiJugadorContent(
     }
 }
 
+// Encapsula la operacion mi jugador header usada por la pantalla o el estado.
 @Composable
 private fun MiJugadorHeader(jugador: JugadorResponse) {
     Column(
@@ -185,6 +188,7 @@ private fun MiJugadorHeader(jugador: JugadorResponse) {
     }
 }
 
+// Encapsula la operacion mi jugador header metadata usada por la pantalla o el estado.
 @Composable
 private fun MiJugadorHeaderMetadata(text: String) {
     Text(
@@ -194,6 +198,7 @@ private fun MiJugadorHeaderMetadata(text: String) {
     )
 }
 
+// Encapsula la operacion radar chart usada por la pantalla o el estado.
 @Composable
 private fun RadarChart(
     stats: List<PlayerStat>,
@@ -206,6 +211,7 @@ private fun RadarChart(
         val gridColor = textColor.copy(alpha = 0.75f)
         val fillColor = secondaryColor.copy(alpha = 0.92f)
 
+        // Encapsula la operacion point usada por la pantalla o el estado.
         fun point(index: Int, percent: Float): Offset {
             val angle = (-90f + index * 60f) * (PI.toFloat() / 180f)
             return Offset(
@@ -292,6 +298,7 @@ private fun RadarChart(
     }
 }
 
+// Encapsula la operacion draw scope usada por la pantalla o el estado.
 private fun DrawScope.drawPolygon(
     points: List<Offset>,
     color: Color,
@@ -309,6 +316,7 @@ private fun DrawScope.drawPolygon(
     }
 }
 
+// Encapsula la operacion stats grid usada por la pantalla o el estado.
 @Composable
 private fun StatsGrid(
     stats: List<PlayerStat>
@@ -342,6 +350,7 @@ private fun StatsGrid(
     }
 }
 
+// Encapsula la operacion stat bar usada por la pantalla o el estado.
 @Composable
 private fun StatBar(
     stat: PlayerStat,
@@ -371,17 +380,20 @@ private fun StatBar(
     }
 }
 
+// Agrupa la pantalla player stat y su estado visual principal.
 private data class PlayerStat(
     val name: String,
     val value: Int
 )
 
+// Encapsula la operacion double usada por la pantalla o el estado.
 private fun Double?.toPlayerHeightLabel(): String {
     return this?.let {
         "${String.format(Locale("es", "ES"), "%.2f", it)} m"
     } ?: "- m"
 }
 
+// Encapsula la operacion double usada por la pantalla o el estado.
 private fun Double?.toPlayerWeightLabel(): String {
     return this?.let {
         "${String.format(Locale("es", "ES"), "%.2f", it)} kg"

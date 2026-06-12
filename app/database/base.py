@@ -6,4 +6,5 @@ from sqlalchemy.orm import DeclarativeBase
 # Esta clase base será heredada por todas nuestras entidades.
 # Piensa en ella como la "clase madre" de los modelos de base de datos.
 class Base(DeclarativeBase):
+    """Centraliza la definicion de base dentro del modulo."""
     pass

@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+// Mantiene el estado y las operaciones de tarifa view model para la interfaz.
 class TarifaViewModel : ViewModel() {
 
     private val _tarifas = MutableStateFlow<List<TarifaResponse>>(emptyList())
@@ -20,6 +21,7 @@ class TarifaViewModel : ViewModel() {
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
+    // Carga cargar tarifas desde la API y actualiza el estado asociado.
     fun cargarTarifas(token: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -43,6 +45,7 @@ class TarifaViewModel : ViewModel() {
         }
     }
 
+    // Limpia limpiar error para reiniciar el estado temporal.
     fun limpiarError() {
         _errorMessage.value = null
     }

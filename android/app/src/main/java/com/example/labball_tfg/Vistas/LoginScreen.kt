@@ -46,6 +46,7 @@ import com.example.labball_tfg.ui.theme.primaryColor
 import com.example.labball_tfg.ui.theme.secondaryColor
 import com.example.labball_tfg.ui.theme.textColor
 
+// Renderiza la pantalla login screen y conecta sus acciones principales.
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = viewModel(),
@@ -202,6 +203,7 @@ fun LoginScreen(
     }
 }
 
+// Muestra una vista previa de login screen preview para Compose.
 @Composable
 @Preview(showBackground = true)
 fun LoginScreenPreview() {
